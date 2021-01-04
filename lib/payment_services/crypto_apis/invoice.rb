@@ -33,7 +33,7 @@ class PaymentServices::CryptoApis
     end
 
     def complete_payment?
-      confirmations == CONFIRMATIONS_FOR_COMPLETE
+      confirmations >= CONFIRMATIONS_FOR_COMPLETE
     end
 
     def order

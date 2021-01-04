@@ -14,14 +14,14 @@ class PaymentServices::CryptoApis
 
     def address_transactions(currency:, address:)
       safely_parse http_request(
-        url: "#{API_URL}/bc/btc/testnet/address/#{address}/basic/transactions",
+        url: "#{API_URL}/bc/bch/testnet/address/#{address}/basic/transactions",
         method: :GET
       )
     end
 
-    def transaction_details(transition_id)
+    def transaction_details(transaction_id)
       safely_parse http_request(
-        url: "#{API_URL}/bc/btc/testnet/txs/basic/txid/#{transition_id}",
+        url: "#{API_URL}/bc/bch/testnet/txs/basic/txid/#{transaction_id}",
         method: :GET
       )
     end
