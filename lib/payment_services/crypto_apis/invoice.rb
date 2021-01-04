@@ -6,7 +6,7 @@ class PaymentServices::CryptoApis
   class Invoice < ApplicationRecord
     CONFIRMATIONS_FOR_COMPLETE = 2
     include Workflow
-    self.table_name = 'crypto_apis_invoices'
+    # self.table_name = 'crypto_apis_invoices'
 
     scope :ordered, -> { order(id: :desc) }
 
