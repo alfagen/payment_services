@@ -6,7 +6,7 @@ class PaymentServices::CryptoApis
   class PayoutClient < PaymentServices::CryptoApis::Client
     def make_payout(inputs:, outputs:, fee:, wifs:)
       safely_parse http_request(
-        url: "#{API_URL}/bc/bch/#{NETWORK}/txs/txid/#{txid}",
+        url: "#{API_URL}/bc/bch/#{NETWORK}/txs/new",
         method: :POST,
         body: {
           createTx: {
