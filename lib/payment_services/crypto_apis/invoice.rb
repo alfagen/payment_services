@@ -6,6 +6,7 @@ class PaymentServices::CryptoApis
   class Invoice < ApplicationRecord
     CONFIRMATIONS_FOR_COMPLETE = 2
     include Workflow
+    self.table_name = 'crypto_apis_invoices'
 
     scope :ordered, -> { order(id: :desc) }
 
@@ -21,7 +22,7 @@ class PaymentServices::CryptoApis
 
       state :paid do
         on_entry do
-          # кидаем заявку в новые?
+          order.auto_confirm!(income_amount: amount)
         end
       end
       state :cancelled
@@ -36,7 +37,7 @@ class PaymentServices::CryptoApis
     end
 
     def order
-      Order.find_by(public_id: order_public_id)
+      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
   end
 end

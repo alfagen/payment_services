@@ -5,18 +5,21 @@ require_relative 'payout_client'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter
-    attribute :order
+    # payout_wallets - массив из адресов кошельков(кошелька) с уже просчитанными суммами в формате:
+    # [{ address: 'fh4..', payout_amount: 0.004, wif: 'fhf..' }..]
+    def initialize(order:, payout_wallets:)
+      @order, @payout_wallets = order, payout_wallets
+    end
 
-    # payout_wallets - массив из кошельков из уже просчитанными суммами
-    def create_payout(amount_cents, payout_wallets, destination_address, fee, wifs)
-      payout = Payout.new(amount_cents: amount_cents, destination_address: destination_address, wifs: wifs, fee: fee)
-      payout.payout_wallets = payout_wallets
-      payout.save!
+    attr_reader :order, :payout_wallets
+
+    def create_payout(amount_cents, destination_address, fee)
+      Payout.create!(amount_cents: amount_cents, order_public_id: order.public_id, destination_address: destination_address, fee: fee)
     end
 
     def make_payout!
-      response = client.make_payout(query: payout.api_query)
-      return response[:meta][:error][:message] if response.dig(:meta, :error, :message)
+      response = client.make_payout(query: api_query)
+      raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
       payout.pay!(txid: response[:payload][:txid])
     end
@@ -40,7 +43,36 @@ class PaymentServices::CryptoApis
       @client ||= begin
         wallet = order.income_wallet
         api_key = wallet.api_key.presence || wallet.parent&.api_key
-        PayoutClient.new(api_key: wallet.api_key)
+        PayoutClient.new(wallet.api_key)
+      end
+    end
+
+    def api_query
+      {
+        createTx: {
+          inputs: inputs,
+          outputs: outputs,
+          fee: {
+            value: payout.fee
+          }
+        },
+        wifs: wifs
+      }
+    end
+
+    def inputs
+      payout_wallets.inject([]) do |memo, wallet|
+        memo << { address: wallet[:address], value: wallet[:payout_amount] }
+      end
+    end
+
+    def outputs
+      [{ address: payout.destination_address, value: payout.amount_cents }]
+    end
+
+    def wifs
+      payout_wallets.inject([]) do |memo, wallet| 
+        memo << wallet[:wif]
       end
     end
   end

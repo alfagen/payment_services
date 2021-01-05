@@ -27,7 +27,7 @@ class PaymentServices::CryptoApis
       )
     end
 
-    protected
+    private
 
     attr_reader :api_key
 
@@ -61,7 +61,7 @@ class PaymentServices::CryptoApis
 
     def headers
       {
-        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
         'X-API-Key': api_key
       }

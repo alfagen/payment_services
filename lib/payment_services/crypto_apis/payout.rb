@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
-require_relative 'payout_client'
-
 class PaymentServices::CryptoApis
   class Payout < ApplicationRecord
     CONFIRMATIONS_FOR_COMPLETE = 2
+    include Workflow
+    self.table_name = 'crypto_apis_payouts'
 
-    attribute :payout_wallets
+    scope :ordered, -> { order(id: :desc) }
 
     monetize :amount_cents, as: :amount
+    validates :amount_cents, :order_public_id, :fee, :destination_address, :state, presence: true
 
     workflow_column :state
     workflow do
@@ -16,7 +17,12 @@ class PaymentServices::CryptoApis
         event :pay, transitions_to: :paid
         event :confirmed, transitions_to: :completed
       end
+      state :completed do
+        on_entry do
+          # кидаем заявку в завершенные?
 
+        end
+      end
       state :cancelled
     end
 
@@ -28,29 +34,8 @@ class PaymentServices::CryptoApis
       confirmations >= CONFIRMATIONS_FOR_COMPLETE
     end
 
-    def api_query
-      {
-        createTx: {
-          inputs: inputs,
-          outputs: outputs,
-          fee: {
-            value: fee
-          }
-        },
-        wifs: wifs
-      }
-    end
-
-    private
-
-    def inputs
-      payout_wallets.inject([]) do |memo, wallet| 
-        memo << { address: wallet.address, value: wallet.value }
-      end
-    end
-
-    def outputs
-      [{ address: destination_address, value: amount_cents }]
+    def order
+      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
   end
 end
