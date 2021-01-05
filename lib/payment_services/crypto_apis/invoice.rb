@@ -37,7 +37,7 @@ class PaymentServices::CryptoApis
     end
 
     def order
-      Order.find_by(public_id: order_public_id
+      Order.find_by(public_id: order_public_id)
     end
   end
 end
