@@ -22,7 +22,6 @@ class PaymentServices::CryptoApis
       state :paid do
         on_entry do
           # кидаем заявку в новые?
-          order.auto_confirm!(income_amount: amount)
         end
       end
       state :cancelled

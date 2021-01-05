@@ -4,35 +4,15 @@ require_relative 'client'
 
 class PaymentServices::CryptoApis
   class PayoutClient < PaymentServices::CryptoApis::Client
-    include AutoLogger
-    TIMEOUT = 10
-    API_URL = 'https://api.cryptoapis.io/v1'
-    NETWORK = 'testnet'
-
-    def initialize(api_key)
-      @api_key = api_key
-    end
-
-    attr_reader :api_key
-
-    def make_payout(inputs:, outputs:, fee:, wifs:)
+    def make_payout(query:)
       safely_parse http_request(
         url: "#{API_URL}/bc/bch/#{NETWORK}/txs/new",
         method: :POST,
-        body: {
-          createTx: {
-            inputs: inputs,
-            outputs: outputs,
-            fee: {
-              value: fee
-            }
-          },
-          wifs: wifs
-        }
+        body: query
       )
     end
 
-    def info(txid)
+    def transaction_details(txid)
       safely_parse http_request(
         url: "#{API_URL}/bc/bch/#{NETWORK}/txs/txid/#{txid}",
         method: :GET
