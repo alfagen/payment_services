@@ -5,8 +5,8 @@
 module PaymentServices
   class CryptoApis < Base
     autoload :Invoicer, 'payment_services/crypto_apis/invoicer'
-    autoload :PayoutAdapter, 'payment_services/crypto_apis/payout_adapter'
+    autoload :PayoutClient, 'payment_services/crypto_apis/payout_client'
     register :invoicer, Invoicer
-    register :payout_adapter, PayoutAdapter
+    register :payout_client, PayoutClient
   end
 end
