@@ -7,6 +7,7 @@ class PaymentServices::CryptoApis
     include AutoLogger
     TIMEOUT = 10
     API_URL = 'https://api.cryptoapis.io/v1'
+    NETWORK = 'testnet'
 
     def initialize(api_key)
       @api_key = api_key
@@ -14,14 +15,14 @@ class PaymentServices::CryptoApis
 
     def address_transactions(currency:, address:)
       safely_parse http_request(
-        url: "#{API_URL}/bc/bch/testnet/address/#{address}/basic/transactions",
+        url: "#{API_URL}/bc/bch/#{NETWORK}/address/#{address}/basic/transactions",
         method: :GET
       )
     end
 
     def transaction_details(transaction_id)
       safely_parse http_request(
-        url: "#{API_URL}/bc/bch/testnet/txs/basic/txid/#{transaction_id}",
+        url: "#{API_URL}/bc/bch/#{NETWORK}/txs/basic/txid/#{transaction_id}",
         method: :GET
       )
     end
