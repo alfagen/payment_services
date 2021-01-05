@@ -27,7 +27,7 @@ class PaymentServices::CryptoApis
       )
     end
 
-    private
+    protected
 
     attr_reader :api_key
 
