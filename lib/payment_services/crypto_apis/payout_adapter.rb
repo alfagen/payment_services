@@ -1,20 +1,29 @@
 # frozen_string_literal: true
 
-require_relative 'payout'
 require_relative 'payout_client'
+require_relative 'wallet'
+require_relative 'payout_payment'
+require_relative 'payout'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter
-    # payout_wallets - массив из адресов кошельков(кошелька) с уже просчитанными суммами в формате:
-    # [{ address: 'fh4..', payout_amount: 0.004, wif: 'fhf..' }..]
+    # payout_wallets - хеш из кошельков(кошелька) для снятия средств с уже просчитанными суммами в формате:
+    # { wallet_id => payout_amount }
     def initialize(order:, payout_wallets:)
-      @order, @payout_wallets = order, payout_wallets
+      @order = order
+      @payout_wallets = payout_wallets
     end
 
     attr_reader :order, :payout_wallets
 
-    def create_payout(amount_cents, destination_address, fee)
-      Payout.create!(amount_cents: amount_cents, order_public_id: order.public_id, destination_address: destination_address, fee: fee)
+    def create_payout(amount, destination_address, fee)
+      payout = Payout.new(amount: amount, order_public_id: order.public_id, destination_address: destination_address, fee: fee)
+
+      payout_wallets.each do |wallet_id, payout_amount|
+        payout.payout_payments.new(wallet_id: wallet_id, amount: payout_amount)
+      end
+
+      payout.save!
     end
 
     def make_payout!
@@ -61,18 +70,18 @@ class PaymentServices::CryptoApis
     end
 
     def inputs
-      payout_wallets.inject([]) do |memo, wallet|
-        memo << { address: wallet[:address], value: wallet[:payout_amount] }
+      payout.payout_payments.inject([]) do |memo, payment|
+        memo << { address: payment.wallet.address, value: payment.amount }
       end
     end
 
     def outputs
-      [{ address: payout.destination_address, value: payout.amount_cents }]
+      [{ address: payout.destination_address, value: payout.amount }]
     end
 
     def wifs
-      payout_wallets.inject([]) do |memo, wallet| 
-        memo << wallet[:wif]
+      payout.wallets.inject([]) do |memo, wallet| 
+        memo << wallet.wif
       end
     end
   end
