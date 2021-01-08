@@ -15,14 +15,7 @@ class PaymentServices::CryptoApis
       state :pending do
         event :pay, transitions_to: :paid
       end
-      state :paid do
-        on_entry do
-          wallet.with_lock do
-            wallet.balance -= amount
-            wallet.save!
-          end
-        end
-      end
+      state :paid
     end
   end
 end

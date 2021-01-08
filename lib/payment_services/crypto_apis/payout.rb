@@ -11,7 +11,7 @@ class PaymentServices::CryptoApis
 
     scope :ordered, -> { order(id: :desc) }
 
-    validates :amount, :destination_address, :fee, :order_public_id, :state, presence: true
+    validates :amount, :address, :fee, :state, presence: true
 
     workflow_column :state
     workflow do
@@ -20,13 +20,7 @@ class PaymentServices::CryptoApis
         event :confirmed, transitions_to: :completed
       end
       state :paid
-      state :completed do
-        on_entry do
-          payout_payments.each(&:pay!)
-          # кидаем заявку в завершенные?
-
-        end
-      end
+      state :completed
       state :cancelled
     end
 
@@ -34,12 +28,8 @@ class PaymentServices::CryptoApis
       update(txid: txid)
     end
 
-    def complete_payment?
+    def complete_payout?
       confirmations >= CONFIRMATIONS_FOR_COMPLETE
-    end
-
-    def order
-      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
   end
 end

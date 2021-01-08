@@ -9,20 +9,23 @@ class PaymentServices::CryptoApis
     API_URL = 'https://api.cryptoapis.io/v1'
     NETWORK = 'testnet'
 
-    def initialize(api_key)
+    def initialize(api_key:, currency:)
       @api_key = api_key
+      @currency = currency
     end
 
-    def address_transactions(currency:, address:)
+    attr_reader :currency
+
+    def address_transactions(address)
       safely_parse http_request(
-        url: "#{API_URL}/bc/bch/#{NETWORK}/address/#{address}/basic/transactions",
+        url: "#{API_URL}/bc/#{currency}/#{NETWORK}/address/#{address}/basic/transactions",
         method: :GET
       )
     end
 
     def transaction_details(transaction_id)
       safely_parse http_request(
-        url: "#{API_URL}/bc/bch/#{NETWORK}/txs/basic/txid/#{transaction_id}",
+        url: "#{API_URL}/bc/#{currency}/#{NETWORK}/txs/basic/txid/#{transaction_id}",
         method: :GET
       )
     end

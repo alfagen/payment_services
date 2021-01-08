@@ -37,7 +37,7 @@ class PaymentServices::CryptoApis
         client.transaction_details(invoice.transaction_id)[:payload]
       else
         currency = invoice.amount_currency.to_s
-        response = client.address_transactions(currency: currency, address: invoice.address)
+        response = client.address_transactions(invoice.address)
         response[:payload].find do |transaction|
           received_amount = transaction[:received][invoice.address]
           received_amount&.to_d == invoice.amount.to_d && Time.parse(transaction[:datetime]) > invoice.created_at
@@ -49,7 +49,7 @@ class PaymentServices::CryptoApis
       @client ||= begin
         wallet = order.income_wallet
         api_key = wallet.api_key.presence || wallet.parent&.api_key
-        Client.new(api_key)
+        Client.new(api_key: api_key, currency: order.currency)
       end
     end
   end
