@@ -49,7 +49,7 @@ class PaymentServices::CryptoApis
       @client ||= begin
         wallet = order.income_wallet
         api_key = wallet.api_key.presence || wallet.parent&.api_key
-        Client.new(api_key: api_key, currency: order.currency)
+        Client.new(api_key: api_key, currency: wallet.currency.to_s.downcase)
       end
     end
   end

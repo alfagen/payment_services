@@ -6,8 +6,7 @@ class PaymentServices::CryptoApis
     include Workflow
     self.table_name = 'crypto_apis_payouts'
 
-    has_many :payout_payments
-    has_many :wallets, through: :payout_payments
+    belongs_to :wallet
 
     scope :ordered, -> { order(id: :desc) }
 
@@ -17,11 +16,11 @@ class PaymentServices::CryptoApis
     workflow do
       state :pending do
         event :pay, transitions_to: :paid
-        event :confirmed, transitions_to: :completed
       end
-      state :paid
+      state :paid do
+        event :confirm, transitions_to: :completed
+      end
       state :completed
-      state :cancelled
     end
 
     def pay(txid:)

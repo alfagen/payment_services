@@ -2,12 +2,10 @@
 
 class PaymentServices::CryptoApis
   class Wallet < ApplicationRecord
-    include Workflow
     self.table_name = 'crypto_apis_wallets'
 
-    validates :address, :wif, presence: true
+    validates :address, :wif, :api_key, :currency, presence: true
 
-    has_many :payout_payments
-    has_many :payouts, through: :payout_payments
+    has_many :payouts
   end
 end
