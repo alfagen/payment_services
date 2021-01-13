@@ -6,8 +6,6 @@ class PaymentServices::CryptoApis
     include Workflow
     self.table_name = 'crypto_apis_payouts'
 
-    belongs_to :wallet
-
     scope :ordered, -> { order(id: :desc) }
 
     validates :amount, :address, :fee, :state, presence: true

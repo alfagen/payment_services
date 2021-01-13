@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'payout_client'
-require_relative 'wallet'
 require_relative 'payout'
+require_relative 'payout_client'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter
@@ -13,7 +12,7 @@ class PaymentServices::CryptoApis
     attr_accessor :payout_id
 
     def create_payout(amount:, address:)
-      payout = Payout.create!(amount: amount, wallet_id: wallet.id, address: address, fee: client.transactions_average_fee)
+      payout = Payout.create!(amount: amount, address: address, fee: client.transactions_average_fee)
 
       @payout_id = payout.id
     end
@@ -22,7 +21,7 @@ class PaymentServices::CryptoApis
       response = client.make_payout(query: api_query)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
-      payout.pay!(txid: response[:payload][:txid])
+      payout.pay!(txid: response[:payload][:txid]) if response[:payload][:txid]
     end
 
     def refresh_status!
@@ -31,7 +30,7 @@ class PaymentServices::CryptoApis
       response = client.transaction_details(payout.txid)
       raise "Can't get transaction details: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
-      payout.update!(confirmations: response[:payload][:confirmations])
+      payout.update!(confirmations: response[:payload][:confirmations]) if response[:payload][:confirmations]
 
       payout.confirm! if payout.complete_payout?
     end
