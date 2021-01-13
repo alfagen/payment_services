@@ -28,6 +28,8 @@ class PaymentServices::CryptoApis
     end
 
     def complete_payout?
+      return false if confirmations.nil?
+
       confirmations >= CONFIRMATIONS_FOR_COMPLETE
     end
   end

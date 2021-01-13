@@ -6,7 +6,7 @@ class PaymentServices::CryptoApis
   class PayoutClient < PaymentServices::CryptoApis::Client
     def make_payout(query:)
       safely_parse http_request(
-        url: "#{API_URL}/bc/#{currency}/#{NETWORK}/txs/new",
+        url: "#{base_url}/txs/new",
         method: :POST,
         body: query
       )
@@ -14,9 +14,16 @@ class PaymentServices::CryptoApis
 
     def transaction_details(txid)
       safely_parse http_request(
-        url: "#{API_URL}/bc/#{currency}/#{NETWORK}/txs/txid/#{txid}",
+        url: "#{base_url}/txs/txid/#{txid}",
         method: :GET
       )
+    end
+
+    def transactions_average_fee
+      safely_parse(http_request(
+        url: "#{base_url}/txs/fee",
+        method: :GET
+      ))[:payload][:average]
     end
   end
 end

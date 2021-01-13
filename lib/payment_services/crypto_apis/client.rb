@@ -18,14 +18,14 @@ class PaymentServices::CryptoApis
 
     def address_transactions(address)
       safely_parse http_request(
-        url: "#{API_URL}/bc/#{currency}/#{NETWORK}/address/#{address}/basic/transactions",
+        url: "#{base_url}/address/#{address}/basic/transactions",
         method: :GET
       )
     end
 
     def transaction_details(transaction_id)
       safely_parse http_request(
-        url: "#{API_URL}/bc/#{currency}/#{NETWORK}/txs/basic/txid/#{transaction_id}",
+        url: "#{base_url}/txs/basic/txid/#{transaction_id}",
         method: :GET
       )
     end
@@ -33,6 +33,10 @@ class PaymentServices::CryptoApis
     private
 
     attr_reader :api_key
+
+    def base_url
+      "#{API_URL}/bc/#{currency}/#{NETWORK}"
+    end
 
     def http_request(url:, method:, body: nil)
       uri = URI.parse(url)

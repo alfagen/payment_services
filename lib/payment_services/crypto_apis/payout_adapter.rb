@@ -12,8 +12,8 @@ class PaymentServices::CryptoApis
 
     attr_accessor :payout_id
 
-    def create_payout(amount:, address:, fee:)
-      payout = Payout.create!(amount: amount, wallet_id: wallet.id, address: address, fee: fee)
+    def create_payout(amount:, address:)
+      payout = Payout.create!(amount: amount, wallet_id: wallet.id, address: address, fee: client.transactions_average_fee)
 
       @payout_id = payout.id
     end
