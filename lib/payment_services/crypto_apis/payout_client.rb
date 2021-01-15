@@ -4,11 +4,11 @@ require_relative 'client'
 
 class PaymentServices::CryptoApis
   class PayoutClient < PaymentServices::CryptoApis::Client
-    def make_payout(query:)
+    def make_payout(payout:, wallet:)
       safely_parse http_request(
         url: "#{base_url}/txs/new",
         method: :POST,
-        body: query
+        body: api_query_for(payout, wallet)
       )
     end
 
@@ -24,6 +24,21 @@ class PaymentServices::CryptoApis
         url: "#{base_url}/txs/fee",
         method: :GET
       ))[:payload][:average]
+    end
+
+    private
+
+    def api_query_for(payout, wallet)
+      {
+        createTx: {
+          inputs: [{ address: wallet.address, value: payout.amount.to_d }],
+          outputs: [{ address: payout.address, value: payout.amount.to_d }],
+          fee: {
+            value: payout.fee
+          }
+        },
+        wifs: [ wallet.wif ]
+      }
     end
   end
 end

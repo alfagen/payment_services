@@ -8,7 +8,8 @@ class PaymentServices::CryptoApis
 
     scope :ordered, -> { order(id: :desc) }
 
-    validates :amount, :address, :fee, :state, presence: true
+    monetize :amount_cents, as: :amount
+    validates :amount_cents, :address, :fee, :state, presence: true
 
     workflow_column :state
     workflow do

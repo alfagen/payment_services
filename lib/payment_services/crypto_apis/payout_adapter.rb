@@ -4,24 +4,9 @@ require_relative 'payout'
 require_relative 'payout_client'
 
 class PaymentServices::CryptoApis
-  class PayoutAdapter
-    def initialize(wallet:)
-      @wallet = wallet
-    end
-
-    attr_accessor :payout_id
-
-    def create_payout(amount:, address:)
-      payout = Payout.create!(amount: amount, address: address, fee: client.transactions_average_fee)
-
-      @payout_id = payout.id
-    end
-
-    def make_payout!
-      response = client.make_payout(query: api_query)
-      raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
-
-      payout.pay!(txid: response[:payload][:txid]) if response[:payload][:txid]
+  class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
+      super
     end
 
     def refresh_status!
@@ -41,37 +26,23 @@ class PaymentServices::CryptoApis
 
     private
 
-    attr_reader :wallet
+    attr_accessor :payout_id
+
+    def make_payout(amount:, payment_card_details:, transaction_id:, destination_account:)
+      payout = Payout.create!(amount: amount, address: destination_account, fee: client.transactions_average_fee)
+      @payout_id = payout.id
+
+      response = client.make_payout(payout: payout, wallet: wallet)
+      raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
+
+      payout.pay!(txid: response[:payload][:txid]) if response[:payload][:txid]
+    end
 
     def client
       @client ||= begin
-        PayoutClient.new(api_key: wallet.api_key, currency: wallet.currency.to_s.downcase)
+        api_key = wallet.api_key.presence || wallet.parent&.api_key
+        PayoutClient.new(api_key: api_key, currency: wallet.currency.to_s.downcase)
       end
-    end
-
-    def api_query
-      {
-        createTx: {
-          inputs: inputs,
-          outputs: outputs,
-          fee: {
-            value: payout.fee
-          }
-        },
-        wifs: wifs
-      }
-    end
-
-    def inputs
-      [{ address: wallet.address, value: payout.amount }]
-    end
-
-    def outputs
-      [{ address: payout.address, value: payout.amount }]
-    end
-
-    def wifs
-      [ wallet.wif ]
     end
   end
 end

@@ -14,8 +14,6 @@ class PaymentServices::CryptoApis
       @currency = currency
     end
 
-    attr_reader :currency
-
     def address_transactions(address)
       safely_parse http_request(
         url: "#{base_url}/address/#{address}/basic/transactions",
@@ -32,7 +30,7 @@ class PaymentServices::CryptoApis
 
     private
 
-    attr_reader :api_key
+    attr_reader :api_key, :currency
 
     def base_url
       "#{API_URL}/bc/#{currency}/#{NETWORK}"
