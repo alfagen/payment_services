@@ -15,10 +15,7 @@ class PaymentServices::CryptoApis
       transaction = transaction_for(invoice)
       return if transaction.nil?
 
-      invoice.update!(
-        transaction_id: invoice.transaction_id || transaction[:txid],
-        confirmations: transaction[:confirmations]
-      )
+      update_invoice_details(invoice: invoice, transaction: transaction)
       invoice.pay!(payload: transaction) if invoice.complete_payment?
     end
 
@@ -31,6 +28,13 @@ class PaymentServices::CryptoApis
     end
 
     private
+
+    def update_invoice_details(invoice:, transaction:)
+      invoice.transaction_created_at ||= Time.parse(transaction[:datetime])
+      invoice.transaction_id ||= transaction[:txid]
+      invoice.confirmations = transaction[:confirmations]
+      invoice.save!
+    end
 
     def transaction_for(invoice)
       if invoice.transaction_id
