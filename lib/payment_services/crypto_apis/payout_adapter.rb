@@ -5,6 +5,13 @@ require_relative 'payout_client'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
+      make_payout(
+        amount: amount,
+        address: destination_account
+      )
+    end
+
     def refresh_status!
       return if payout.pending?
 
@@ -24,8 +31,8 @@ class PaymentServices::CryptoApis
 
     attr_accessor :payout_id
 
-    def make_payout(amount:, destination_account:)
-      payout = Payout.create!(amount: amount, address: destination_account, fee: client.transactions_average_fee)
+    def make_payout(amount:, address:)
+      payout = Payout.create!(amount: amount, address: address, fee: client.transactions_average_fee)
       @payout_id = payout.id
 
       response = client.make_payout(payout: payout, wallet: wallet)
