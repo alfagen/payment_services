@@ -24,7 +24,8 @@ class PaymentServices::AnyMoney
         expiry: ANYMONEY_TIME_LIMIT,
         payway: payway,
         callback_url: order.income_payment_system.callback_url,
-        client_email: order.user&.email
+        client_email: order.user&.email,
+        merchant_payfee: "1"
       }
       {
         url: ANYMONEY_PAYMENT_FORM_URL,
