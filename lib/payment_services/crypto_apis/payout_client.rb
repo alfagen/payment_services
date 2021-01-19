@@ -37,7 +37,7 @@ class PaymentServices::CryptoApis
             value: payout.fee
           }
         },
-        wifs: [ wallet.wif ]
+        wifs: [ wallet.secretKey ]
       }
     end
   end
