@@ -47,9 +47,9 @@ class PaymentServices::AnyMoney
 
     def build_request(uri:, method:, body: nil)
       request = if method == :POST
-                  Net::HTTP::Post.new(uri.request_uri, headers(body['params']))
+                  Net::HTTP::Post.new(uri.request_uri, headers(body[:params]))
                 elsif method == :GET
-                  Net::HTTP::Get.new(uri.request_uri, headers(body['params']))
+                  Net::HTTP::Get.new(uri.request_uri, headers(body[:params]))
                 else
                   raise "Запрос #{method} не поддерживается!"
                 end
