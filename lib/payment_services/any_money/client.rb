@@ -4,7 +4,7 @@ class PaymentServices::AnyMoney
   class Client
     include AutoLogger
     TIMEOUT = 10
-    API_URL = 'https://api.any.money'
+    API_URL = 'https://api.any.money/'
     API_VERSION = '2.0'
 
     def initialize(merchant_id:, api_key:)
@@ -14,10 +14,6 @@ class PaymentServices::AnyMoney
 
     def create(params:)
       request_for('payout.create', params)
-    end
-
-    def calculate(params:)
-      request_for('payout.calc', params)
     end
 
     def get(params:)
@@ -70,18 +66,18 @@ class PaymentServices::AnyMoney
     end
 
     def headers(params)
-      utc_now = Time.now.utc * 1000
+      utc_now = Time.now.to_i.to_s
 
       {
         'Content-Type': 'application/json',
-        'x-merchant': merchant_id,
+        'x-merchant': merchant_id.to_s,
         'x-signature': build_signature(params, utc_now),
         'x-utc-now-ms': utc_now
       }
     end
 
     def build_signature(params, utc_now)
-      sign_string = params.sort_by { |k, _v| k }.map(&:last).join.downcase + utc_now.to_s
+      sign_string = params.sort_by { |k, _v| k }.map(&:last).join.downcase + utc_now
 
       OpenSSL::HMAC.hexdigest('SHA512', api_key, sign_string)
     end

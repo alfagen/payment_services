@@ -24,5 +24,11 @@ class PaymentServices::AnyMoney
     def pay(externalid:)
       update(externalid: externalid)
     end
+
+    def complete_payout?
+      return false if status.nil?
+
+      status == 'done'
+    end
   end
 end
