@@ -6,6 +6,8 @@ require_relative 'payout_client'
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
+      raise 'amount is not a Money' unless amount.is_a? Money
+
       make_payout(
         amount: amount,
         address: destination_account
