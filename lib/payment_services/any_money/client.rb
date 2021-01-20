@@ -32,7 +32,7 @@ class PaymentServices::AnyMoney
           'method': method,
           'params': params,
           'jsonrpc': API_VERSION,
-          'id': ''
+          'id': '1'
         }
       )
     end

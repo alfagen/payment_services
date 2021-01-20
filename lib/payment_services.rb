@@ -22,6 +22,7 @@ module PaymentServices
   autoload :YandexMoney, 'payment_services/yandex_money'
   autoload :BlockIo, 'payment_services/block_io'
   autoload :CryptoApis, 'payment_services/crypto_apis'
+  autoload :AnyMoney, 'payment_services/any_money'
 
   UnauthorizedPayout = Class.new StandardError
 

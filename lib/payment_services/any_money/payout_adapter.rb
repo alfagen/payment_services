@@ -35,7 +35,7 @@ class PaymentServices::AnyMoney
       @payout_id = Payout.create!(amount: amount, destination_account: destination_account).id
 
       params = {
-        amount: amount.to_s
+        amount: amount.to_s,
         externalid: @payout_id.to_s,
         out_curr: wallet.currency.to_s.upcase,
         payway: wallet.payment_system.name,
@@ -49,8 +49,7 @@ class PaymentServices::AnyMoney
 
     def client
       @client ||= begin
-        api_key = wallet.api_key.presence || wallet.parent&.api_key
-        Client.new(merchant_id: wallet.merchant_id, api_key: api_key)
+        Client.new(merchant_id: wallet.merchant_id, api_key: wallet.api_key)
       end
     end
   end
