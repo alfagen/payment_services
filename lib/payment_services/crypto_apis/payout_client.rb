@@ -31,7 +31,7 @@ class PaymentServices::CryptoApis
     def api_query_for(payout, wallet)
       {
         createTx: {
-          inputs: [{ address: wallet.address, value: payout.amount.to_d }],
+          inputs: [{ address: wallet.account, value: payout.amount.to_d }],
           outputs: [{ address: payout.address, value: payout.amount.to_d }],
           fee: {
             value: payout.fee
