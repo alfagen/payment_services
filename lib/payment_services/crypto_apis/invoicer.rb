@@ -27,7 +27,7 @@ class PaymentServices::CryptoApis
       true
     end
 
-    private
+#    private
 
     def update_invoice_details(invoice:, transaction:)
       invoice.transaction_created_at ||= Time.parse(transaction[:datetime])
@@ -40,8 +40,8 @@ class PaymentServices::CryptoApis
       if invoice.transaction_id
         client.transaction_details(invoice.transaction_id)[:payload]
       else
-        currency = invoice.amount_currency.to_s
         response = client.address_transactions(invoice.address)
+        p response
         response[:payload].find do |transaction|
           received_amount = transaction[:received][invoice.address]
           received_amount&.to_d == invoice.amount.to_d && Time.parse(transaction[:datetime]) > invoice.created_at
