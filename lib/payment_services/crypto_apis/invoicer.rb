@@ -41,7 +41,7 @@ class PaymentServices::CryptoApis
         client.transaction_details(invoice.transaction_id)[:payload]
       else
         response = client.address_transactions(invoice.address)
-        raise response[:meta][:error][:message]} if response.dig(:meta, :error, :message)
+        raise response[:meta][:error][:message] if response.dig(:meta, :error, :message)
 
         response[:payload].find do |transaction|
           received_amount = transaction[:received][invoice.address]
