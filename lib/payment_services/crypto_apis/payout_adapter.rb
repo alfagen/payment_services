@@ -34,7 +34,8 @@ class PaymentServices::CryptoApis
     attr_accessor :payout_id
 
     def make_payout(amount:, address:)
-      @payout_id = Payout.create!(amount: amount, address: address, fee: client.transactions_average_fee).id
+      fee = client.transactions_average_fee
+      @payout_id = Payout.create!(amount: amount, address: address, fee: fee).id
 
       response = client.make_payout(payout: payout, wallet: wallet)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
