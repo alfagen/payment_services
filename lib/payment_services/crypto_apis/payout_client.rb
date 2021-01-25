@@ -23,7 +23,7 @@ class PaymentServices::CryptoApis
       safely_parse(http_request(
         url: "#{base_url}/txs/fee",
         method: :GET
-      ))[:payload][:average]
+      ))
     end
 
     private
