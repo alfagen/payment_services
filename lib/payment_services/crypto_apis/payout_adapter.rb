@@ -35,7 +35,8 @@ class PaymentServices::CryptoApis
 
     def make_payout(amount:, address:)
       fee = transaction_fee
-      p fee
+      raise "Can't get fee" if fee == 0.0
+
       @payout_id = Payout.create!(amount: amount, address: address, fee: fee).id
 
       response = client.make_payout(payout: payout, wallet: wallet)
