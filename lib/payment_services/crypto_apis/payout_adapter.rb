@@ -35,7 +35,7 @@ class PaymentServices::CryptoApis
 
     def make_payout(amount:, address:)
       fee = transaction_fee
-      raise "Can't get fee" if fee == 0.0
+      raise "Fee is too low: #{fee}" if fee < 0.00000001
 
       @payout_id = Payout.create!(amount: amount, address: address, fee: fee).id
 
