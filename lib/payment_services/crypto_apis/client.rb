@@ -73,7 +73,9 @@ class PaymentServices::CryptoApis
     end
 
     def safely_parse(response)
-      JSON.parse(response.body).with_indifferent_access
+      res = JSON.parse(response.body).with_indifferent_access
+      logger.info "Response: #{res}"
+      res
     rescue JSON::ParserError => err
       logger.warn "Request failed #{response.class} #{response.body}"
       Bugsnag.notify err do |report|
