@@ -7,7 +7,7 @@ class PaymentServices::CryptoApis
     include AutoLogger
     TIMEOUT = 10
     API_URL = 'https://api.cryptoapis.io/v1'
-    NETWORK = 'testnet'
+    NETWORK = 'mainnet'
 
     def initialize(api_key:, currency:)
       @api_key = api_key
