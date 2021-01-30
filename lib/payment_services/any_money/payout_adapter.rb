@@ -38,7 +38,7 @@ class PaymentServices::AnyMoney
         amount: amount.to_s,
         externalid: @payout_id.to_s,
         out_curr: wallet.currency.to_s.upcase,
-        payway: wallet.payment_system.name,
+        payway: wallet.payment_system.payway,
         payee: destination_account
       }
       response = client.create(params: params)
