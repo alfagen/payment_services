@@ -18,7 +18,8 @@ class PaymentServices::AnyMoney
       response = client.get(payout.externalid)
       raise "Can't get order details: #{response[:error][:message]}" if response.dig(:error)
 
-      payout.update!(status: response[:status]) if response[:status]
+      result = response[:result]
+      payout.update!(status: result[:status]) if result[:status]
 
       payout.confirm! if payout.complete_payout?
     end
