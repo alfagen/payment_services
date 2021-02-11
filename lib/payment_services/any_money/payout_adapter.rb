@@ -45,7 +45,8 @@ class PaymentServices::AnyMoney
       response = client.create(params: params)
       raise "Can't process payout: #{response[:error][:message]}" if response.dig(:error)
 
-      payout.pay!(externalid: @payout_id.to_s) if response[:externalid]
+      result = response[:result]
+      payout.pay!(externalid: result[:externalid]) if result[:externalid]
     end
 
     def client
