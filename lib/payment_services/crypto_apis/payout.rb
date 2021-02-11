@@ -24,6 +24,7 @@ class PaymentServices::CryptoApis
 
     def pay(txid:)
       update(txid: txid)
+      txid
     end
 
     def complete_payout?
