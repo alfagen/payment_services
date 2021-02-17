@@ -16,7 +16,7 @@ class PaymentServices::CryptoApis
 
     def address_transactions(address)
       safely_parse http_request(
-        url: "#{base_url}/address/#{address}/basic/transactions",
+        url: "#{base_url}/address/#{address}/basic/transactions?legacy=true",
         method: :GET
       )
     end
