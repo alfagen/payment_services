@@ -10,7 +10,6 @@ class PaymentServices::AnyMoney
     RUB_PAYWAYS = %w[qiwi]
     UAH_PAYWAYS = %w[visamc visamc_p2p]
     ANYMONEY_TIME_LIMIT = "1h30m"
-    MERCHANT_PAYFEE = "1"
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -26,7 +25,7 @@ class PaymentServices::AnyMoney
         payway: payway,
         callback_url: order.income_payment_system.callback_url,
         client_email: order.user&.email,
-        merchant_payfee: MERCHANT_PAYFEE
+        merchant_payfee: order.income_payment_system.transfer_comission_payer_shop? ? "1" : "0"
       }
       {
         url: ANYMONEY_PAYMENT_FORM_URL,
