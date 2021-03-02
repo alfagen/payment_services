@@ -3,10 +3,18 @@
 # Copyright (c) 2020 FINFEX https://github.com/finfex
 
 require_relative 'invoice'
-require_relative 'client'
+require_relative 'clients/client'
+require_relative 'clients/ethereum_client'
+require_relative 'clients/omni_client'
 
 class PaymentServices::CryptoApis
   class Invoicer < ::PaymentServices::Base::Invoicer
+    SPECIFIC_CLIENTS = {
+      'eth'   => 'EthereumClient',
+      'etc'   => 'EthereumClient',
+      'omni'  => 'OmniClient'
+    }
+
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
@@ -31,7 +39,7 @@ class PaymentServices::CryptoApis
 
     def update_invoice_details(invoice:, transaction:)
       invoice.transaction_created_at ||= Time.parse(transaction[:datetime])
-      invoice.transaction_id ||= transaction[:txid]
+      invoice.transaction_id ||= transaction[:txid] || transaction[:hash]
       invoice.confirmations = transaction[:confirmations]
       invoice.save!
     end
@@ -44,10 +52,8 @@ class PaymentServices::CryptoApis
         raise response[:meta][:error][:message] if response.dig(:meta, :error, :message)
 
         response[:payload].find do |transaction|
-          # bch has 'bitcoincash:' suffix. If won't affect other currencies
-          address = invoice.address.split(':').last
+          received_amount = transaction[:received] ? transaction[:received][invoice.address] : transaction[:amount]
 
-          received_amount = transaction[:received][address] || transaction[:received][invoice.address]
           received_amount&.to_d == invoice.amount.to_d && Time.parse(transaction[:datetime]) > invoice.created_at
         end if response[:payload]
       end
@@ -57,7 +63,9 @@ class PaymentServices::CryptoApis
       @client ||= begin
         wallet = order.income_wallet
         api_key = wallet.api_key.presence || wallet.parent&.api_key
-        Client.new(api_key: api_key, currency: wallet.currency.to_s.downcase)
+        currency = wallet.currency.to_s.downcase
+
+        (SPECIFIC_CLIENTS[currency] || 'Client').constantize.new(api_key: api_key, currency: currency)
       end
     end
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'client'
+require_relative '../clients/client'
 
 class PaymentServices::CryptoApis
   class PayoutClient < PaymentServices::CryptoApis::Client
@@ -9,13 +9,6 @@ class PaymentServices::CryptoApis
         url: "#{base_url}/txs/new",
         method: :POST,
         body: api_query_for(payout, wallet)
-      )
-    end
-
-    def transaction_details(txid)
-      safely_parse http_request(
-        url: "#{base_url}/txs/txid/#{txid}",
-        method: :GET
       )
     end
 

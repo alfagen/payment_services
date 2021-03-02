@@ -1,10 +1,18 @@
 # frozen_string_literal: true
 
 require_relative 'payout'
-require_relative 'payout_client'
+require_relative 'payout_clients/payout_client'
+require_relative 'payout_clients/payout_ethereum_client'
+require_relative 'payout_clients/payout_omni_client'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    SPECIFIC_CLIENTS = {
+      'eth'   => 'PayoutEthereumClient',
+      'etc'   => 'PayoutEthereumClient',
+      'omni'  => 'PayoutOmniClient'
+    }
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
       raise 'amount is not a Money' unless amount.is_a? Money
 
@@ -50,15 +58,17 @@ class PaymentServices::CryptoApis
       raise "Can't get transaction fee: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
       payload = response[:payload]
-      fee = payload[:average].to_f
-      fee = payload[:recommended].to_f if fee == 0.0
+      fee = payload[:standard].to_f
+      fee = payload[:average].to_f if fee == 0.0
       fee
     end
 
     def client
       @client ||= begin
         api_key = wallet.api_key.presence || wallet.parent&.api_key
-        PayoutClient.new(api_key: api_key, currency: wallet.currency.to_s.downcase)
+        currency = wallet.currency.to_s.downcase
+
+        (SPECIFIC_CLIENTS[currency] || 'PayoutClient').constantize.new(api_key: api_key, currency: currency)
       end
     end
   end
