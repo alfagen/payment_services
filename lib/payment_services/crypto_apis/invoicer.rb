@@ -64,8 +64,9 @@ class PaymentServices::CryptoApis
         wallet = order.income_wallet
         api_key = wallet.api_key.presence || wallet.parent&.api_key
         currency = wallet.currency.to_s.downcase
+        klass_name = 'PaymentServices::CryptoApis::Clients::' + (SPECIFIC_CLIENTS[currency] || 'Client')
 
-        (SPECIFIC_CLIENTS[currency] || 'Client').constantize.new(api_key: api_key, currency: currency)
+        klass_name.constantize.new(api_key: api_key, currency: currency)
       end
     end
   end

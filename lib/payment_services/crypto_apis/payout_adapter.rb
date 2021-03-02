@@ -50,7 +50,10 @@ class PaymentServices::CryptoApis
       response = client.make_payout(payout: payout, wallet: wallet)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
-      payout.pay!(txid: response[:payload][:txid]) if response[:payload][:txid]
+      hash = response[:payload][:txid] || response[:payload][:hex]
+      raise "Didn't get tx hash" unless hash
+
+      payout.pay!(txid: hash)
     end
 
     def transaction_fee
@@ -67,8 +70,9 @@ class PaymentServices::CryptoApis
       @client ||= begin
         api_key = wallet.api_key.presence || wallet.parent&.api_key
         currency = wallet.currency.to_s.downcase
+        klass_name = 'PaymentServices::CryptoApis::PayoutClients::' + (SPECIFIC_CLIENTS[currency] || 'PayoutClient')
 
-        (SPECIFIC_CLIENTS[currency] || 'PayoutClient').constantize.new(api_key: api_key, currency: currency)
+        klass_name.constantize.new(api_key: api_key, currency: currency)
       end
     end
   end
