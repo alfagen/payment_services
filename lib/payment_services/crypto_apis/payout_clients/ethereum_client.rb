@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
-require_relative '../clients/client'
+require_relative '../clients/ethereum_client'
 
 class PaymentServices::CryptoApis
   module PayoutClients
-    class PayoutClient < PaymentServices::CryptoApis::Clients::Client
+    class EthereumClient < PaymentServices::CryptoApis::Clients::EthereumClient
+      STANDART_GAS_LIMIT = 21000
+
       def make_payout(payout:, wallet:)
         safely_parse http_request(
-          url: "#{base_url}/txs/new",
+          url: "#{base_url}/txs/new-pvtkey",
           method: :POST,
           body: api_query_for(payout, wallet)
         )
@@ -24,14 +26,12 @@ class PaymentServices::CryptoApis
 
       def api_query_for(payout, wallet)
         {
-          createTx: {
-            inputs: [{ address: wallet.account, value: payout.amount.to_d }],
-            outputs: [{ address: payout.address, value: payout.amount.to_d }],
-            fee: {
-              value: payout.fee
-            }
-          },
-          wifs: [ wallet.api_secret ]
+          fromAddress: wallet.account,
+          toAddress: payout.address,
+          gasLimit: STANDART_GAS_LIMIT,
+          gasPrice: payout.fee,
+          value: payout.amount.to_d,
+          privateKey: wallet.api_secret
         }
       end
     end

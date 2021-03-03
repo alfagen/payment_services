@@ -4,25 +4,20 @@ require_relative '../clients/omni_client'
 
 class PaymentServices::CryptoApis
   module PayoutClients
-    class PayoutOmniClient < PaymentServices::CryptoApis::Clients::OmniClient
+    class OmniClient < PaymentServices::CryptoApis::Clients::OmniClient
+      TOKEN_PROPERTY_ID = 2
+
       def make_payout(payout:, wallet:)
         safely_parse http_request(
-          url: "#{base_url}/",
+          url: "#{base_url}/txs/new",
           method: :POST,
           body: api_query_for(payout, wallet)
         )
       end
 
-      def transaction_details(txid)
-        safely_parse http_request(
-          url: "#{base_url}/",
-          method: :GET
-        )
-      end
-
       def transactions_average_fee
         safely_parse(http_request(
-          url: "#{base_url}/",
+          url: "#{base_url}/txs/fee",
           method: :GET
         ))
       end
@@ -31,7 +26,12 @@ class PaymentServices::CryptoApis
 
       def api_query_for(payout, wallet)
         {
-          
+          from: wallet.account,
+          to: payout.address,
+          value: payout.amount.to_d,
+          fee: payout.fee,
+          propertyID: TOKEN_PROPERTY_ID,
+          wif: wallet.api_secret
         }
       end
     end

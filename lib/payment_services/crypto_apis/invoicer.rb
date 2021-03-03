@@ -3,18 +3,10 @@
 # Copyright (c) 2020 FINFEX https://github.com/finfex
 
 require_relative 'invoice'
-require_relative 'clients/client'
-require_relative 'clients/ethereum_client'
-require_relative 'clients/omni_client'
+require_relative 'client'
 
 class PaymentServices::CryptoApis
   class Invoicer < ::PaymentServices::Base::Invoicer
-    SPECIFIC_CLIENTS = {
-      'eth'   => 'EthereumClient',
-      'etc'   => 'EthereumClient',
-      'omni'  => 'OmniClient'
-    }
-
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
@@ -64,9 +56,8 @@ class PaymentServices::CryptoApis
         wallet = order.income_wallet
         api_key = wallet.api_key.presence || wallet.parent&.api_key
         currency = wallet.currency.to_s.downcase
-        klass_name = 'PaymentServices::CryptoApis::Clients::' + (SPECIFIC_CLIENTS[currency] || 'Client')
 
-        klass_name.constantize.new(api_key: api_key, currency: currency)
+        Client.new(currency: currency).invoice.new(api_key: api_key, currency: currency)
       end
     end
   end

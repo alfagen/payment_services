@@ -4,11 +4,11 @@
 
 class PaymentServices::CryptoApis
   module Clients
-    class Client
+    class BaseClient
       include AutoLogger
       TIMEOUT = 10
       API_URL = 'https://api.cryptoapis.io/v1'
-      NETWORK = 'mainnet'
+      NETWORK = Rails.env.production? ? 'mainnet' : 'testnet'
 
       def initialize(api_key:, currency:)
         @api_key = api_key

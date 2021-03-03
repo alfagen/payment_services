@@ -1,18 +1,10 @@
 # frozen_string_literal: true
 
 require_relative 'payout'
-require_relative 'payout_clients/payout_client'
-require_relative 'payout_clients/payout_ethereum_client'
-require_relative 'payout_clients/payout_omni_client'
+require_relative 'client'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    SPECIFIC_CLIENTS = {
-      'eth'   => 'PayoutEthereumClient',
-      'etc'   => 'PayoutEthereumClient',
-      'omni'  => 'PayoutOmniClient'
-    }
-
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
       raise 'amount is not a Money' unless amount.is_a? Money
 
@@ -70,9 +62,8 @@ class PaymentServices::CryptoApis
       @client ||= begin
         api_key = wallet.api_key.presence || wallet.parent&.api_key
         currency = wallet.currency.to_s.downcase
-        klass_name = 'PaymentServices::CryptoApis::PayoutClients::' + (SPECIFIC_CLIENTS[currency] || 'PayoutClient')
 
-        klass_name.constantize.new(api_key: api_key, currency: currency)
+        Client.new(currency: currency).payout.new(api_key: api_key, currency: currency)
       end
     end
   end
