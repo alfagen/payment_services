@@ -2,6 +2,7 @@
 
 require_relative 'payout'
 require_relative 'client'
+require_relative '../payout_status'
 
 class PaymentServices::AnyMoney
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
@@ -12,16 +13,17 @@ class PaymentServices::AnyMoney
       )
     end
 
-    def refresh_status!
-      return if payout.pending?
+    def refresh_status!(payout_id)
+      @payout_id = payout_id
 
       response = client.get(payout.externalid)
       raise "Can't get order details: #{response[:error][:message]}" if response.dig(:error)
 
       result = response[:result]
       payout.update!(status: result[:status]) if result[:status]
-
       payout.confirm! if payout.complete_payout?
+
+      PayoutStatus.new(payout: payout, server_response: response)
     end
 
     def payout
@@ -47,6 +49,7 @@ class PaymentServices::AnyMoney
 
       result = response[:result]
       payout.pay!(externalid: result[:externalid]) if result[:externalid]
+      refresh_status!(payout_id)
     end
 
     def client

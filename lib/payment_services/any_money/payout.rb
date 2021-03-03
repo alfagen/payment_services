@@ -26,8 +26,6 @@ class PaymentServices::AnyMoney
     end
 
     def complete_payout?
-      return false if status.nil?
-
       status == 'done'
     end
   end

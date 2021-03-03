@@ -2,6 +2,7 @@
 
 require_relative 'payout'
 require_relative 'payout_client'
+require_relative '../payout_status'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
@@ -14,15 +15,16 @@ class PaymentServices::CryptoApis
       )
     end
 
-    def refresh_status!
-      return if payout.pending?
+    def refresh_status!(payout_id)
+      @payout_id = payout_id
 
       response = client.transaction_details(payout.txid)
       raise "Can't get transaction details: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
       payout.update!(confirmations: response[:payload][:confirmations]) if response[:payload][:confirmations]
-
       payout.confirm! if payout.complete_payout?
+
+      PayoutStatus.new(payout: payout, server_response: response)
     end
 
     def payout
@@ -43,6 +45,7 @@ class PaymentServices::CryptoApis
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
       payout.pay!(txid: response[:payload][:txid]) if response[:payload][:txid]
+      refresh_status!(payout_id)
     end
 
     def transaction_fee
