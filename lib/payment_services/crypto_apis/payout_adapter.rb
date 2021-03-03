@@ -17,6 +17,7 @@ class PaymentServices::CryptoApis
 
     def refresh_status!(payout_id)
       @payout_id = payout_id
+      return if payout.pending?
 
       response = client.transaction_details(payout.txid)
       raise "Can't get transaction details: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)

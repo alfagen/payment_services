@@ -15,6 +15,7 @@ class PaymentServices::AnyMoney
 
     def refresh_status!(payout_id)
       @payout_id = payout_id
+      return if payout.pending?
 
       response = client.get(payout.externalid)
       raise "Can't get order details: #{response[:error][:message]}" if response.dig(:error)
@@ -23,7 +24,7 @@ class PaymentServices::AnyMoney
       payout.update!(status: result[:status]) if result[:status]
       payout.confirm! if payout.complete_payout?
 
-      PayoutStatus.new(payout: payout, server_response: response)
+      PayoutStatus.new(payout: payout, server_response: result)
     end
 
     def payout
