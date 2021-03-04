@@ -6,10 +6,11 @@ require_relative '../payout_status'
 
 class PaymentServices::AnyMoney
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
-        destination_account: destination_account
+        destination_account: destination_account,
+        order_payout_id: order_payout_id
       )
     end
 
@@ -35,8 +36,8 @@ class PaymentServices::AnyMoney
 
     attr_accessor :payout_id
 
-    def make_payout(amount:, destination_account:)
-      @payout_id = Payout.create!(amount: amount, destination_account: destination_account).id
+    def make_payout(amount:, destination_account:, order_payout_id:)
+      @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
 
       params = {
         amount: amount.to_s,

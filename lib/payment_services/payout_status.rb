@@ -3,8 +3,6 @@
 class PayoutStatus
   attr_reader :server_response
 
-  delegate :id, to: :payout, prefix: true
-
   def initialize(payout:, server_response:)
     @payout = payout
     @server_response = server_response

@@ -6,12 +6,13 @@ require_relative '../payout_status'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       raise 'amount is not a Money' unless amount.is_a? Money
 
       make_payout(
         amount: amount,
-        address: destination_account
+        address: destination_account,
+        order_payout_id: order_payout_id
       )
     end
 
@@ -36,11 +37,11 @@ class PaymentServices::CryptoApis
 
     attr_accessor :payout_id
 
-    def make_payout(amount:, address:)
+    def make_payout(amount:, address:, order_payout_id:)
       fee = transaction_fee
       raise "Fee is too low: #{fee}" if fee < 0.00000001
 
-      @payout_id = Payout.create!(amount: amount, address: address, fee: fee).id
+      @payout_id = Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
 
       response = client.make_payout(payout: payout, wallet: wallet)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
