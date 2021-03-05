@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'payout'
-require_relative 'payout_client'
+require_relative 'client'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
@@ -45,7 +45,10 @@ class PaymentServices::CryptoApis
       response = client.make_payout(payout: payout, wallet: wallet)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
-      payout.pay!(txid: response[:payload][:txid]) if response[:payload][:txid]
+      hash = response[:payload][:txid] || response[:payload][:hex]
+      raise "Didn't get tx hash" unless hash
+
+      payout.pay!(txid: hash)
       refresh_status!(payout_id)
     end
 
@@ -54,15 +57,17 @@ class PaymentServices::CryptoApis
       raise "Can't get transaction fee: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
       payload = response[:payload]
-      fee = payload[:average].to_f
-      fee = payload[:recommended].to_f if fee == 0.0
+      fee = payload[:standard].to_f
+      fee = payload[:average].to_f if fee == 0.0
       fee
     end
 
     def client
       @client ||= begin
         api_key = wallet.api_key.presence || wallet.parent&.api_key
-        PayoutClient.new(api_key: api_key, currency: wallet.currency.to_s.downcase)
+        currency = wallet.currency.to_s.downcase
+
+        Client.new(currency: currency).payout.new(api_key: api_key, currency: currency)
       end
     end
   end

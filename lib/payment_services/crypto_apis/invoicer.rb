@@ -31,7 +31,7 @@ class PaymentServices::CryptoApis
 
     def update_invoice_details(invoice:, transaction:)
       invoice.transaction_created_at ||= Time.parse(transaction[:datetime])
-      invoice.transaction_id ||= transaction[:txid]
+      invoice.transaction_id ||= transaction[:txid] || transaction[:hash]
       invoice.confirmations = transaction[:confirmations]
       invoice.save!
     end
@@ -44,10 +44,8 @@ class PaymentServices::CryptoApis
         raise response[:meta][:error][:message] if response.dig(:meta, :error, :message)
 
         response[:payload].find do |transaction|
-          # bch has 'bitcoincash:' suffix. If won't affect other currencies
-          address = invoice.address.split(':').last
+          received_amount = transaction[:received] ? transaction[:received][invoice.address] : transaction[:amount]
 
-          received_amount = transaction[:received][address] || transaction[:received][invoice.address]
           received_amount&.to_d == invoice.amount.to_d && Time.parse(transaction[:datetime]) > invoice.created_at
         end if response[:payload]
       end
@@ -57,7 +55,9 @@ class PaymentServices::CryptoApis
       @client ||= begin
         wallet = order.income_wallet
         api_key = wallet.api_key.presence || wallet.parent&.api_key
-        Client.new(api_key: api_key, currency: wallet.currency.to_s.downcase)
+        currency = wallet.currency.to_s.downcase
+
+        Client.new(currency: currency).invoice.new(api_key: api_key, currency: currency)
       end
     end
   end
