@@ -2,7 +2,6 @@
 
 require_relative 'payout'
 require_relative 'client'
-require_relative '../payout_status'
 
 class PaymentServices::AnyMoney
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
@@ -24,8 +23,9 @@ class PaymentServices::AnyMoney
       result = response[:result]
       payout.update!(status: result[:status]) if result[:status]
       payout.confirm! if payout.complete_payout?
+      payout.fail! if payout.status_failed?
 
-      PayoutStatus.new(payout: payout, server_response: result)
+      result
     end
 
     def payout

@@ -2,7 +2,6 @@
 
 require_relative 'payout'
 require_relative 'payout_client'
-require_relative '../payout_status'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
@@ -26,7 +25,7 @@ class PaymentServices::CryptoApis
       payout.update!(confirmations: response[:payload][:confirmations]) if response[:payload][:confirmations]
       payout.confirm! if payout.complete_payout?
 
-      PayoutStatus.new(payout: payout, server_response: response[:payload])
+      response[:payload]
     end
 
     def payout
