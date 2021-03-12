@@ -16,7 +16,7 @@ class Client
     'omni'  => 'OmniClient',
   }
 
-  def initialize(currency)
+  def initialize(currency:)
     @currency = currency
   end
 

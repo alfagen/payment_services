@@ -42,8 +42,9 @@ class PaymentServices::CryptoApis
       response = client.make_payout(payout: payout, wallet: wallet)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
+      # NOTE: ETH/ETC is using 'hex' format
       hash = response[:payload][:txid] || response[:payload][:hex]
-      raise "Didn't get tx hash" unless hash
+      raise "Didn't get transaction hash" unless hash
 
       payout.pay!(txid: hash)
     end
