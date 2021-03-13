@@ -3,9 +3,11 @@
 require_relative 'clients/base_client'
 require_relative 'clients/ethereum_client'
 require_relative 'clients/omni_client'
+require_relative 'clients/dash_client'
 require_relative 'payout_clients/base_client'
 require_relative 'payout_clients/ethereum_client'
 require_relative 'payout_clients/omni_client'
+require_relative 'payout_clients/dash_client'
 
 class Client
   BASE_CLIENT = 'BaseClient'
@@ -14,6 +16,7 @@ class Client
     'eth'   => 'EthereumClient',
     'etc'   => 'EthereumClient',
     'omni'  => 'OmniClient',
+    'dsh'   => 'DashClient'
   }
 
   def initialize(currency:)

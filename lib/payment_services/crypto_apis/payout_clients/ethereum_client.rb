@@ -28,8 +28,8 @@ class PaymentServices::CryptoApis
         {
           fromAddress: wallet.account,
           toAddress: payout.address,
-          gasLimit: STANDART_GAS_LIMIT,
-          gasPrice: payout.fee.to_i,
+          # gasLimit: STANDART_GAS_LIMIT,
+          # gasPrice: payout.fee.to_i,
           value: payout.amount.to_d,
           privateKey: wallet.api_secret
         }
