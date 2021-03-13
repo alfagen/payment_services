@@ -20,9 +20,8 @@ class PaymentServices::CryptoApis
       return if payout.pending?
 
       response = client.transaction_details(payout.txid)
-      raise "Can't get transaction details: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
-      payout.update!(confirmations: response[:payload][:confirmations]) if response[:payload][:confirmations]
+      payout.update!(confirmations: response[:payload][:confirmations]) if response[:payload]
       payout.confirm! if payout.complete_payout?
 
       response[:payload]
@@ -49,7 +48,6 @@ class PaymentServices::CryptoApis
       raise "Didn't get tx hash" unless hash
 
       payout.pay!(txid: hash)
-      refresh_status!(payout_id)
     end
 
     def transaction_fee
