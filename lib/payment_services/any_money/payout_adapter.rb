@@ -17,7 +17,11 @@ class PaymentServices::AnyMoney
       @payout_id = payout_id
       return if payout.pending?
 
-      response = client.get(params: payout.externalid)
+      params = {
+        externalid: payout.externalid.to_s
+      }
+
+      response = client.get(params: params)
       raise "Can't get order details: #{response[:error][:message]}" if response.dig(:error)
 
       result = response[:result]
