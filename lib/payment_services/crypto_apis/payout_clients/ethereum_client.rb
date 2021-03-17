@@ -5,8 +5,6 @@ require_relative '../clients/ethereum_client'
 class PaymentServices::CryptoApis
   module PayoutClients
     class EthereumClient < PaymentServices::CryptoApis::Clients::EthereumClient
-      STANDART_GAS_LIMIT = 21000
-
       def make_payout(payout:, wallet:)
         safely_parse http_request(
           url: "#{base_url}/txs/new-pvtkey",
@@ -28,8 +26,6 @@ class PaymentServices::CryptoApis
         {
           fromAddress: wallet.account,
           toAddress: payout.address,
-          # gasLimit: STANDART_GAS_LIMIT,
-          # gasPrice: payout.fee.to_i,
           value: payout.amount.to_d,
           privateKey: wallet.api_secret
         }
