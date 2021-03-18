@@ -22,7 +22,7 @@ class PaymentServices::CryptoApis
       response = client.transaction_details(payout.txid)
 
       payout.update!(confirmations: response[:payload][:confirmations]) if response[:payload]
-      payout.confirm! if payout.complete_payout?
+      payout.confirm! if payout.success?
 
       response[:payload]
     end

@@ -26,7 +26,7 @@ class PaymentServices::AnyMoney
 
       result = response[:result]
       payout.update!(status: result[:status]) if result[:status]
-      payout.confirm! if payout.complete_payout?
+      payout.confirm! if payout.success?
       payout.fail! if payout.status_failed?
 
       result

@@ -27,7 +27,7 @@ class PaymentServices::AnyMoney
       update(externalid: externalid)
     end
 
-    def complete_payout?
+    def success?
       status == 'done'
     end
 

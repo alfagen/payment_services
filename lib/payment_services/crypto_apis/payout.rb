@@ -27,7 +27,7 @@ class PaymentServices::CryptoApis
       update(txid: txid)
     end
 
-    def complete_payout?
+    def success?
       return false if confirmations.nil?
 
       confirmations >= CONFIRMATIONS_FOR_COMPLETE
