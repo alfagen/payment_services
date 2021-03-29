@@ -16,6 +16,9 @@ class PaymentServices::AnyMoney
     end
 
     def invoice_form_data
+      routes_helper = Rails.application.routes.url_helpers
+      redirect_url = order.income_payment_system.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
+
       form_params = {
         merchant: order.income_wallet.merchant_id,
         externalid: order.public_id,
@@ -25,7 +28,8 @@ class PaymentServices::AnyMoney
         payway: payway,
         callback_url: order.income_payment_system.callback_url,
         client_email: order.user&.email,
-        merchant_payfee: order.income_payment_system.transfer_comission_payer_shop? ? "1" : "0"
+        merchant_payfee: order.income_payment_system.transfer_comission_payer_shop? ? "1" : "0",
+        redirect_url: redirect_url
       }
       {
         url: ANYMONEY_PAYMENT_FORM_URL,

@@ -15,7 +15,10 @@ class PaymentServices::AliKassaPeerToPeer
     end
 
     def invoice_form_data
+      routes_helper = Rails.application.routes.url_helpers
       pay_way = order.income_payment_system.payway&.capitalize
+      redirect_url = order.income_payment_system.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
+
       invoice_params = {
         merchantUuid: order.income_wallet.merchant_id,
         orderId: order.public_id,
@@ -23,7 +26,8 @@ class PaymentServices::AliKassaPeerToPeer
         currency: ALIKASSA_RUB_CURRENCY,
         payWayVia: pay_way,
         desc: I18n.t('payment_systems.default_product', order_id: order.public_id),
-        customerEmail: order.user.try(:email)
+        customerEmail: order.user.try(:email),
+        urlSuccess: redirect_url
       }
       invoice_params[:payWayOn] = 'Qiwi' if pay_way == 'Qiwi'
       invoice_params[:number] = order.income_account.gsub(/\D/, '') if order.income_payment_system.payway == ALIKASSA_CARD

@@ -31,7 +31,10 @@ class PaymentServices::AliKassa
     end
 
     def invoice_form_data
+      routes_helper = Rails.application.routes.url_helpers
       pay_way = order.income_payment_system.payway
+      redirect_url = order.income_payment_system.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
+
       invoice_params = {
         merchantUuid: order.income_wallet.merchant_id,
         orderId: order.public_id,
@@ -40,8 +43,10 @@ class PaymentServices::AliKassa
         desc: I18n.t('payment_systems.default_product', order_id: order.public_id),
         lifetime: ALIKASSA_TIME_LIMIT,
         payWayVia: pay_way&.upcase_first,
-        customerEmail: order.user.try(:email)
+        customerEmail: order.user.try(:email),
+        urlSuccess: redirect_url
       }
+      invoice_params[:urlSuccess] = order.income_payment_system.redirect_url if order.income_payment_system.redirect_url.present?
       invoice_params = assign_additional_params(invoice_params: invoice_params, pay_way: pay_way)
       invoice_params[:sign] = calculate_signature(invoice_params)
 
