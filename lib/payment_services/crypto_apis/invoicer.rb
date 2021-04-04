@@ -44,7 +44,7 @@ class PaymentServices::CryptoApis
         raise response[:meta][:error][:message] if response.dig(:meta, :error, :message)
 
         response[:payload].find do |transaction|
-          received_amount = transaction[:received] ? transaction[:received][invoice.address] : transaction[:amount]
+          received_amount = transaction[:received][invoice.address] || transaction[:amount]
 
           received_amount&.to_d == invoice.amount.to_d && Time.parse(transaction[:datetime]) > invoice.created_at
         end if response[:payload]
