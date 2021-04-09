@@ -23,6 +23,7 @@ module PaymentServices
   autoload :BlockIo, 'payment_services/block_io'
   autoload :CryptoApis, 'payment_services/crypto_apis'
   autoload :AnyMoney, 'payment_services/any_money'
+  autoload :AppexMoney, 'payment_services/appex_money'
 
   UnauthorizedPayout = Class.new StandardError
 
