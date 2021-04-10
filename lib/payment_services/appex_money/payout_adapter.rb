@@ -43,7 +43,7 @@ class PaymentServices::AppexMoney
       @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
 
       params = {
-        amount: amount.to_s,
+        amount: amount.to_d,
         amountcurr: wallet.currency.to_s.upcase,
         number: "Invoice#{@payout_id}",
         operator: wallet.payment_system.payway,
