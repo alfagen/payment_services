@@ -21,6 +21,7 @@ class PaymentServices::AppexMoney
         nonce: SecureRandom.hex(10)
       )
       params[:signature] = signature(params)
+      logger.info params
 
       safely_parse http_request(
         url: API_URL + 'payout/execute',
