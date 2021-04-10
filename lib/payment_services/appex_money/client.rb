@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'digest'
+require 'securerandom'
 
 class PaymentServices::AppexMoney
   class Client
@@ -17,7 +18,7 @@ class PaymentServices::AppexMoney
     def create(params:)
       params = params.merge(
         account: account_id,
-        nonce: OpenSSL::Random.random_bytes(32)
+        nonce: SecureRandom.hex(10)
       )
       params[:signature] = signature(params)
 
@@ -31,7 +32,7 @@ class PaymentServices::AppexMoney
     def get(params:)
       params = params.merge(
         account: account_id,
-        nonce: OpenSSL::Random.random_bytes(32)
+        nonce: SecureRandom.hex(10)
       )
       params[:signature] = signature(params)
 
