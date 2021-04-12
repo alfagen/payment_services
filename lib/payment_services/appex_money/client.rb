@@ -82,15 +82,13 @@ class PaymentServices::AppexMoney
     end
 
     def signature(params)
-      sign_string = ''
+      card_number = params[:params]
+      masked_params = card_number[0..5] + '*' * 6 + card_number[-4..card_number.length]
+      sign_string = "#{params[:nonce]}:#{params[:account]}:#{params[:operator]}:#{masked_params}:#{params[:amount]}:#{params[:amountcurr]}:#{params[:number]}"
 
-      params.each do |_k, v| 
-        sign_string += "#{v}:"
-      end
+      sign_string = sign_string + ":#{first_secret_key}:#{second_secret_key}"
 
-      sign_string = sign_string.upcase + "#{first_secret_key}:#{second_secret_key}".upcase
-
-      Digest::MD5.hexdigest sign_string
+      Digest::MD5.hexdigest(sign_string).upcase
     end
 
     def safely_parse(response)
