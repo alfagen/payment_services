@@ -44,7 +44,7 @@ class PaymentServices::AppexMoney
       routes_helper = Rails.application.routes.url_helpers
 
       params = {
-        amount: amount.to_d.round(2),
+        amount: amount.to_d.round(2).to_s,
         amountcurr: wallet.currency.to_s.upcase,
         number: "Invoice#{@payout_id}",
         operator: wallet.merchant_id,
