@@ -92,7 +92,7 @@ class PaymentServices::AppexMoney
     end
 
     def refresh_signature(params)
-      sign_string = "#{params[:nonce]}:#{params[:account]}:#{params[:number]}: "
+      sign_string = "#{params[:nonce]}:#{params[:account]}:#{params[:number]}:"
 
       sign_string = sign_string + ":#{first_secret_key}:#{second_secret_key}"
 
