@@ -87,6 +87,9 @@ class PaymentServices::AppexMoney
       sign_string = "#{params[:nonce]}:#{params[:account]}:#{params[:operator]}:#{masked_params}:#{params[:amount]}:#{params[:amountcurr]}:#{params[:number]}"
 
       sign_string = sign_string + ":#{first_secret_key}:#{second_secret_key}"
+      p '<<<<<<<<<<<<<<<<'
+      p sign_string
+      p '>>>>>>>>>>>>>>>>'
 
       Digest::MD5.hexdigest(sign_string).upcase
     end
