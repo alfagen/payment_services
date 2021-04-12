@@ -28,7 +28,7 @@ class PaymentServices::AppexMoney
       payout.confirm! if payout.success?
       payout.fail! if payout.status_failed?
 
-      result
+      response
     end
 
     def payout
