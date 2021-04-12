@@ -41,13 +41,15 @@ class PaymentServices::AppexMoney
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
+      routes_helper = Rails.application.routes.url_helpers
 
       params = {
-        amount: amount.to_d,
+        amount: amount.to_d.round(2),
         amountcurr: wallet.currency.to_s.upcase,
         number: "Invoice#{@payout_id}",
-        operator: wallet.payment_system.payway,
-        params: destination_account
+        operator: wallet.merchant_id,
+        params: destination_account,
+        callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout"
       }
       response = client.create(params: params)
       raise "Can't process payout: #{response[:errortext]}" if response.dig(:errortext)
@@ -58,7 +60,7 @@ class PaymentServices::AppexMoney
     def client
       @client ||= begin
         Client.new(
-          account_id: wallet.merchant_id,
+          num_ps: wallet.num_ps,
           first_secret_key: wallet.api_key,
           second_secret_key: wallet.secretKey
         )

@@ -9,15 +9,15 @@ class PaymentServices::AppexMoney
     TIMEOUT = 10
     API_URL = 'https://ecommerce.test.appexmoney.com/api/'
 
-    def initialize(account_id:, first_secret_key:, second_secret_key:)
-      @account_id = account_id
+    def initialize(num_ps:, first_secret_key:, second_secret_key:)
+      @num_ps = num_ps
       @first_secret_key = first_secret_key
       @second_secret_key = second_secret_key
     end
 
     def create(params:)
       params = params.merge(
-        account: account_id,
+        account: num_ps,
         nonce: SecureRandom.hex(10)
       )
       params[:signature] = signature(params)
@@ -31,7 +31,7 @@ class PaymentServices::AppexMoney
 
     def get(params:)
       params = params.merge(
-        account: account_id,
+        account: num_ps,
         nonce: SecureRandom.hex(10)
       )
       params[:signature] = signature(params)
@@ -45,7 +45,7 @@ class PaymentServices::AppexMoney
 
     private
 
-    attr_reader :account_id, :first_secret_key, :second_secret_key
+    attr_reader :num_ps, :first_secret_key, :second_secret_key
 
     def http_request(url:, method:, body: nil)
       uri = URI.parse(url)
@@ -82,7 +82,7 @@ class PaymentServices::AppexMoney
         sign_string += "#{v}:"
       end
 
-      sign_string = sign_string.upcase + "#{first_secret_key}:#{second_secret_key}"
+      sign_string = sign_string.upcase + "#{first_secret_key}:#{second_secret_key}".upcase
 
       Digest::MD5.hexdigest sign_string
     end
