@@ -64,6 +64,9 @@ class PaymentServices::AppexMoney
                   raise "Запрос #{method} не поддерживается!"
                 end
       request.body = (body.present? ? body : {}).to_json
+      p '<<<<<<<<<<<<<<<<'
+      p request.body
+      p '>>>>>>>>>>>>>>>>'
       request
     end
 
@@ -82,7 +85,8 @@ class PaymentServices::AppexMoney
         sign_string += "#{v}:"
       end
 
-      sign_string = sign_string.upcase + "#{first_secret_key}:#{second_secret_key}".upcase
+      # sign_string = sign_string.upcase + "#{first_secret_key}:#{second_secret_key}".upcase
+      sign_string = 'lol'
 
       Digest::MD5.hexdigest sign_string
     end
