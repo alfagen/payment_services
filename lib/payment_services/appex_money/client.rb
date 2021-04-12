@@ -57,14 +57,20 @@ class PaymentServices::AppexMoney
 
     def build_request(uri:, method:, body: nil)
       request = if method == :POST
-                  Net::HTTP::Post.new(uri.request_uri)
+                  Net::HTTP::Post.new(uri.request_uri, headers)
                 elsif method == :GET
-                  Net::HTTP::Get.new(uri.request_uri)
+                  Net::HTTP::Get.new(uri.request_uri, headers)
                 else
                   raise "Запрос #{method} не поддерживается!"
                 end
       request.body = (body.present? ? body : {}).to_json
       request
+    end
+
+    def headers
+      {
+        'Content-Type': 'application/json'
+      }
     end
 
     def http(uri)
