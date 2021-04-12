@@ -20,7 +20,7 @@ class PaymentServices::AppexMoney
         account: num_ps,
         nonce: SecureRandom.hex(10)
       )
-      params[:signature] = signature(params)
+      params[:signature] = create_signature(params)
 
       safely_parse http_request(
         url: API_URL + 'payout/execute',
@@ -34,7 +34,7 @@ class PaymentServices::AppexMoney
         account: num_ps,
         nonce: SecureRandom.hex(10)
       )
-      params[:signature] = signature(params)
+      params[:signature] = refresh_signature(params)
 
       safely_parse http_request(
         url: API_URL + 'payout/status',
@@ -81,10 +81,18 @@ class PaymentServices::AppexMoney
                       read_timeout: TIMEOUT)
     end
 
-    def signature(params)
+    def create_signature(params)
       card_number = params[:params]
       masked_params = card_number[0..5] + '*' * 6 + card_number[-4..card_number.length]
       sign_string = "#{params[:nonce]}:#{params[:account]}:#{params[:operator]}:#{masked_params}:#{params[:amount]}:#{params[:amountcurr]}:#{params[:number]}"
+
+      sign_string = sign_string + ":#{first_secret_key}:#{second_secret_key}"
+
+      Digest::MD5.hexdigest(sign_string).upcase
+    end
+
+    def refresh_signature(params)
+      sign_string = "#{params[:nonce]}:#{params[:account]}:#{params[:number]}: "
 
       sign_string = sign_string + ":#{first_secret_key}:#{second_secret_key}"
 

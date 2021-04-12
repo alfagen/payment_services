@@ -18,7 +18,7 @@ class PaymentServices::AppexMoney
       return if payout.pending?
 
       params = {
-        number: @payout_id.to_s
+        number: "Invoice#{@payout_id}",
       }
 
       response = client.get(params: params)
