@@ -17,11 +17,7 @@ class PaymentServices::AppexMoney
       @payout_id = payout_id
       return if payout.pending?
 
-      params = {
-        number: "Invoice#{@payout_id}",
-      }
-
-      response = client.get(params: params)
+      response = client.get(params: { number: "Invoice#{@payout_id}" })
       raise "Can't get order details: #{response[:errortext]}" if response.dig(:errortext)
 
       payout.update!(status: response[:status]) if response[:status]

@@ -84,19 +84,20 @@ class PaymentServices::AppexMoney
     def create_signature(params)
       card_number = params[:params]
       masked_params = card_number[0..5] + '*' * 6 + card_number[-4..card_number.length]
-      sign_string = "#{params[:nonce]}:#{params[:account]}:#{params[:operator]}:#{masked_params}:#{params[:amount]}:#{params[:amountcurr]}:#{params[:number]}"
+      sign_array = [
+        params[:nonce], params[:account], params[:operator], masked_params, params[:amount],
+        params[:amountcurr], params[:number], first_secret_key, second_secret_key
+      ]
 
-      sign_string = sign_string + ":#{first_secret_key}:#{second_secret_key}"
-
-      Digest::MD5.hexdigest(sign_string).upcase
+      Digest::MD5.hexdigest(sign_array.join(':')).upcase
     end
 
     def refresh_signature(params)
-      sign_string = "#{params[:nonce]}:#{params[:account]}:#{params[:number]}:"
-
-      sign_string = sign_string + ":#{first_secret_key}:#{second_secret_key}"
-
-      Digest::MD5.hexdigest(sign_string).upcase
+      sign_array = [
+        params[:nonce], params[:account], params[:number], 
+        '', first_secret_key, second_secret_key
+      ]
+      Digest::MD5.hexdigest(sign_array.join(':')).upcase
     end
 
     def safely_parse(response)
