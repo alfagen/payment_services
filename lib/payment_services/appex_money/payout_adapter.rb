@@ -18,7 +18,7 @@ class PaymentServices::AppexMoney
       return if payout.pending?
 
       begin
-        response = client.get(params: { number: "Invoice#{@payout_id}" })
+        response = client.get(params: { number: payout_number.to_s })
       rescue Net::ReadTimeout => error
         retry
       end
@@ -35,6 +35,10 @@ class PaymentServices::AppexMoney
       @payout ||= Payout.find_by(id: payout_id)
     end
 
+    def payout_number
+      @payout_number ||= OrderPayout.find(payout.order_payout_id).order.id
+    end
+
     private
 
     attr_accessor :payout_id
@@ -43,14 +47,12 @@ class PaymentServices::AppexMoney
       @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
       routes_helper = Rails.application.routes.url_helpers
 
-      p '<<<<<<<<<<<<'
-      p OrderPayout.find(payout.order_payout_id).order.id
-      p '>>>>>>>>>>>>'
+      number = OrderPayout.find(payout.order_payout_id).order.id
 
       params = {
         amount: amount.to_d.round(2).to_s,
         amountcurr: wallet.currency.to_s.upcase,
-        number: "Invoice#{@payout_id}",
+        number: payout_number.to_s,
         operator: wallet.merchant_id,
         params: destination_account,
         callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout"
