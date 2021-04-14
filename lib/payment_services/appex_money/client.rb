@@ -7,7 +7,7 @@ class PaymentServices::AppexMoney
   class Client
     include AutoLogger
     TIMEOUT = 10
-    API_URL = 'https://ecommerce.appexmoney.com/api/'
+    API_URL = 'https://ecommerce.test.appexmoney.com/api/'
 
     def initialize(num_ps:, first_secret_key:, second_secret_key:)
       @num_ps = num_ps
