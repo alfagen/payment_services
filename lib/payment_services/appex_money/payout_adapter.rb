@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::AppexMoney
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    PAYOUT_NUMBER_PREFIX = 'Kassa_payout_'
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -18,7 +20,7 @@ class PaymentServices::AppexMoney
       return if payout.pending?
 
       begin
-        response = client.get(params: { number: payout_number.to_s })
+        response = client.get(params: { number: "#{PAYOUT_NUMBER_PREFIX}#{payout_number}" })
       rescue Net::ReadTimeout => error
         retry
       end
@@ -50,7 +52,7 @@ class PaymentServices::AppexMoney
       params = {
         amount: amount.to_d.round(2).to_s,
         amountcurr: wallet.currency.to_s.upcase,
-        number: payout_number.to_s,
+        number: "#{PAYOUT_NUMBER_PREFIX}#{payout_number}",
         operator: wallet.merchant_id,
         params: destination_account,
         callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout"
