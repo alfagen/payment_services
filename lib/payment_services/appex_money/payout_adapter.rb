@@ -36,7 +36,7 @@ class PaymentServices::AppexMoney
     end
 
     def payout_number
-      @payout_number ||= OrderPayout.find(payout.order_payout_id).order.id
+      @payout_number ||= OrderPayout.find(payout.order_payout_id).order.public_id
     end
 
     private
@@ -46,8 +46,6 @@ class PaymentServices::AppexMoney
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
       routes_helper = Rails.application.routes.url_helpers
-
-      number = OrderPayout.find(payout.order_payout_id).order.id
 
       params = {
         amount: amount.to_d.round(2).to_s,
