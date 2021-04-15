@@ -6,7 +6,7 @@ require 'securerandom'
 class PaymentServices::AppexMoney
   class Client
     include AutoLogger
-    TIMEOUT = 10
+    TIMEOUT = 60
     API_URL = 'https://ecommerce.appexmoney.com/api/'
 
     def initialize(num_ps:, first_secret_key:, second_secret_key:)
