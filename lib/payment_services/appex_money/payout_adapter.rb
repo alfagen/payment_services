@@ -5,8 +5,6 @@ require_relative 'client'
 
 class PaymentServices::AppexMoney
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    PAYOUT_NUMBER_PREFIX = 'Kassa_payout_'
-
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -19,7 +17,7 @@ class PaymentServices::AppexMoney
       @payout_id = payout_id
       return if payout.pending?
 
-      response = client.get(params: { number: "#{PAYOUT_NUMBER_PREFIX}#{payout_number}" })
+      response = client.get(params: { number: number })
       raise "Can't get order details: #{response[:errortext]}" if response.dig(:errortext)
 
       payout.update!(status: response[:status]) if response[:status]
@@ -33,13 +31,17 @@ class PaymentServices::AppexMoney
       @payout ||= Payout.find_by(id: payout_id)
     end
 
-    def payout_number
-      @payout_number ||= OrderPayout.find(payout.order_payout_id).order.public_id
+    def order_payout
+      @payout_number ||= OrderPayout.find(payout.order_payout_id)
     end
 
     private
 
     attr_accessor :payout_id
+
+    def number
+      "Kassa_#{order_payout.order.public_id}_payout_#{order_payout.id}"
+    end
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
@@ -48,7 +50,7 @@ class PaymentServices::AppexMoney
       params = {
         amount: amount.to_d.round(2).to_s,
         amountcurr: wallet.currency.to_s.upcase,
-        number: "#{PAYOUT_NUMBER_PREFIX}#{payout_number}",
+        number: number,
         operator: wallet.merchant_id,
         params: destination_account,
         callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout"
