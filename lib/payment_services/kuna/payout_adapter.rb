@@ -44,7 +44,7 @@ class PaymentServices::Kuna
         withdraw_to: destination_account
       }
       response = client.create(params: params)
-      raise "Can't process payout: #{response[:messages].join(', ')}" if response.dig(:messages)
+      raise "Can't process payout: #{response[:messages].join(', ')}" if response[:messages]
 
       payout.pay!(withdrawal_id: response[:withdrawal_id]) if response[:withdrawal_id]
     end
