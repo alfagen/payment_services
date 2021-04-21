@@ -40,7 +40,7 @@ class PaymentServices::Kuna
 
       params = {
         amount: amount.to_d,
-        downcase: wallet.currency.to_s.downcase,
+        withdraw_type: wallet.currency.to_s.downcase,
         withdraw_to: destination_account
       }
       response = client.create(params: params)
