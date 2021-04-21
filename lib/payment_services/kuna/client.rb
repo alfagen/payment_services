@@ -88,9 +88,9 @@ class PaymentServices::Kuna
       res
     rescue JSON::ParserError => err
       logger.warn "Request failed #{response.class} #{response.body}"
-      # Bugsnag.notify err do |report|
-      #   report.add_tab(:response, response_class: response.class, response_body: response.body)
-      # end
+      Bugsnag.notify err do |report|
+        report.add_tab(:response, response_class: response.class, response_body: response.body)
+      end
       response.body
     end
   end
