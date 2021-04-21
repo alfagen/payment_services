@@ -13,6 +13,7 @@ class PaymentServices::Kuna
     end
 
     def pay_invoice_url
+      invoice = Invoice.find_by!(order_public_id: order.public_id)
       params = {
         amount: invoice.amount.to_f,
         currency: invoice.amount.currency.to_s.downcase,
@@ -23,7 +24,6 @@ class PaymentServices::Kuna
 
       raise "Can't create invoice: #{response['messages']}" if response['messages']
 
-      invoice = Invoice.find_by!(order_public_id: order.public_id)
       invoice.update!(deposit_id: response['deposit_id'])
 
       response['payment_url']
