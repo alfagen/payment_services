@@ -15,7 +15,7 @@ class PaymentServices::Kuna
 
     def refresh_status!(payout_id)
       @payout_id = payout_id
-      return if payout.pending?
+      # return if payout.pending?
 
       response = client.get(params: { id: payout.withdrawal_id })
       # NOTE: API returns an array of responses
