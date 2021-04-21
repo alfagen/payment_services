@@ -20,7 +20,7 @@ class PaymentServices::Kuna
         payment_service: PAYMENT_SERVICE
         # callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/kuna/receive_payment"
       }
-      response = client.create_deposit(params)
+      response = client.create_deposit(params: params)
 
       raise "Can't create invoice: #{response['messages']}" if response['messages']
 
