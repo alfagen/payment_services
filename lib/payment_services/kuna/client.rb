@@ -83,7 +83,7 @@ class PaymentServices::Kuna
     end
 
     def safely_parse(response)
-      res = JSON.parse(response.body).with_indifferent_access
+      res = JSON.parse(response.body)
       logger.info "Response: #{res}"
       res
     rescue JSON::ParserError => err
