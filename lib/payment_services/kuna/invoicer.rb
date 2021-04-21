@@ -5,8 +5,8 @@ require_relative 'client'
 
 class PaymentServices::Kuna
   class Invoicer < ::PaymentServices::Base::Invoicer
-    KUNA_URL = 'https://api.kuna.io/v3/auth/deposit'
-    PAYMENT_SERVICE = 'default'
+    KUNA_URL = 'https://api.kuna.io/v3/auth/merchant/deposit'
+    PAYMENT_SERVICE = 'payment_card_rub_hpp'
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
