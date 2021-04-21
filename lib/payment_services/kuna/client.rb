@@ -62,10 +62,10 @@ class PaymentServices::Kuna
       nonce = Time.now.to_i.to_s
 
       {
-        'Content-Type': 'application/json',
-        'kun-nonce'     : nonce,
-        'kun-apikey'    : api_key,
-        'kun-signature' : signature(url, params, nonce)
+        'Content-Type'  => 'application/json',
+        'kun-nonce'     => nonce,
+        'kun-apikey'    => api_key,
+        'kun-signature' => signature(url, params, nonce)
       }
     end
 
