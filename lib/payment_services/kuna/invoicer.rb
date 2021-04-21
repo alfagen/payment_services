@@ -5,7 +5,7 @@ require_relative 'client'
 
 class PaymentServices::Kuna
   class Invoicer < ::PaymentServices::Base::Invoicer
-    KUNA_URL = 'https://api.kuna.io/v3/auth/merchant/deposit'
+    KUNA_URL = 'https://api.kuna.io/v3/auth/deposit'
     PAYMENT_SERVICE = 'default'
 
     def create_invoice(money)
@@ -18,6 +18,7 @@ class PaymentServices::Kuna
         amount: invoice.amount.to_f,
         currency: invoice.amount.currency.to_s.downcase,
         payment_service: PAYMENT_SERVICE,
+        deposit_from: order.num_ps1,
         callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/kuna/receive_payment"
       }
       response = client.create_deposit(params: params)
