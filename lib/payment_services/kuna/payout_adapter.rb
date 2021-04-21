@@ -19,11 +19,11 @@ class PaymentServices::Kuna
 
       response = client.get(params: { id: payout.withdrawal_id })
       # NOTE: API returns an array of responses
-      result = response.first
+      response = response.first if response.is_a? Array
 
       raise "Can't get withdrawal details: #{response['messages']}" if response['messages']
 
-      payout.update!(status: result['status']) if result['status']
+      payout.update!(status: response['status']) if response['status']
       payout.confirm! if payout.success?
       payout.fail! if payout.status_failed?
 
@@ -47,11 +47,11 @@ class PaymentServices::Kuna
         withdraw_to: destination_account
       }
       response = client.create(params: params)
-      result = response.first
+      response = response.first if response.is_a? Array
 
       raise "Can't process payout: #{response['messages']}" if response['messages']
 
-      payout.pay!(withdrawal_id: result['withdrawal_id']) if result['withdrawal_id']
+      payout.pay!(withdrawal_id: response['withdrawal_id']) if response['withdrawal_id']
     end
 
     def client
