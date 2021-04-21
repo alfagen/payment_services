@@ -13,7 +13,6 @@ class PaymentServices::Kuna
     end
 
     def pay_invoice_url
-      routes_helper = Rails.application.routes.url_helpers
       params = {
         amount: invoice.amount.to_f,
         currency: invoice.amount.currency.to_s.downcase,
