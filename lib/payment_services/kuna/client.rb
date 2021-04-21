@@ -59,7 +59,7 @@ class PaymentServices::Kuna
     end
 
     def headers(url, params)
-      nonce = Time.now.to_i.to_s
+      nonce = Time.now.to_i * 1000
 
       {
         'Content-Type'  => 'application/json',
@@ -79,7 +79,7 @@ class PaymentServices::Kuna
 
     def signature(url, params, nonce)
       url.slice!(API_URL)
-      sign_string = url + nonce + params.to_json
+      sign_string = url + nonce.to_s + params.to_json
 
       OpenSSL::HMAC.hexdigest('SHA384', secret_key, sign_string)
     end
