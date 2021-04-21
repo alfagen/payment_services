@@ -32,6 +32,14 @@ class PaymentServices::Kuna
       )
     end
 
+    def create_deposit(params:)
+      safely_parse http_request(
+        url: API_URL + '/v3/auth/merchant/deposit',
+        method: :POST,
+        body: params
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key
