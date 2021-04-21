@@ -18,7 +18,7 @@ class PaymentServices::Kuna
       return if payout.pending?
 
       response = client.get(params: { withdrawal_id: payout.withdrawal_id })
-      raise "Can't get withdrawal details: #{response[:messages].join(', ')}" if response.dig(:messages)
+      raise "Can't get withdrawal details: #{response[:messages].join(', ')}" if response[:messages]
 
       payout.update!(status: response[:status]) if response[:status]
       payout.confirm! if payout.success?
