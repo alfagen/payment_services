@@ -26,7 +26,7 @@ class PaymentServices::Kuna
 
     def get(params:)
       safely_parse http_request(
-        url: API_URL + '/v3/withdraw/details',
+        url: API_URL + '/v3/auth/withdraw/details',
         method: :POST,
         body: params
       )
