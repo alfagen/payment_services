@@ -17,8 +17,8 @@ class PaymentServices::Kuna
       params = {
         amount: invoice.amount.to_f,
         currency: invoice.amount.currency.to_s.downcase,
-        payment_service: PAYMENT_SERVICE
-        # callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/kuna/receive_payment"
+        payment_service: PAYMENT_SERVICE,
+        callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/kuna/receive_payment"
       }
       response = client.create_deposit(params: params)
 
