@@ -17,7 +17,7 @@ class PaymentServices::Kuna
       @payout_id = payout_id
       return if payout.pending?
 
-      response = client.get(params: { id: payout.withdrawal_id })
+      response = client.payout_status(params: { id: payout.withdrawal_id })
 
       raise "Can't get withdrawal details: #{response['messages']}" if response['messages']
 
@@ -44,7 +44,7 @@ class PaymentServices::Kuna
         withdraw_type: wallet.currency.to_s.downcase,
         withdraw_to: destination_account
       }
-      response = client.create(params: params)
+      response = client.create_payout(params: params)
       # NOTE: API returns an array of responses
       response = response.first if response.is_a? Array
 

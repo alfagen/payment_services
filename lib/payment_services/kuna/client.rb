@@ -12,7 +12,15 @@ class PaymentServices::Kuna
       @secret_key = secret_key
     end
 
-    def create(params:)
+    def create_deposit(params:)
+      safely_parse http_request(
+        url: API_URL + '/v3/auth/merchant/deposit',
+        method: :POST,
+        body: params
+      )
+    end
+
+    def create_payout(params:)
       params = params.merge(
         gateway: GATEWAY
       )
@@ -24,17 +32,9 @@ class PaymentServices::Kuna
       )
     end
 
-    def get(params:)
+    def payout_status(params:)
       safely_parse http_request(
         url: API_URL + '/v3/auth/withdraw/details',
-        method: :POST,
-        body: params
-      )
-    end
-
-    def create_deposit(params:)
-      safely_parse http_request(
-        url: API_URL + '/v3/auth/merchant/deposit',
         method: :POST,
         body: params
       )
