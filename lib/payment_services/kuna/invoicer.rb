@@ -26,12 +26,9 @@ class PaymentServices::Kuna
         deposit_id: response['deposit_id'],
         payment_invoice_id: response['payment_invoice_id']
       )
-      invoice
     end
 
     def pay_invoice_url
-      invoice = Invoice.find_by!(order_public_id: order.public_id)
-
       uri = URI.parse(PAY_URL)
       uri.query = { cpi: invoice.payment_invoice_id }.to_query
 
@@ -39,6 +36,10 @@ class PaymentServices::Kuna
     end
 
     private
+
+    def invoice
+      @invoice ||= Invoice.find_by!(order_public_id: order.public_id)
+    end
 
     def payment_service
       available_options = {
