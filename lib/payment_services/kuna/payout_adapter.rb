@@ -14,7 +14,7 @@ class PaymentServices::Kuna
     end
 
     def available_methods
-      client.methods
+      client.methods(params: { currency: 'rub' })
     end
 
     def refresh_status!(payout_id)
