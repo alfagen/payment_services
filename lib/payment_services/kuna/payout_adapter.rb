@@ -13,10 +13,6 @@ class PaymentServices::Kuna
       )
     end
 
-    def available_methods
-      client.methods(params: { currency: 'rub' })
-    end
-
     def refresh_status!(payout_id)
       @payout_id = payout_id
       return if payout.pending?

@@ -14,11 +14,14 @@ class PaymentServices::Kuna
 
     def pay_invoice_url
       invoice = Invoice.find_by!(order_public_id: order.public_id)
+      payment_service_fields = [
+        { card_number: order.num_ps1 }
+      ]
       params = {
         amount: invoice.amount.to_f,
         currency: invoice.amount.currency.to_s.downcase,
         payment_service: PAYMENT_SERVICE,
-        deposit_from: order.num_ps1,
+        fields: { card_number: order.num_ps1 },
         callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/kuna/receive_payment"
       }
       response = client.create_deposit(params: params)
