@@ -48,11 +48,15 @@ class PaymentServices::Kuna
     end
 
     def enought_for_direct_payment?
-      invoice.amount.to_f >= FOR_DIRECT_PAY_AMOUNT
+      invoice.amount.to_f >= FOR_DIRECT_PAY_AMOUNT && payway == 'visamc'
     end
 
     def invoice
       @invoice ||= Invoice.find_by!(order_public_id: order.public_id)
+    end
+
+    def payway
+      @payway ||= order.income_wallet.payment_system.payway
     end
 
     def payment_service
@@ -60,7 +64,7 @@ class PaymentServices::Kuna
         'visamc' => "payment_card_#{currency}_hpp",
         'qiwi'   => "qiwi_#{currency}_hpp"
       }
-      available_options[order.income_wallet.payment_system.payway]
+      available_options[payway]
     end
 
     def required_field_name
@@ -68,7 +72,7 @@ class PaymentServices::Kuna
         'visamc' => 'card_number',
         'qiwi'   => 'phone'
       }
-      required_field_for[order.income_wallet.payment_system.payway]
+      required_field_for[payway]
     end
 
     def client
