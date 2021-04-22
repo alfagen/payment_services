@@ -24,10 +24,14 @@ class PaymentServices::Kuna
 
       invoice.update!(deposit_id: response['deposit_id'])
       invoice.update!(payment_invoice_id: response['payment_invoice_id'])
+
+      # NOTE: API returns direct pay link if amount >= 5000
+      invoice.update!(pay_url: response['flow_data']['action']) if invoice.amount.to_f >= 5000
     end
 
     def pay_invoice_url
       invoice = Invoice.find_by!(order_public_id: order.public_id)
+      return URI.parse(invoice.pay_url) if invoice.pay_url
 
       uri = URI.parse(PAY_URL)
       uri.query = { cpi: invoice.payment_invoice_id }.to_query
