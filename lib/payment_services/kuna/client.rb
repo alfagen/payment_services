@@ -6,7 +6,6 @@ class PaymentServices::Kuna
     TIMEOUT = 10
     API_URL = 'https://api.kuna.io'
     GATEWAY = 'default'
-    NONCE   = (Time.now.to_i * 1000).to_s
 
     def initialize(api_key:, secret_key:)
       @api_key = api_key
@@ -62,11 +61,13 @@ class PaymentServices::Kuna
     end
 
     def headers(url, params)
+      nonce = (Time.now.to_i * 1000).to_s
+
       {
         'Content-Type'  => 'application/json',
-        'kun-nonce'     => NONCE,
+        'kun-nonce'     => nonce,
         'kun-apikey'    => api_key,
-        'kun-signature' => signature(url: url, params: params)
+        'kun-signature' => signature(url: url, params: params, nonce: nonce)
       }
     end
 
@@ -78,9 +79,9 @@ class PaymentServices::Kuna
                       read_timeout: TIMEOUT)
     end
 
-    def signature(url:, params:)
+    def signature(url:, params:, nonce:)
       url.slice!(API_URL)
-      sign_string = url + NONCE + params.to_json
+      sign_string = url + nonce + params.to_json
 
       OpenSSL::HMAC.hexdigest('SHA384', secret_key, sign_string)
     end
