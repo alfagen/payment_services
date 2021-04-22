@@ -5,7 +5,7 @@ require_relative 'client'
 
 class PaymentServices::Kuna
   class Invoicer < ::PaymentServices::Base::Invoicer
-    KUNA_URL = 'https://api.kuna.io/v3/auth/merchant/deposit'
+    PAY_INVOICE_URL = 'https://pay.kuna.io/hpp/?cpi='
     PAYMENT_SERVICE = 'payment_card_rub_hpp'
 
     def create_invoice(money)
@@ -14,9 +14,6 @@ class PaymentServices::Kuna
 
     def pay_invoice_url
       invoice = Invoice.find_by!(order_public_id: order.public_id)
-      payment_service_fields = [
-        { card_number: order.num_ps1 }
-      ]
       params = {
         amount: invoice.amount.to_f,
         currency: invoice.amount.currency.to_s.downcase,
@@ -30,7 +27,7 @@ class PaymentServices::Kuna
 
       invoice.update!(deposit_id: response['deposit_id'])
 
-      response['payment_url']
+      PAY_INVOICE_URL + response['payment_invoice_id']
     end
 
     private
