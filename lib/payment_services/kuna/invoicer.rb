@@ -27,6 +27,8 @@ class PaymentServices::Kuna
     end
 
     def pay_invoice_url
+      invoice = Invoice.find_by!(order_public_id: order.public_id)
+
       uri = URI.parse(PAY_URL)
       uri.query = { cpi: invoice.payment_invoice_id }.to_query
 
