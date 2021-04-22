@@ -5,20 +5,18 @@ require_relative 'client'
 
 class PaymentServices::Kuna
   class Invoicer < ::PaymentServices::Base::Invoicer
-    PAY_INVOICE_URL = 'https://paygate.kuna.io/hpp?cpi='
+    PAY_URL = 'https://paygate.kuna.io/hpp'
     PAYMENT_SERVICE = 'payment_card_rub_hpp'
 
     def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
-    end
+      invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
 
-    def pay_invoice_url
-      invoice = Invoice.find_by!(order_public_id: order.public_id)
       params = {
         amount: invoice.amount.to_f,
         currency: invoice.amount.currency.to_s.downcase,
         payment_service: PAYMENT_SERVICE,
         fields: { card_number: order.num_ps1 },
+        return_url: routes_helper.public_payment_status_success_url(order_id: order.public_id),
         callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/kuna/receive_payment"
       }
       response = client.create_deposit(params: params)
@@ -26,8 +24,16 @@ class PaymentServices::Kuna
       raise "Can't create invoice: #{response['messages']}" if response['messages']
 
       invoice.update!(deposit_id: response['deposit_id'])
+      invoice.update!(payment_invoice_id: response['payment_invoice_id'])
+    end
 
-      PAY_INVOICE_URL + response['payment_invoice_id']
+    def pay_invoice_url
+      invoice = Invoice.find_by!(order_public_id: order.public_id)
+
+      uri = URI.parse(PAY_URL)
+      uri.query = { cpi: invoice.payment_invoice_id }.to_query
+
+      uri
     end
 
     private
