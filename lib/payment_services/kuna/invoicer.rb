@@ -22,10 +22,8 @@ class PaymentServices::Kuna
 
       raise "Can't create invoice: #{response['messages']}" if response['messages']
 
-      invoice.update!(
-        deposit_id: response['deposit_id'],
-        payment_invoice_id: response['payment_invoice_id']
-      )
+      invoice.update!(deposit_id: response['deposit_id'])
+      invoice.update!(payment_invoice_id: response['payment_invoice_id'])
     end
 
     def pay_invoice_url
