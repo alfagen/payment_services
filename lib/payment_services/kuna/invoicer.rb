@@ -26,6 +26,7 @@ class PaymentServices::Kuna
         deposit_id: response['deposit_id'],
         payment_invoice_id: response['payment_invoice_id']
       )
+      invoice
     end
 
     def pay_invoice_url
