@@ -5,7 +5,7 @@ require_relative 'client'
 
 class PaymentServices::Kuna
   class Invoicer < ::PaymentServices::Base::Invoicer
-    PAY_INVOICE_URL = 'https://pay.kuna.io/hpp/?cpi='
+    PAY_INVOICE_URL = 'https://paygate.kuna.io/hpp?cpi='
     PAYMENT_SERVICE = 'payment_card_rub_hpp'
 
     def create_invoice(money)
