@@ -6,7 +6,6 @@ require_relative 'client'
 class PaymentServices::Kuna
   class Invoicer < ::PaymentServices::Base::Invoicer
     PAY_URL = 'https://paygate.kuna.io/hpp'
-    PAYMENT_SERVICE = 'payment_card_rub_hpp'
 
     def create_invoice(money)
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -14,8 +13,8 @@ class PaymentServices::Kuna
       params = {
         amount: invoice.amount.to_f,
         currency: invoice.amount.currency.to_s.downcase,
-        payment_service: PAYMENT_SERVICE,
-        fields: { card_number: order.num_ps1 },
+        payment_service: payment_service,
+        fields: { required_field_name => order.num_ps1 },
         return_url: routes_helper.public_payment_status_success_url(order_id: order.public_id),
         callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/kuna/receive_payment"
       }
@@ -37,6 +36,22 @@ class PaymentServices::Kuna
     end
 
     private
+
+    def payment_service
+      available_options = {
+        'visamc' => "payment_card_#{invoice.amount.currency.to_s.downcase}_hpp",
+        'qiwi'   => "qiwi_#{invoice.amount.currency.to_s.downcase}_hpp"
+      }
+      available_options[wallet.payment_system.payway]
+    end
+
+    def required_field_name
+      required_field_for = {
+        'visamc' => 'card_number',
+        'qiwi'   => 'phone'
+      }
+      required_field_for[wallet.payment_system.payway]
+    end
 
     def client
       @client ||= begin
