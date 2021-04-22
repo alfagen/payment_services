@@ -29,11 +29,11 @@ class PaymentServices::Kuna
     end
 
     def success?
-      status == 'done'
+      provider_state == 'done'
     end
 
     def status_failed?
-      status == 'canceled' || status == 'unknown'
+      provider_state == 'canceled' || provider_state == 'unknown'
     end
   end
 end

@@ -21,7 +21,7 @@ class PaymentServices::Kuna
 
       raise "Can't get withdrawal details: #{response['messages']}" if response['messages']
 
-      payout.update!(status: response['status']) if response['status']
+      payout.update!(provider_state: response['status']) if response['status']
       payout.confirm! if payout.success?
       payout.fail! if payout.status_failed?
 
@@ -55,10 +55,7 @@ class PaymentServices::Kuna
 
     def client
       @client ||= begin
-        Client.new(
-          api_key: wallet.api_key,
-          secret_key: wallet.api_secret
-        )
+        Client.new(api_key: wallet.api_key, secret_key: wallet.api_secret)
       end
     end
   end
