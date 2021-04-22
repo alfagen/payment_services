@@ -46,7 +46,7 @@ class PaymentServices::Kuna
         'visamc' => "payment_card_#{invoice.amount.currency.to_s.downcase}_hpp",
         'qiwi'   => "qiwi_#{invoice.amount.currency.to_s.downcase}_hpp"
       }
-      available_options[wallet.payment_system.payway]
+      available_options[order.income_wallet.payment_system.payway]
     end
 
     def required_field_name
@@ -54,7 +54,7 @@ class PaymentServices::Kuna
         'visamc' => 'card_number',
         'qiwi'   => 'phone'
       }
-      required_field_for[wallet.payment_system.payway]
+      required_field_for[order.income_wallet.payment_system.payway]
     end
 
     def client
