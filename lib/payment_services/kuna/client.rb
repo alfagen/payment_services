@@ -36,7 +36,7 @@ class PaymentServices::Kuna
       )
     end
 
-    def services
+    def services(params:)
       safely_parse http_request(
         url: API_URL + '/v3/auth/merchant/payment_services',
         method: :POST,
