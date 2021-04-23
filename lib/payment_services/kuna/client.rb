@@ -61,7 +61,7 @@ class PaymentServices::Kuna
     end
 
     def headers(url, params)
-      nonce = (Time.now.to_i * 1000).to_s
+      nonce = time_now_milliseconds
 
       {
         'Content-Type'  => 'application/json',
@@ -69,6 +69,10 @@ class PaymentServices::Kuna
         'kun-apikey'    => api_key,
         'kun-signature' => signature(url: url, params: params, nonce: nonce)
       }
+    end
+
+    def time_now_milliseconds
+      Time.now.strftime("%s%3N")
     end
 
     def http(uri)

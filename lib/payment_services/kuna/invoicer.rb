@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::Kuna
   class Invoicer < ::PaymentServices::Base::Invoicer
     PAY_URL               = 'https://paygate.kuna.io/hpp'
-    FOR_DIRECT_PAY_AMOUNT = 5000
+    DIRECT_AMOUNT_THRESHOLD_CENTS = 500000
 
     def create_invoice(money)
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -32,7 +32,6 @@ class PaymentServices::Kuna
     end
 
     def pay_invoice_url
-      invoice = Invoice.find_by!(order_public_id: order.public_id)
       return URI.parse(invoice.pay_url) if invoice.pay_url
 
       uri = URI.parse(PAY_URL)
@@ -48,7 +47,7 @@ class PaymentServices::Kuna
     end
 
     def enought_for_direct_payment?
-      invoice.amount.to_f >= FOR_DIRECT_PAY_AMOUNT && payway == 'visamc'
+      invoice.amount_cents >= DIRECT_AMOUNT_THRESHOLD_CENTS && payway == 'visamc'
     end
 
     def invoice
