@@ -35,7 +35,7 @@ class PaymentServices::Kuna
       return URI.parse(invoice.pay_url) if invoice.pay_url
 
       uri = URI.parse(PAY_URL)
-      uri.query = { cpi: invoice.payment_invoice_id }.to_query
+      uri.query = { cpi: invoice.reload.payment_invoice_id }.to_query
 
       uri
     end
