@@ -16,7 +16,7 @@ class PaymentServices::Kuna
         currency: currency,
         payment_service: payment_service,
         fields: { required_field_name => order.income_account },
-        return_url: routes_helper.public_payment_status_success_url(order_id: order.public_id),
+        return_url: 'https://kassa.cc/callbacks/v1/kuna/receive_payment',
         callback_url: order.income_payment_system.callback_url
       }
       response = client.create_deposit(params: params)
