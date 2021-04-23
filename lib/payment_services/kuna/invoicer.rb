@@ -41,7 +41,7 @@ class PaymentServices::Kuna
     end
 
     def services
-      client.service(params: { currency: 'rub' })
+      client.services(params: { currency: 'rub' })
     end
 
     private
