@@ -36,6 +36,14 @@ class PaymentServices::Kuna
       )
     end
 
+    def services
+      safely_parse http_request(
+        url: API_URL + '/v3/auth/merchant/payment_services',
+        method: :POST,
+        body: params
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key

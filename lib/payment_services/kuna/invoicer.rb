@@ -40,6 +40,10 @@ class PaymentServices::Kuna
       uri
     end
 
+    def services
+      client.service(params: { currency: 'rub' })
+    end
+
     private
 
     def currency
