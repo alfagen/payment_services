@@ -2,6 +2,8 @@
 
 class PaymentServices::Kuna
   class Invoice < ApplicationRecord
+    FEE_PERCENT = 0.5
+
     include Workflow
 
     self.table_name = 'kuna_invoices'
@@ -28,7 +30,7 @@ class PaymentServices::Kuna
     end
 
     def can_be_confirmed?(income_money:)
-      pending? && amount == income_money
+      pending? && amount_with_fee == income_money
     end
 
     def pay(payload:)
@@ -36,6 +38,10 @@ class PaymentServices::Kuna
     end
 
     private
+
+    def amount_with_fee
+      amount * (1 - FEE_PERCENT / 100)
+    end
 
     def preliminary_order
       PreliminaryOrder.find_by(public_id: order_public_id)
