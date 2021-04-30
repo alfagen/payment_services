@@ -49,7 +49,7 @@ class PaymentServices::Kuna
     end
 
     def currency
-      invoice.amount.currency.to_s.downcase
+      @currency ||= invoice.amount.currency.to_s.downcase
     end
 
     def enought_for_direct_payment?
