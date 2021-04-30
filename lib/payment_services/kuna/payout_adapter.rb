@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::Kuna
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    DEFAULT_GATEWAY = 'default'
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -41,8 +43,9 @@ class PaymentServices::Kuna
 
       params = {
         amount: amount.to_d,
-        withdraw_type: wallet.currency.to_s.downcase,
-        withdraw_to: destination_account
+        withdraw_type: currency,
+        withdraw_to: destination_account,
+        gateway: gateway
       }
       response = client.create_payout(params: params)
       # NOTE: API returns an array of responses
@@ -57,6 +60,16 @@ class PaymentServices::Kuna
       @client ||= begin
         Client.new(api_key: wallet.api_key, secret_key: wallet.api_secret)
       end
+    end
+
+    def gateway
+      return DEFAULT_GATEWAY unless wallet.payment_system.name == 'QIWI'
+
+      "qiwi_#{currency}"
+    end
+
+    def currency
+      @currency ||= wallet.currency.to_s.downcase
     end
   end
 end

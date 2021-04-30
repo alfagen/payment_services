@@ -15,10 +15,12 @@ class PaymentServices::Kuna
         amount: invoice.amount.to_f,
         currency: currency,
         payment_service: payment_service,
-        fields: { required_field_name => order.income_account },
         return_url: routes_helper.public_payment_status_success_url(order_id: order.public_id),
         callback_url: order.income_payment_system.callback_url
       }
+
+      params[:fields] = { required_field_name => order.income_account } unless payment_card_uah?
+
       response = client.create_deposit(params: params)
 
       raise "Can't create invoice: #{response['messages']}" if response['messages']
@@ -41,6 +43,10 @@ class PaymentServices::Kuna
     end
 
     private
+
+    def payment_card_uah?
+      payway == 'visamc' && currency == 'uah'
+    end
 
     def currency
       invoice.amount.currency.to_s.downcase

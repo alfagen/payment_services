@@ -5,7 +5,6 @@ class PaymentServices::Kuna
     include AutoLogger
     TIMEOUT = 10
     API_URL = 'https://api.kuna.io'
-    GATEWAY = 'default'
 
     def initialize(api_key:, secret_key:)
       @api_key = api_key
@@ -24,7 +23,7 @@ class PaymentServices::Kuna
       safely_parse http_request(
         url: API_URL + '/v3/auth/withdraw',
         method: :POST,
-        body: params.merge(gateway: GATEWAY)
+        body: params
       )
     end
 
