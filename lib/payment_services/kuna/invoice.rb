@@ -23,7 +23,7 @@ class PaymentServices::Kuna
 
       state :paid do
         on_entry do
-          preliminary_order&.auto_confirm!(income_amount: amount)
+          order.auto_confirm!(income_amount: amount)
         end
       end
       state :cancelled
@@ -37,14 +37,14 @@ class PaymentServices::Kuna
       update(payload: payload)
     end
 
+    def order
+      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
+    end
+
     private
 
     def amount_with_fee
       amount * (1 - FEE_PERCENT / 100)
-    end
-
-    def preliminary_order
-      PreliminaryOrder.find_by(public_id: order_public_id)
     end
   end
 end
