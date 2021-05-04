@@ -4,6 +4,7 @@
 
 require_relative 'invoice'
 require_relative 'client'
+require 'date'
 
 class PaymentServices::CryptoApis
   class Invoicer < ::PaymentServices::Base::Invoicer
@@ -49,7 +50,11 @@ class PaymentServices::CryptoApis
           received_amount = transaction[:amount]
           received_amount = transaction[:received][invoice.address] unless transaction[:received][invoice.address] == invoice.address 
 
-          time_diff = (Time.parse(transaction[:datetime]) - invoice.created_at.utc) / 1.minute
+          transaction_created_at = DateTime.strptime(transaction[:timestamp].to_s,'%s')
+          invoice_created_at = invoice.created_at.utc
+          next if invoice_created_at >= transaction_created_at
+
+          time_diff = (transaction_created_at - invoice_created_at) / 1.minute
           received_amount&.to_d == invoice.amount.to_d && time_diff.round.minutes < TRANSACTION_TIME_THRESHOLD
         end if response[:payload]
       end
