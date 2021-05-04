@@ -4,7 +4,6 @@
 
 require_relative 'invoice'
 require_relative 'client'
-require 'date'
 
 class PaymentServices::CryptoApis
   class Invoicer < ::PaymentServices::Base::Invoicer
@@ -50,7 +49,7 @@ class PaymentServices::CryptoApis
           received_amount = transaction[:amount]
           received_amount = transaction[:received][invoice.address] unless transaction[:received][invoice.address] == invoice.address 
 
-          transaction_created_at = DateTime.strptime(transaction[:timestamp].to_s,'%s')
+          transaction_created_at = DateTime.strptime(transaction[:timestamp].to_s,'%s').utc
           invoice_created_at = invoice.created_at.utc
           next if invoice_created_at >= transaction_created_at
 
