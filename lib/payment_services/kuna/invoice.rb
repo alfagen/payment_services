@@ -3,6 +3,7 @@
 class PaymentServices::Kuna
   class Invoice < ApplicationRecord
     FEE_PERCENT = 0.5
+    KOPECK_EPSILON = 1
 
     include Workflow
 
@@ -30,7 +31,7 @@ class PaymentServices::Kuna
     end
 
     def can_be_confirmed?(income_money:)
-      pending? && amount_with_fee == income_money
+      pending? && (amount_with_fee - income_money) <= Money.new(KOPECK_EPSILON, amount.currency)
     end
 
     def pay(payload:)
