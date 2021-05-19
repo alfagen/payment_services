@@ -17,8 +17,10 @@ class PaymentServices::Liquid
       request_for("/transactions?transaction_type=funding&currency=#{currency}")
     end
 
-    def get_wallet
-      request_for("/crypto_accounts?currency=#{currency}")
+    def wallet
+      wallets = request_for("/crypto_accounts")
+
+      wallets.find { |w| w['currency'] == currency }
     end
 
     private

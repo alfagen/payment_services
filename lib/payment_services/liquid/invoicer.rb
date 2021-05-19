@@ -9,8 +9,10 @@ class PaymentServices::Liquid
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
 
-    def get_wallet_for(currency:)
-      Client.new(currency: currency).get_wallet
+    def wallet_address(currency:)
+      wallet = Client.new(currency: currency).wallet
+
+      wallet['address']
     end
 
     def update_invoice_state!
