@@ -18,7 +18,7 @@ class PaymentServices::Liquid
     end
 
     def get_wallet
-      request_for("/crypto_accounts")
+      request_for("/crypto_accounts?currency=#{currency}")
     end
 
     private
