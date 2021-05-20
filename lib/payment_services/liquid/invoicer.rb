@@ -43,7 +43,7 @@ class PaymentServices::Liquid
 
     def transaction_for(invoice)
       response = client.address_transactions
-      raise response[:message] if response.dig(:message)
+      raise response['message'] if response['message']
 
       response['models'].find do |transaction|
         received_amount = transaction['gross_amount']
