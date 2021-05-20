@@ -36,7 +36,6 @@ class PaymentServices::Liquid
       response = client.address_transactions
       raise response[:message] if response.dig(:message)
 
-      p response[:models]
       response[:models].find do |transaction|
         received_amount = transaction[:gross_amount]
         received_amount.to_d == invoice.amount.to_d && DateTime.strptime(transaction[:created_at].to_s, '%s') > invoice.created_at

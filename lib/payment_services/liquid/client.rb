@@ -87,7 +87,7 @@ class PaymentServices::Liquid
 
     def safely_parse(response)
       res = JSON.parse(response.body)
-      logger.info "Response: #{res}"
+      logger.info "Response: #{res[:models]}"
       res
     rescue JSON::ParserError => err
       logger.warn "Request failed #{response.class} #{response.body}"
