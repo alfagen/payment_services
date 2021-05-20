@@ -23,7 +23,7 @@ class PaymentServices::Liquid
     end
 
     def invoice
-      {}
+      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
     end
 
     def async_invoice_state_updater?
@@ -36,15 +36,15 @@ class PaymentServices::Liquid
       response = client.address_transactions
       raise response[:message] if response.dig(:message)
 
-      response[:models].find do |transaction|
-        received_amount = transaction[:gross_amount]
-        received_amount.to_d == invoice.amount.to_d && DateTime.strptime(transaction[:created_at].to_s, '%s') > invoice.created_at
+      response['models'].find do |transaction|
+        received_amount = transaction['gross_amount']
+        received_amount.to_d == invoice.amount.to_d && DateTime.strptime(transaction['created_at'].to_s, '%s').utc > invoice.created_at.utc
       end if response[:models]
     end
 
     def client
       @client ||= begin
-        Client.new(currency: 'TRX')
+        Client.new(currency: order.income_wallet.currency.to_s)
       end
     end
   end

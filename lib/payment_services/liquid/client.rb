@@ -6,8 +6,6 @@ class PaymentServices::Liquid
     TIMEOUT = 10
     API_URL = 'https://api.liquid.com'
     API_VERSION = '2'
-    API_TOKEN_ID = 1865638
-    API_SECRET = 'p/RsKyj1ezZRMz6Wuf0j5lsg+Fq7hpXzR6psjMgzmE2GgdNWDSIDXBvpJOd5oST+Q/u3nvJemEr1eJuh2Ppwpw=='
     WALLET_NAME_GROUP = 'LIQUID_API_KEYS'
 
     def initialize(currency:)
@@ -29,7 +27,7 @@ class PaymentServices::Liquid
     attr_reader :currency
 
     def api_wallet
-      @api_wallet = Wallet.find_by(name_group: 'LIQUID_API_KEYS')
+      @api_wallet = Wallet.find_by(name_group: WALLET_NAME_GROUP)
     end
 
     def request_for(path)
@@ -79,15 +77,15 @@ class PaymentServices::Liquid
       auth_payload = {
         path: path,
         nonce: DateTime.now.strftime('%Q'),
-        token_id: API_TOKEN_ID
+        token_id: api_wallet.merchant_id.to_i
       }
 
-      JWT.encode(auth_payload, API_SECRET, 'HS256')
+      JWT.encode(auth_payload, api_wallet.api_key, 'HS256')
     end
 
     def safely_parse(response)
       res = JSON.parse(response.body)
-      logger.info "Response: #{res['models']}"
+      logger.info "Response: #{res}"
       res
     rescue JSON::ParserError => err
       logger.warn "Request failed #{response.class} #{response.body}"
