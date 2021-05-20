@@ -19,7 +19,8 @@ class PaymentServices::Liquid
       transaction = transaction_for(invoice)
       return if transaction.nil?
 
-      invoice.pay!(payload: transaction)
+      update_invoice_details(invoice: invoice, transaction: transaction)
+      invoice.pay!(payload: transaction) if invoice.complete_payment?
     end
 
     def invoice
@@ -31,6 +32,14 @@ class PaymentServices::Liquid
     end
 
     private
+
+    def update_invoice_details(invoice:, transaction:)
+      invoice.transaction_created_at ||= DateTime.strptime(transaction['created_at'].to_s, '%s').utc
+      invoice.transaction_id ||= transaction['transaction_hash']
+      invoice.provider_state = transaction['state']
+
+      invoice.save!
+    end
 
     def transaction_for(invoice)
       response = client.address_transactions

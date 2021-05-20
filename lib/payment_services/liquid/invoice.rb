@@ -19,10 +19,14 @@ class PaymentServices::Liquid
 
       state :paid do
         on_entry do
-          order.auto_confirm!(income_amount: amount)
+          order.auto_confirm!(income_amount: amount, hash: transaction_id)
         end
       end
       state :cancelled
+    end
+
+    def complete_payment?
+      provider_state == 'confirmed'
     end
 
     def pay(payload:)
