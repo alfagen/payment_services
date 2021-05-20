@@ -23,7 +23,7 @@ class PaymentServices::Liquid
     end
 
     def invoice
-      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
+      {}
     end
 
     def async_invoice_state_updater?
@@ -45,7 +45,7 @@ class PaymentServices::Liquid
 
     def client
       @client ||= begin
-        Client.new(currency: order.income_wallet.currency.to_s)
+        Client.new(currency: 'TRX')
       end
     end
   end
