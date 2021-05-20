@@ -25,6 +25,7 @@ module PaymentServices
   autoload :AnyMoney, 'payment_services/any_money'
   autoload :AppexMoney, 'payment_services/appex_money'
   autoload :Kuna, 'payment_services/kuna'
+  autoload :Liquid, 'payment_services/liquid'
 
   UnauthorizedPayout = Class.new StandardError
 
