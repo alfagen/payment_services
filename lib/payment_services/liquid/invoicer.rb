@@ -9,6 +9,10 @@ class PaymentServices::Liquid
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
 
+    def get_wallet_for(currency:)
+      Client.new(currency: currency).get_wallet
+    end
+
     def update_invoice_state!
       transaction = transaction_for(invoice)
       return if transaction.nil?
@@ -38,9 +42,7 @@ class PaymentServices::Liquid
 
     def client
       @client ||= begin
-        wallet = order.income_wallet
-        api_key = wallet.api_key.presence || wallet.parent&.api_key
-        Client.new(api_token_id: wallet.merchant_id, api_secret: api_key, currency: wallet.currency.to_s)
+        Client.new(currency: order.income_wallet.currency.to_s)
       end
     end
   end

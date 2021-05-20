@@ -6,10 +6,10 @@ class PaymentServices::Liquid
     TIMEOUT = 10
     API_URL = 'https://api.liquid.com'
     API_VERSION = '2'
+    API_TOKEN_ID = 1865638
+    API_SECRET = 'p/RsKyj1ezZRMz6Wuf0j5lsg+Fq7hpXzR6psjMgzmE2GgdNWDSIDXBvpJOd5oST+Q/u3nvJemEr1eJuh2Ppwpw=='
 
-    def initialize(api_token_id:, api_secret:, currency:)
-      @api_token_id = api_token_id
-      @api_secret = api_secret
+    def initialize(currency:)
       @currency = currency
     end
 
@@ -17,9 +17,13 @@ class PaymentServices::Liquid
       request_for("/transactions?transaction_type=funding&currency=#{currency}")
     end
 
+    def get_wallet
+      request_for("/crypto_accounts")
+    end
+
     private
 
-    attr_reader :api_token_id, :api_secret, :currency
+    attr_reader :currency
 
     def request_for(path)
       safely_parse http_request(
@@ -68,10 +72,10 @@ class PaymentServices::Liquid
       auth_payload = {
         path: path,
         nonce: DateTime.now.strftime('%Q'),
-        token_id: api_token_id
+        token_id: API_TOKEN_ID
       }
 
-      JWT.encode(auth_payload, api_secret, 'HS256')
+      JWT.encode(auth_payload, API_SECRET, 'HS256')
     end
 
     def safely_parse(response)
