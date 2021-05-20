@@ -48,7 +48,7 @@ class PaymentServices::Liquid
       response['models'].find do |transaction|
         received_amount = transaction['gross_amount']
         received_amount.to_d == invoice.amount.to_d && DateTime.strptime(transaction['created_at'].to_s, '%s').utc > invoice.created_at.utc
-      end if response[:models]
+      end if response['models']
     end
 
     def client
