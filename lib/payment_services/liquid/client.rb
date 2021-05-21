@@ -13,11 +13,16 @@ class PaymentServices::Liquid
     end
 
     def address_transactions
-      request_for("/transactions?transaction_type=funding&currency=#{currency}")
+      params = {
+        transaction_type: 'funding',
+        currency: currency
+      }
+
+      request_for('/transactions?', params: params)
     end
 
     def wallet
-      wallets = request_for("/crypto_accounts")
+      wallets = request_for('/crypto_accounts')
 
       wallets.find { |w| w['currency'] == currency }
     end
@@ -30,9 +35,12 @@ class PaymentServices::Liquid
       @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)
     end
 
-    def request_for(path)
+    def request_for(path, params: nil)
+      url = API_URL + path
+      url += params.to_query if params
+
       safely_parse http_request(
-        url: API_URL + path,
+        url: url,
         method: :GET
       )
     end
