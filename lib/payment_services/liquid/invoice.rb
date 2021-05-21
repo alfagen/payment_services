@@ -34,7 +34,7 @@ class PaymentServices::Liquid
     end
 
     def order
-      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
+      @order ||= Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
   end
 end

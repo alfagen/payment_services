@@ -19,12 +19,8 @@ class PaymentServices::Liquid
       transaction = transaction_for(invoice)
       return if transaction.nil?
 
-      update_invoice_details(invoice: invoice, transaction: transaction)
+      update_invoice_details(transaction: transaction)
       invoice.pay!(payload: transaction) if invoice.complete_payment?
-    end
-
-    def invoice
-      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
     end
 
     def async_invoice_state_updater?
@@ -33,7 +29,11 @@ class PaymentServices::Liquid
 
     private
 
-    def update_invoice_details(invoice:, transaction:)
+    def invoice
+      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
+    end
+
+    def update_invoice_details(transaction:)
       invoice.transaction_created_at ||= DateTime.strptime(transaction['created_at'].to_s, '%s').utc
       invoice.transaction_id ||= transaction['transaction_hash']
       invoice.provider_state = transaction['state']
@@ -44,11 +44,12 @@ class PaymentServices::Liquid
     def transaction_for(invoice)
       response = client.address_transactions
       raise response['message'] if response['message']
+      return unless response['models']
 
       response['models'].find do |transaction|
         received_amount = transaction['gross_amount']
         received_amount.to_d == invoice.amount.to_d && DateTime.strptime(transaction['created_at'].to_s, '%s').utc > invoice.created_at.utc
-      end if response['models']
+      end
     end
 
     def client

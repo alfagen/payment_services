@@ -27,7 +27,7 @@ class PaymentServices::Liquid
     attr_reader :currency
 
     def api_wallet
-      @api_wallet = Wallet.find_by(name_group: WALLET_NAME_GROUP)
+      @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)
     end
 
     def request_for(path)
