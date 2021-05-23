@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::Liquid
   class Invoicer < ::PaymentServices::Base::Invoicer
+    AddressTransactionsRequestFailed = Class.new StandardError
+
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
@@ -43,7 +45,7 @@ class PaymentServices::Liquid
 
     def transaction_for(invoice)
       response = client.address_transactions
-      raise response['message'] if response['message']
+      raise AddressTransactionsRequestFailed if response['message']
       return unless response['models']
 
       response['models'].find do |transaction|
