@@ -6,10 +6,11 @@ class PaymentServices::Liquid
     TIMEOUT = 10
     API_URL = 'https://api.liquid.com'
     API_VERSION = '2'
-    WALLET_NAME_GROUP = 'LIQUID_API_KEYS'
 
-    def initialize(currency:)
+    def initialize(currency:, token_id:, api_key:)
       @currency = currency
+      @token_id = token_id
+      @api_key = api_key
     end
 
     def address_transactions
@@ -29,11 +30,7 @@ class PaymentServices::Liquid
 
     private
 
-    attr_reader :currency
-
-    def api_wallet
-      @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)
-    end
+    attr_reader :currency, :token_id, :api_key
 
     def request_for(path, params: nil)
       url = API_URL + path
@@ -85,10 +82,10 @@ class PaymentServices::Liquid
       auth_payload = {
         path: path,
         nonce: DateTime.now.strftime('%Q'),
-        token_id: api_wallet.merchant_id.to_i
+        token_id: token_id
       }
 
-      JWT.encode(auth_payload, api_wallet.api_key, 'HS256')
+      JWT.encode(auth_payload, api_key, 'HS256')
     end
 
     def safely_parse(response)

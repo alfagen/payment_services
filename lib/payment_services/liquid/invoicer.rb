@@ -5,6 +5,7 @@ require_relative 'client'
 
 class PaymentServices::Liquid
   class Invoicer < ::PaymentServices::Base::Invoicer
+    WALLET_NAME_GROUP = 'LIQUID_API_KEYS'
     AddressTransactionsRequestFailed = Class.new StandardError
 
     def create_invoice(money)
@@ -12,7 +13,7 @@ class PaymentServices::Liquid
     end
 
     def wallet_address(currency:)
-      wallet = Client.new(currency: currency).wallet
+      wallet = Client.new(currency: currency, token_id: api_wallet.merchant_id.to_i, api_key: api_wallet.api_key).wallet
 
       wallet['address']
     end
@@ -33,6 +34,10 @@ class PaymentServices::Liquid
 
     def invoice
       @invoice ||= Invoice.find_by(order_public_id: order.public_id)
+    end
+
+    def api_wallet
+      @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)
     end
 
     def update_invoice_details(transaction:)
@@ -56,7 +61,7 @@ class PaymentServices::Liquid
 
     def client
       @client ||= begin
-        Client.new(currency: order.income_wallet.currency.to_s)
+        Client.new(currency: order.income_wallet.currency.to_s, token_id: api_wallet.merchant_id.to_i, api_key: api_wallet.api_key)
       end
     end
   end
