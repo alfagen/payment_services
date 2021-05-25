@@ -52,12 +52,13 @@ class PaymentServices::Payeer
 
     def build_request(uri:, method:, body: nil)
       request = if method == :POST
-                  Net::HTTP::Post.new(uri.request_uri, headers).set_form_data(body)
+                  Net::HTTP::Post.new(uri.request_uri, headers)
                 elsif method == :GET
                   Net::HTTP::Get.new(uri.request_uri, headers)
                 else
                   raise "Запрос #{method} не поддерживается!"
                 end
+      request.body = URI.encode_www_form((body.present? ? body : {}))
       request
     end
 
