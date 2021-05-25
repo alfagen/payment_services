@@ -24,13 +24,13 @@ class PaymentServices::Payeer
 
       response = client.payments(params: params)
 
-      raise "Can't get withdrawal details: #{response['errors']}" if response['errors'].is_a? Array
+      raise "Can't get withdrawal details: #{response['errors']}" if response['errors'].any?
 
-      payment = response['items'].find do |payment|
+      payment = response['history'].values.find do |payment|
         payment['referenceId'] == payout.reference_id
       end
 
-      payout.update!(provider_state: payment['']) if payment
+      payout.update!(provider_state: payment['status']) if payment
       payout.confirm! if payout.success?
       payout.fail! if payout.failed?
 
