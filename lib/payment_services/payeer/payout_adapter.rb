@@ -69,7 +69,7 @@ class PaymentServices::Payeer
 
     def client
       @client ||= begin
-        Client.new(api_id: wallet.merchant_id, api_key: wallet.api_secret, currency: wallet.currency.to_s)
+        Client.new(api_id: wallet.merchant_id, api_key: wallet.api_key, currency: wallet.currency.to_s)
       end
     end
   end
