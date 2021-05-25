@@ -26,7 +26,7 @@ class PaymentServices::Payeer
 
       response = client.payout_status(params: params)
 
-      raise "Can't get withdrawal details: #{response['errors']}" if response['errors'].any?
+      raise "Can't get withdrawal details: #{response['errors']}" if response['errors'].is_a? Array
 
       payout.update!(success_provider_state: response['success'])
       payout.confirm! if payout.success?
@@ -63,7 +63,7 @@ class PaymentServices::Payeer
       }
       response = client.create_payout(params: params)
 
-      raise "Can't process payout: #{response['errors']}" if response['errors'].any?
+      raise "Can't process payout: #{response['errors']}" if response['errors'].is_a? Array
 
       payout.pay!(reference_id: reference_id)
     end
