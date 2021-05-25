@@ -57,7 +57,7 @@ class PaymentServices::Payeer
       params = {
         account: wallet.num_ps,
         sum: amount.to_d,
-        to: destination_account
+        to: destination_account,
         comment: "Перевод по заявке №#{order_payout.order.public_id} на сайте Kassa.cc"
       }
       response = client.create_payout(params: params)
