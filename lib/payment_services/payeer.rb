@@ -5,7 +5,9 @@
 module PaymentServices
   class Payeer < Base
     autoload :Invoicer, 'payment_services/payeer/invoicer'
+    autoload :PayoutAdapter, 'payment_services/payeer/payout_adapter'
 
     register :invoicer, Invoicer
+    register :payout_adapter, PayoutAdapter
   end
 end
