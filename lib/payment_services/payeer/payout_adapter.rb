@@ -18,11 +18,7 @@ class PaymentServices::Payeer
       @payout_id = payout_id
       return if payout.pending?
 
-      params = {
-        account: wallet.num_ps
-      }
-
-      response = client.payments(params: params)
+      response = client.payments(params: { account: wallet.num_ps })
 
       raise "Can't get withdrawal details: #{response['errors']}" if response['errors'].any?
 
@@ -30,20 +26,20 @@ class PaymentServices::Payeer
         payment['referenceId'] == payout.reference_id
       end
 
-      payout.update!(provider_state: payment['status'])
+      payout.update!(provider_state: payment['status']) if payment
       payout.confirm! if payout.success?
       payout.fail! if payout.failed?
 
       payment
     end
 
-    def payout
-      @payout ||= Payout.find(payout_id)
-    end
-
     private
 
     attr_accessor :payout_id
+
+    def payout
+      @payout ||= Payout.find(payout_id)
+    end
 
     def order_payout
       @order_payout ||= OrderPayout.find(payout.order_payout_id)
