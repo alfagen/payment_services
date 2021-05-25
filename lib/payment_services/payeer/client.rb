@@ -64,7 +64,7 @@ class PaymentServices::Payeer
 
     def headers
       {
-        'Content-Type'  => 'application/x-www-form-urlencoded'
+        'Content-Type'  => 'application/json'
       }
     end
 
