@@ -19,16 +19,18 @@ class PaymentServices::Payeer
       return if payout.pending?
 
       params = {
-        account: wallet.num_ps,
-        merchantId: wallet.merchant_id,
-        referenceId: payout.reference_id
+        account: wallet.num_ps
       }
 
-      response = client.payout_status(params: params)
+      response = client.payments(params: params)
 
       raise "Can't get withdrawal details: #{response['errors']}" if response['errors'].is_a? Array
 
-      payout.update!(success_provider_state: response['success'])
+      payment = response['items'].find do |payment|
+        payment['referenceId'] == payout.reference_id
+      end
+
+      payout.update!(provider_state: payment['']) if payment
       payout.confirm! if payout.success?
       payout.fail! if payout.failed?
 

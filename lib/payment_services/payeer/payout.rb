@@ -29,11 +29,11 @@ class PaymentServices::Payeer
     end
 
     def success?
-      success_provider_state == true
+      provider_state == 'success'
     end
 
     def failed?
-      success_provider_state == false
+      provider_state == 'canceled'
     end
   end
 end

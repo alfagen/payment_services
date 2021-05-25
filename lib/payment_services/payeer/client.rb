@@ -26,14 +26,14 @@ class PaymentServices::Payeer
       )
     end
 
-    def payout_status(params:)
+    def payments(params:)
       safely_parse http_request(
-        url: API_URL + '?paymentDetails',
+        url: API_URL + '?history',
         method: :POST,
         body: params.merge(
           apiId: api_id,
           apiPass: api_key,
-          action: 'paymentDetails'
+          action: 'history'
         )
       )
     end
