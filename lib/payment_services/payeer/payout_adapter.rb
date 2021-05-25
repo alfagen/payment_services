@@ -30,11 +30,11 @@ class PaymentServices::Payeer
         payment['referenceId'] == payout.reference_id
       end
 
-      payout.update!(provider_state: payment['status']) if payment
+      payout.update!(provider_state: payment['status'])
       payout.confirm! if payout.success?
       payout.fail! if payout.failed?
 
-      response
+      payment
     end
 
     def payout
