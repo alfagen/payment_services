@@ -52,19 +52,18 @@ class PaymentServices::Payeer
 
     def build_request(uri:, method:, body: nil)
       request = if method == :POST
-                  Net::HTTP::Post.new(uri.request_uri, headers)
+                  Net::HTTP::Post.new(uri.request_uri, headers).set_form_data(body)
                 elsif method == :GET
                   Net::HTTP::Get.new(uri.request_uri, headers)
                 else
                   raise "Запрос #{method} не поддерживается!"
                 end
-      request.body = (body.present? ? body : {}).to_json
       request
     end
 
     def headers
       {
-        'Content-Type'  => 'application/json'
+        'content_type'  => 'application/x-www-form-urlencoded'
       }
     end
 
