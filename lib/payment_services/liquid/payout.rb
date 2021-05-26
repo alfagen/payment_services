@@ -21,6 +21,7 @@ class PaymentServices::Liquid
         event :confirm, transitions_to: :completed
       end
       state :completed
+      state :failed
     end
 
     def pay(withdrawal_id:)
