@@ -21,11 +21,13 @@ class PaymentServices::Liquid
       raise "Can't get payout details: #{response['errors'].to_s}" if response['errors']
 
       withdrawal = response['models'].find do |withdrawal|
-        payout.withdrawal_id == withdrawal.id
+        payout.withdrawal_id == withdrawal['id']
       end
 
       payout.update!(status: withdrawal['state']) if withdrawal
       payout.confirm! if payout.complete_payout?
+
+      withdrawal
     end
 
     def payout
