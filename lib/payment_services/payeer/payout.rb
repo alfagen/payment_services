@@ -24,9 +24,26 @@ class PaymentServices::Payeer
       state :failed
     end
 
-    def pay(reference_id:)
-      update(reference_id: reference_id)
+    def pay
+      update(reference_id: build_reference_id)
     end
+
+    def update_provider_state(provider_state)
+      update!(provider_state: provider_state)
+
+      confirm!  if success?
+      fail!     if failed?
+    end
+
+    def order_payout
+      @order_payout ||= OrderPayout.find(order_payout_id)
+    end
+
+    def build_reference_id
+      "#{order_payout.order.public_id}-#{order_payout.id}"
+    end
+
+    private
 
     def success?
       provider_state == 'success'

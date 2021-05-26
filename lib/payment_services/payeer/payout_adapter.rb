@@ -15,7 +15,7 @@ class PaymentServices::Payeer
     end
 
     def refresh_status!(payout_id)
-      @payout_id = payout_id
+      payout = Payout.find(payout_id)
       return if payout.pending?
 
       response = client.payments(params: { account: wallet.num_ps })
@@ -26,44 +26,28 @@ class PaymentServices::Payeer
         payment['referenceId'] == payout.reference_id
       end
 
-      payout.update!(provider_state: payment['status']) if payment
-      payout.confirm! if payout.success?
-      payout.fail! if payout.failed?
+      payout.update_provider_state(payment['status']) if payment
 
       payment
     end
 
     private
 
-    attr_accessor :payout_id
-
-    def payout
-      @payout ||= Payout.find(payout_id)
-    end
-
-    def order_payout
-      @order_payout ||= OrderPayout.find(payout.order_payout_id)
-    end
-
-    def reference_id
-      "#{order_payout.order.public_id}-#{order_payout.id}"
-    end
-
     def make_payout(amount:, destination_account:, order_payout_id:)
-      @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
+      payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
 
       params = {
         account: wallet.num_ps,
-        sum: amount.to_d,
+        sumOut: amount.to_d,
         to: destination_account,
-        comment: "Перевод по заявке №#{order_payout.order.public_id} на сайте Kassa.cc",
-        referenceId: reference_id
+        comment: "Перевод по заявке №#{payout.order_payout.order.public_id} на сайте Kassa.cc",
+        referenceId: payout.build_reference_id
       }
       response = client.create_payout(params: params)
 
       raise "Can't process payout: #{response['errors']}" if response['errors'].is_a? Array
 
-      payout.pay!(reference_id: reference_id)
+      payout.pay!
     end
 
     def client
