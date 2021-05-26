@@ -30,5 +30,9 @@ class PaymentServices::Liquid
     def complete_payout?
       status == SUCCESS_PAYOUT_STATE
     end
+
+    def txid
+      transaction_id
+    end
   end
 end
