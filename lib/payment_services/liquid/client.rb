@@ -28,6 +28,18 @@ class PaymentServices::Liquid
       wallets.find { |w| w['currency'] == currency }
     end
 
+    def make_payout(params)
+      safely_parse http_request(
+        url: API_URL + "/crypto_withdrawals",
+        method: :POST,
+        body: { 'crypto_withdrawal' => params.merge(currency: currency) }
+      )
+    end
+
+    def withdrawals
+      request_for('/crypto_withdrawals?', params: { currency: currency })
+    end
+
     private
 
     attr_reader :currency, :token_id, :api_key
