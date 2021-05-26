@@ -33,7 +33,7 @@ class PaymentServices::Liquid
     end
 
     def txid
-      transaction_id
+      withdrawal_id
     end
   end
 end
