@@ -30,11 +30,11 @@ class PaymentServices::Liquid
       true
     end
 
-    private
-
     def invoice
       @invoice ||= Invoice.find_by(order_public_id: order.public_id)
     end
+
+    private
 
     def api_wallet
       @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)
