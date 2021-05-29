@@ -35,7 +35,7 @@ class PaymentServices::AdvCash
 
       params = {
         amount: amount.to_d.round(2),
-        currency: wallet.currency.to_s,
+        transferCurrency: wallet.currency.to_s,
         walletId: destination_account,
         savePaymentTemplate: false,
         note: payout.build_note
