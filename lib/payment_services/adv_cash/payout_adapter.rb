@@ -21,7 +21,7 @@ class PaymentServices::AdvCash
 
       raise "Can't get withdrawal details: #{response[:exception]}" if response[:exception]
 
-      payout.update!(provider_state: response[:status]) if response[:status]
+      payout.update!(provider_state: response[:return][:status]) if response[:return]
       payout.confirm! if payout.success?
       payout.fail! if payout.failed?
 
@@ -50,7 +50,7 @@ class PaymentServices::AdvCash
 
       raise "Can't process payout: #{response[:exception]}" if response[:exception]
 
-      payout.pay!(withdrawal_id: response)
+      payout.pay!(withdrawal_id: response[:send_money_response][:return]) if response[:send_money_response]
     end
 
     def client
