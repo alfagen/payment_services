@@ -30,12 +30,18 @@ class PaymentServices::AdvCash
 
     private
 
+    def iso_currency
+      currency = wallet.currency.to_s
+
+      currency == 'RUB' ? 'RUR' : currency
+    end
+
     def make_payout(amount:, destination_account:, order_payout_id:)
       payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
 
       params = {
         amount: amount.to_d.round(2),
-        transferCurrency: wallet.currency.to_s,
+        currency: iso_currency,
         walletId: destination_account,
         savePaymentTemplate: false,
         note: payout.build_note
