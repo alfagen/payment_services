@@ -21,7 +21,7 @@ class PaymentServices::AdvCash
         body: {
           arg0: {
             apiName: apiName,
-            authenticationToken: authenticationToken,
+            authenticationToken: encrypted_token,
             accountEmail: accountEmail
           },
           arg1: params
@@ -36,7 +36,7 @@ class PaymentServices::AdvCash
         body: {
           arg0: {
             apiName: apiName,
-            authenticationToken: authenticationToken,
+            authenticationToken: encrypted_token,
             accountEmail: accountEmail
           },
           arg1: id
@@ -47,6 +47,12 @@ class PaymentServices::AdvCash
     private
 
     attr_reader :apiName, :authenticationToken, :accountEmail
+
+    def encrypted_token
+      sign_string = "#{authenticationToken}:#{Time.now.utc.strftime('%Y.%m.%d:%H')}"
+
+      Digest::SHA256.hexdigest(sign_string).upcase
+    end
 
     def soap_request(url:, operation:, body:)
       logger.info "Request operation: #{operation} to #{url} with payload #{body}"
