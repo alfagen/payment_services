@@ -25,7 +25,7 @@ class PaymentServices::AdvCash
       payout.confirm! if payout.success?
       payout.fail! if payout.failed?
 
-      response
+      response[:find_transaction_response]
     end
 
     private
