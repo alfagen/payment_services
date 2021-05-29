@@ -44,7 +44,7 @@ class PaymentServices::AdvCash
 
       raise "Can't process payout: #{response[:exception]}" if response[:exception]
 
-      payout.pay!(withdrawal_id: response['withdrawal_id']) if response['withdrawal_id']
+      payout.pay!(withdrawal_id: response)
     end
 
     def client
