@@ -51,7 +51,7 @@ class PaymentServices::AdvCash
     def encrypted_token
       sign_string = "#{authenticationToken}:#{Time.now.utc.strftime('%Y.%m.%d:%H')}"
 
-      Digest::SHA256.hexdigest(sign_string).upcase
+      Digest::SHA256.hexdigest(sign_string)
     end
 
     def soap_request(url:, operation:, body:)
