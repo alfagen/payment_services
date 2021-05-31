@@ -8,10 +8,10 @@ class PaymentServices::AdvCash
     TIMEOUT = 10
     SOAP_URL = 'https://wallet.advcash.com/wsm/merchantWebService?wsdl'
 
-    def initialize(apiName:, authenticationToken:, accountEmail:)
-      @apiName = apiName
-      @authenticationToken = authenticationToken
-      @accountEmail = accountEmail
+    def initialize(api_name:, authentication_token:, account_email:)
+      @api_name = api_name
+      @authentication_token = authentication_token
+      @account_email = account_email
     end
 
     def create_payout(params:)
@@ -19,11 +19,7 @@ class PaymentServices::AdvCash
         url: SOAP_URL,
         operation: :send_money,
         body: {
-          arg0: {
-            apiName: apiName,
-            authenticationToken: encrypted_token,
-            accountEmail: accountEmail
-          },
+          arg0: authentication_params,
           arg1: params
         }
       )
@@ -34,11 +30,7 @@ class PaymentServices::AdvCash
         url: SOAP_URL,
         operation: :find_transaction,
         body: {
-          arg0: {
-            apiName: apiName,
-            authenticationToken: encrypted_token,
-            accountEmail: accountEmail
-          },
+          arg0: authentication_params,
           arg1: id
         }
       )
@@ -46,10 +38,10 @@ class PaymentServices::AdvCash
 
     private
 
-    attr_reader :apiName, :authenticationToken, :accountEmail
+    attr_reader :api_name, :authentication_token, :account_email
 
     def encrypted_token
-      sign_string = "#{authenticationToken}:#{Time.now.utc.strftime('%Y%m%d:%H')}"
+      sign_string = "#{authentication_token}:#{Time.now.utc.strftime('%Y%m%d:%H')}"
 
       Digest::SHA256.hexdigest(sign_string).upcase
     end
@@ -70,6 +62,14 @@ class PaymentServices::AdvCash
         report.add_tab(:response, response_class: response.class, response_body: response.body)
       end
       response.body
+    end
+
+    def authentication_params
+      {
+        apiName: api_name,
+        authenticationToken: encrypted_token,
+        accountEmail: account_email
+      }
     end
   end
 end

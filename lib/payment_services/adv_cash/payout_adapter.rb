@@ -21,19 +21,18 @@ class PaymentServices::AdvCash
 
       raise "Can't get withdrawal details: #{response[:exception]}" if response[:exception]
 
-      payout.update!(provider_state: response[:find_transaction_response][:return][:status]) if response.dig(:find_transaction_response, :return, :status)
-      payout.confirm! if payout.success?
-      payout.fail! if payout.failed?
+      payout.update_state_by_provider(response[:find_transaction_response][:return][:status]) if response.dig(:find_transaction_response, :return, :status)
 
       response
     end
 
     private
 
-    def iso_currency
-      currency = wallet.currency.to_s
+    # NOTE: AdvCash использует коды 90х годов
+    def iso_code(currency)
+      actual_iso_code = currency.iso_code
 
-      currency == 'RUB' ? 'RUR' : currency
+      actual_iso_code == 'RUB' ? 'RUR' : actual_iso_code
     end
 
     def make_payout(amount:, destination_account:, order_payout_id:)
@@ -41,7 +40,7 @@ class PaymentServices::AdvCash
 
       params = {
         amount: amount.to_d.round(2),
-        currency: iso_currency,
+        currency: iso_code(wallet.currency),
         walletId: destination_account,
         savePaymentTemplate: false,
         note: payout.build_note
@@ -55,7 +54,7 @@ class PaymentServices::AdvCash
 
     def client
       @client ||= begin
-        Client.new(apiName: wallet.merchant_id, authenticationToken: wallet.api_key, accountEmail: wallet.adv_cash_merchant_email)
+        Client.new(api_name: wallet.merchant_id, authentication_token: wallet.api_key, account_email: wallet.adv_cash_merchant_email)
       end
     end
   end

@@ -28,12 +28,11 @@ class PaymentServices::AdvCash
       update(withdrawal_id: withdrawal_id)
     end
 
-    def success?
-      provider_state == 'COMPLETED'
-    end
+    def update_state_by_provider(state)
+      update!(provider_state: state)
 
-    def failed?
-      provider_state == 'CANCELED'
+      confirm!  if success?
+      fail!     if failed?
     end
 
     def build_note
@@ -44,6 +43,14 @@ class PaymentServices::AdvCash
 
     def order_payout
       @order_payout ||= OrderPayout.find(order_payout_id)
+    end
+
+    def success?
+      provider_state == 'COMPLETED'
+    end
+
+    def failed?
+      provider_state == 'CANCELED'
     end
   end
 end
