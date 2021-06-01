@@ -17,12 +17,10 @@ class PaymentServices::PerfectMoney
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      response = client.find_transaction(params: { batchfilter: payout.payment_batch_number })
-
+      response = client.find_transaction(batchfilter: payout.payment_batch_number)
       raise "Can't get withdrawal details" unless response
 
       payout.confirm! if response['Batch'] == payout.payment_batch_number
-
       response
     end
 
@@ -31,13 +29,7 @@ class PaymentServices::PerfectMoney
     def make_payout(amount:, destination_account:, order_payout_id:)
       payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
 
-      params = {
-        Payee_Account: destination_account,
-        Amount: amount.to_d.round(2),
-        PAYMENT_ID: payout.build_payment_id
-      }
-      response = client.create_payout(params: params)
-
+      response = client.create_payout(destination_account: destination_account, amount: amount.to_d.round(2), payment_id: payout.build_payment_id)
       raise "Can't process payout: #{response['ERROR']}" if response['ERROR']
 
       payout.pay!(payment_batch_number: response['PAYMENT_BATCH_NUM']) if response['PAYMENT_BATCH_NUM']

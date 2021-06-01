@@ -15,42 +15,40 @@ class PaymentServices::PerfectMoney
       @account = account
     end
 
-    def create_payout(params:)
-      url = API_URL + '/confirm.asp?'
-      url += params.merge(
-              AccountID: account_id,
-              PassPhrase: pass_phrase,
-              Payer_Account: account
-            ).to_query
-
+    def create_payout(destination_account:, amount:, payment_id:)
       safely_parse(
         http_request(
-          url: url,
-          method: :GET
+          url: API_URL + '/confirm.asp?',
+          method: :GET,
+          body: {
+            AccountID: account_id,
+            PassPhrase: pass_phrase,
+            Payer_Account: account,
+            Payee_Account: destination_account,
+            Amount: amount,
+            PAYMENT_ID: payment_id
+          }
         ),
         mode: :html
       )
     end
 
-    def find_transaction(params:)
-      url = API_URL + '/historycsv.asp?'
-      now = Time.now.utc
-
-      url += params.merge(
-              AccountID: account_id,
-              PassPhrase: pass_phrase,
-              startmonth: now.month, 
-              startday: now.day,
-              startyear: now.year,
-              endmonth: now.month,
-              endday: now.day,
-              endyear: now.year
-            ).to_query
-
+    def find_transaction(payment_batch_number:)
       safely_parse(
         http_request(
-          url: url,
-          method: :GET
+          url: API_URL + '/historycsv.asp?',
+          method: :GET,
+          body: {
+            batchfilter: payment_batch_number,
+            AccountID: account_id,
+            PassPhrase: pass_phrase,
+            startmonth: now_utc.month, 
+            startday: now_utc.day,
+            startyear: now_utc.year,
+            endmonth: now_utc.month,
+            endday: now_utc.day,
+            endyear: now_utc.year
+          }
         ),
         mode: :csv
       )
@@ -76,7 +74,7 @@ class PaymentServices::PerfectMoney
                 else
                   raise "Запрос #{method} не поддерживается!"
                 end
-      request.body = (body.present? ? body : {}).to_json
+      request.body = URI.encode_www_form((body.present? ? body : {}))
       request
     end
 
@@ -118,6 +116,10 @@ class PaymentServices::PerfectMoney
 
     def csv_to_hash(response)
       CSV.parse(response, headers: :first_row).map(&:to_h).first
+    end
+
+    def now_utc
+      @now_utc ||= Time.now.utc
     end
   end
 end
