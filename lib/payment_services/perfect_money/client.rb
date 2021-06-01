@@ -20,7 +20,7 @@ class PaymentServices::PerfectMoney
       url += params.merge(
               AccountID: account_id,
               PassPhrase: pass_phrase,
-              Account: account
+              Payer_Account: account
             ).to_query
 
       safely_parse(
