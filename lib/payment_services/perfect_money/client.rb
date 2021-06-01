@@ -81,14 +81,15 @@ class PaymentServices::PerfectMoney
     end
 
     def safely_parse(response, mode:)
-      logger.info "Response: #{response}"
+      body = response.body
+      logger.info "Response: #{body}"
 
       if mode == :html
-        html_to_hash(response)
+        html_to_hash(body)
       elsif mode == :csv
-        csv_to_hash(response)
+        csv_to_hash(body)
       end
-    rescue
+    rescue => err
       logger.warn "Request failed #{response.class} #{response}"
       Bugsnag.notify err do |report|
         report.add_tab(:response, response_class: response.class, response_body: response)
