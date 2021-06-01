@@ -59,7 +59,7 @@ class PaymentServices::PerfectMoney
     attr_reader :account_id, :pass_phrase, :account
 
     def http_request(url:, method:, body: nil)
-      uri = URI.parse(url)
+      uri = URI.parse(url + body.to_query)
       https = http(uri)
       request = build_request(uri: uri, method: method, body: body)
       logger.info "Request type: #{method} to #{uri} with payload #{request.body}"
