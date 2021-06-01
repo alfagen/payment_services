@@ -34,9 +34,17 @@ class PaymentServices::PerfectMoney
 
     def find_transaction(params:)
       url = API_URL + '/historycsv.asp?'
+      now = Time.now.utc
+
       url += params.merge(
               AccountID: account_id,
-              PassPhrase: pass_phrase
+              PassPhrase: pass_phrase,
+              startmonth: now.month, 
+              startday: now.day,
+              startyear: now.year,
+              endmonth: now.month,
+              endday: now.day,
+              endyear: now.year
             ).to_query
 
       safely_parse(
