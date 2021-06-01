@@ -17,7 +17,7 @@ class PaymentServices::PerfectMoney
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      response = client.find_transaction(batchfilter: payout.payment_batch_number)
+      response = client.find_transaction(payment_batch_number: payout.payment_batch_number)
       raise "Can't get withdrawal details" unless response
 
       payout.confirm! if response['Batch'] == payout.payment_batch_number
