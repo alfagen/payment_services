@@ -101,8 +101,8 @@ class PaymentServices::PerfectMoney
       h = {}
       html = Nokogiri::HTML(response)
 
-      html.search('input[type="hidden"]').each do |field|
-        h[field.name] = field.content
+      html.xpath('//input[@type="hidden"]').each do |input|
+        h[input.attributes['name'].value] = input.attributes['value'].value
       end
 
       h
