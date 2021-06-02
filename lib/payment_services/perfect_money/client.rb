@@ -108,7 +108,7 @@ class PaymentServices::PerfectMoney
       html = Nokogiri::HTML(response)
 
       html.xpath('//input[@type="hidden"]').each do |input|
-        h[input.attributes['name'].value] = input.attributes['value'].value
+        result[input.attributes['name'].value] = input.attributes['value'].value
       end
 
       result
