@@ -18,9 +18,9 @@ class PaymentServices::PerfectMoney
     def create_payout(destination_account:, amount:, payment_id:)
       safely_parse(
         http_request(
-          url: API_URL + '/confirm.asp?',
+          url: "#{API_URL}/confirm.asp?",
           method: :GET,
-          body: {
+          params: {
             AccountID: account_id,
             PassPhrase: pass_phrase,
             Payer_Account: account,
@@ -36,9 +36,9 @@ class PaymentServices::PerfectMoney
     def find_transaction(payment_batch_number:)
       safely_parse(
         http_request(
-          url: API_URL + '/historycsv.asp?',
+          url: "#{API_URL}/historycsv.asp?",
           method: :GET,
-          body: {
+          params: {
             batchfilter: payment_batch_number,
             AccountID: account_id,
             PassPhrase: pass_phrase,
@@ -58,15 +58,15 @@ class PaymentServices::PerfectMoney
 
     attr_reader :account_id, :pass_phrase, :account
 
-    def http_request(url:, method:, body: nil)
-      uri = URI.parse(url + body.to_query)
+    def http_request(url:, method:, params: nil)
+      uri = URI.parse(url + params.to_query)
       https = http(uri)
-      request = build_request(uri: uri, method: method, body: body)
+      request = build_request(uri: uri, method: method, params: params)
       logger.info "Request type: #{method} to #{uri} with payload #{request.body}"
       https.request(request)
     end
 
-    def build_request(uri:, method:, body: nil)
+    def build_request(uri:, method:, params: nil)
       request = if method == :POST
                   Net::HTTP::Post.new(uri.request_uri)
                 elsif method == :GET
@@ -74,7 +74,7 @@ class PaymentServices::PerfectMoney
                 else
                   raise "Запрос #{method} не поддерживается!"
                 end
-      request.body = URI.encode_www_form((body.present? ? body : {}))
+      request.body = URI.encode_www_form((params.present? ? params : {}))
       request
     end
 
@@ -104,14 +104,14 @@ class PaymentServices::PerfectMoney
     end
 
     def html_to_hash(response)
-      h = {}
+      result = {}
       html = Nokogiri::HTML(response)
 
       html.xpath('//input[@type="hidden"]').each do |input|
         h[input.attributes['name'].value] = input.attributes['value'].value
       end
 
-      h
+      result
     end
 
     def csv_to_hash(response)
