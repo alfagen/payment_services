@@ -9,12 +9,12 @@ class PaymentServices::Obmenka
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
 
       params = {
-        amount: invoice.amount.to_f,
         payment_id: order.public_id,
         currency: payment_service,
+        amount: invoice.amount.to_f,
         description: "Платеж по заявке #{order.public_id}",
-        fail_url: routes_helper.public_payment_status_fail_url(order_id: order.public_id),
-        success_url: routes_helper.public_payment_status_success_url(order_id: order.public_id)
+        success_url: routes_helper.public_payment_status_success_url(order_id: order.public_id),
+        fail_url: routes_helper.public_payment_status_fail_url(order_id: order.public_id)
       }
 
       response = client.create_deposit(params: params)

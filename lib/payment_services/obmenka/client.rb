@@ -85,7 +85,7 @@ class PaymentServices::Obmenka
     end
 
     def signature(params:)
-      sign_string = params.to_query
+      sign_string = params.values.join
 
       sign_string = Digest::SHA1.hexdigest(sign_string)
       sign_string = Base64.encode64(sign_string)
