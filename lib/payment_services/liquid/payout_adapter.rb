@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::Liquid
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    WALLET_NAME_GROUP = 'LIQUID_API_KEYS'
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -38,6 +40,10 @@ class PaymentServices::Liquid
 
     attr_accessor :payout_id
 
+    def api_wallet
+      @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)
+    end
+
     def make_payout(amount:, address:, order_payout_id:)
       @payout_id = Payout.create!(amount: amount, address: address, order_payout_id: order_payout_id).id
 
@@ -60,8 +66,7 @@ class PaymentServices::Liquid
 
     def client
       @client ||= begin
-        api_key = wallet.api_key.presence || wallet.parent&.api_key
-        Client.new(currency: wallet.currency.to_s, token_id: wallet.merchant_id.to_i, api_key: api_key)
+        Client.new(currency: wallet.currency.to_s, token_id: api_wallet.merchant_id.to_i, api_key: api_wallet.api_key)
       end
     end
   end
