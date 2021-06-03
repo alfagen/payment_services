@@ -87,11 +87,11 @@ class PaymentServices::Obmenka
     def signature(params:)
       sign_string = params.values.join
       sign_string = Digest::SHA1.digest(sign_string)
-      sign_string = Base64.encode64(sign_string)
+      sign_string = Base64.strict_encode64(sign_string)
       sign_string = secret_key + sign_string + secret_key
       sign_string = Digest::MD5.digest(sign_string)
 
-      Base64.encode64(sign_string)
+      Base64.strict_encode64(sign_string)
     end
 
     def safely_parse(response)
