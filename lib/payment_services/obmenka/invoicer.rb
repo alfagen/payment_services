@@ -13,7 +13,7 @@ class PaymentServices::Obmenka
         payment_id: order.public_id,
         currency: payment_service,
         description: "Платеж по заявке #{order.public_id}",
-        fail_url: routes_helper.public_payment_status_fail_url(order_id: order.public_id)
+        fail_url: routes_helper.public_payment_status_fail_url(order_id: order.public_id),
         success_url: routes_helper.public_payment_status_success_url(order_id: order.public_id)
       }
 
