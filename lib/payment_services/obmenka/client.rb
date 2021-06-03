@@ -72,7 +72,7 @@ class PaymentServices::Obmenka
       {
         'Content-Type'  => 'application/json',
         'DPAY_CLIENT'   => merchant_id,
-        'DPAY_SECURE'   => signature(params)
+        'DPAY_SECURE'   => signature(params: params)
       }
     end
 
