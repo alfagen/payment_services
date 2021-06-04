@@ -44,6 +44,36 @@ class PaymentServices::Obmenka
       )
     end
 
+    def create_payout(params:)
+      safely_parse http_request(
+        url: "#{API_URL}/payment/create",
+        method: :POST,
+        body: params
+      )
+    end
+
+    def process_status(public_id:, withdrawal_id:)
+      safely_parse http_request(
+        url: "#{API_URL}/payment/process",
+        method: :POST,
+        body: {
+          payment_id: public_id,
+          tracking: withdrawal_id
+        }
+      )
+    end
+
+    def payout_status(public_id:, withdrawal_id:)
+      safely_parse http_request(
+        url: "#{API_URL}/payment/status",
+        method: :POST,
+        body: {
+          payment_id: public_id,
+          tracking: withdrawal_id
+        }
+      )
+    end
+
     private
 
     attr_reader :merchant_id, :secret_key
