@@ -52,7 +52,7 @@ class PaymentServices::Obmenka
       )
     end
 
-    def process_status(public_id:, withdrawal_id:)
+    def process_payout(public_id:, withdrawal_id:)
       safely_parse http_request(
         url: "#{API_URL}/payment/process",
         method: :POST,
