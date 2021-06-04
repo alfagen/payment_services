@@ -43,7 +43,7 @@ class PaymentServices::Obmenka
 
       payout.pay!(withdrawal_id: response['tracking']) if response['tracking']
       response = client.process_payout(public_id: payout.public_id, withdrawal_id: payout.withdrawal_id)
-      raise "Can't process payout: #{response['message']}" if response['message']
+      raise "Can't process payout: #{response['error']['message']}" if response['error']
     end
 
     def payment_service_by_payway
