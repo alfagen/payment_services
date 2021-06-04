@@ -13,23 +13,22 @@ class PaymentServices::Obmenka
         currency: payment_service,
         amount: invoice.amount.to_f,
         description: "Payment for #{order.public_id}",
+        sender: order.income_account,
         success_url: routes_helper.public_payment_status_success_url(order_id: order.public_id),
         fail_url: routes_helper.public_payment_status_fail_url(order_id: order.public_id)
       }
 
       response = client.create_deposit(params: params)
-
       raise "Can't create invoice: #{response['error']['message']}" if response['error']
-
       invoice.update!(deposit_id: response['tracking'])
+
+      response = client.process_payment_data(public_id: invoice.order_public_id, deposit_id: invoice.deposit_id)
+      raise "Can't get pay url: #{response['error']['message']}" if response['error']
+      invoice.update!(pay_url: response['pay_link'])
     end
 
     def pay_invoice_url
-      response = client.process_payment_data(public_id: invoice.order_public_id, deposit_id: invoice.deposit_id)
-
-      raise "Can't get pay url: #{response['error']['message']}" if response['error']
-
-      response['pay_link']
+      invoice.reload.pay_url
     end
 
     def async_invoice_state_updater?
