@@ -58,7 +58,7 @@ class PaymentServices::Obmenka
 
     def build_request(uri:, method:, body: nil)
       request = if method == :POST
-                  Net::HTTP::Post.new(uri.request_uri, headers(body))
+                  Net::HTTP::Post.new(uri.request_uri, headers(build_signature(body)))
                 elsif method == :GET
                   Net::HTTP::Get.new(uri.request_uri)
                 else
@@ -68,11 +68,11 @@ class PaymentServices::Obmenka
       request
     end
 
-    def headers(params)
+    def headers(signature)
       {
         'Content-Type'  => 'application/json',
         'DPAY_CLIENT'   => merchant_id,
-        'DPAY_SECURE'   => signature(params: params)
+        'DPAY_SECURE'   => signature
       }
     end
 
@@ -84,8 +84,8 @@ class PaymentServices::Obmenka
                       read_timeout: TIMEOUT)
     end
 
-    def signature(params:)
-      sign_string = ActiveSupport::JSON.encode(params)
+    def build_signature(request_body)
+      sign_string = ActiveSupport::JSON.encode(request_body)
       sign_string = Digest::SHA1.digest(sign_string)
       sign_string = Base64.strict_encode64(sign_string)
       sign_string = secret_key + sign_string + secret_key

@@ -27,11 +27,11 @@ class PaymentServices::Obmenka
       state :cancelled
     end
 
-    def update_state_by_provider_response(response)
-      update!(provider_state: response['status'])
+    def update_state_by_provider(state)
+      update!(provider_state: state)
 
-      pay!(payload: response)    if success?
-      cancel!(payload: response) if failed?
+      pay!    if success?
+      cancel! if failed?
     end
 
     def order
@@ -39,14 +39,6 @@ class PaymentServices::Obmenka
     end
 
     private
-
-    def pay(payload:)
-      update(payload: payload)
-    end
-
-    def cancel(payload:)
-      update(payload: payload)
-    end
 
     def success?
       provider_state == 'FINISHED'
