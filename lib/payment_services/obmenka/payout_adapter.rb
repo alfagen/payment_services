@@ -8,6 +8,11 @@ class PaymentServices::Obmenka
     CARD_RU_SERVICE = 'visamaster.rur'
     QIWI_SERVICE    = 'qiwi'
 
+    Error = Class.new StandardError
+    PayoutStatusRequestFailed = Class.new Error
+    PayoutCreateRequestFailed = Class.new Error
+    PayoutProcessRequestFailed = Class.new Error
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -21,7 +26,7 @@ class PaymentServices::Obmenka
       return if payout.pending?
 
       response = client.payout_status(public_id: payout.public_id, withdrawal_id: payout.withdrawal_id)
-      raise "Can't get payout status: #{response['error']['message']}" if response['error']
+      raise PayoutStatusRequestFailed, "Can't get payout status: #{response['error']['message']}" if response['error']
 
       payout.update_state_by_provider(response['status']) if response['status']
       response
@@ -39,11 +44,11 @@ class PaymentServices::Obmenka
         payment_id: payout.public_id
       }
       response = client.create_payout(params: payout_params)
-      raise "Can't create payout: #{response['error']['message']}" if response['error']
+      raise PayoutCreateRequestFailed, "Can't create payout: #{response['error']['message']}" if response['error']
 
       payout.pay!(withdrawal_id: response['tracking'])
       response = client.process_payout(public_id: payout.public_id, withdrawal_id: payout.withdrawal_id)
-      raise "Can't process payout: #{response['error']['message']}" if response['error']
+      raise PayoutProcessRequestFailed, "Can't process payout: #{response['error']['message']}" if response['error']
     end
 
     def payment_service_by_payway
