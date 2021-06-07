@@ -22,8 +22,8 @@ class PaymentServices::Obmenka
 
       response = client.payout_status(public_id: payout.public_id, withdrawal_id: payout.withdrawal_id)
       raise "Can't get payout status: #{response['error']['message']}" if response['error']
-      payout.update_state_by_provider(response['status']) if response['status']
 
+      payout.update_state_by_provider(response['status']) if response['status']
       response
     end
 
