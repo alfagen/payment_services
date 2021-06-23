@@ -5,6 +5,8 @@ require_relative '../clients/base_client'
 class PaymentServices::CryptoApis
   module PayoutClients
     class BaseClient < PaymentServices::CryptoApis::Clients::BaseClient
+      DEFAULT_PARAMS = { replaceable: true }
+
       def make_payout(payout:, wallet:)
         safely_parse http_request(
           url: "#{base_url}/txs/new",
@@ -32,7 +34,7 @@ class PaymentServices::CryptoApis
             }
           },
           wifs: [ wallet.api_secret ]
-        }
+        }.merge(DEFAULT_PARAMS)
       end
     end
   end
