@@ -33,7 +33,7 @@ class PaymentServices::AliKassa
     def invoice_form_data
       routes_helper = Rails.application.routes.url_helpers
       pay_way = order.income_payment_system.payway
-      redirect_url = order.income_payment_system.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
+      redirect_url = order.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
 
       invoice_params = {
         merchantUuid: order.income_wallet.merchant_id,
