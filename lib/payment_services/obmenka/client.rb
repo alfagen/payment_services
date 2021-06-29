@@ -6,7 +6,7 @@ require 'base64'
 class PaymentServices::Obmenka
   class Client
     include AutoLogger
-    TIMEOUT = 10
+    TIMEOUT = 30
     API_URL = 'https://acquiring_api.obmenka.ua/api'
 
     def initialize(merchant_id:, secret_key:)
