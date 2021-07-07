@@ -6,6 +6,12 @@ require_relative 'client'
 class PaymentServices::Liquid
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     WALLET_NAME_GROUP = 'LIQUID_API_KEYS'
+    PAYOUT_FEES = {
+      'XRP'  => 0.25,
+      'TRX'  => 63,
+      'NEM'  => 15,
+      'USDT' => 15
+    }
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
@@ -48,7 +54,7 @@ class PaymentServices::Liquid
       @payout_id = Payout.create!(amount: amount, address: address, order_payout_id: order_payout_id).id
 
       payout_params = {
-        amount: amount.to_d.round(2),
+        amount: amount_with_fee.round(2),
         address: address,
         payment_id: nil,
         memo_type: nil,
@@ -62,6 +68,10 @@ class PaymentServices::Liquid
       raise 'Payout was not processed' unless response['id']
 
       payout.pay!(withdrawal_id: response['id'])
+    end
+
+    def amount_with_fee
+      payout.amount.to_d + PAYOUT_FEES[payout.amount_currency]
     end
 
     def client

@@ -24,11 +24,15 @@ class PaymentServices::CryptoApis
 
       private
 
+      def amount_with_fee_of(payout:)
+        @amount_with_fee_of ||= payout.amount.to_d + payout.fee
+      end
+
       def api_query_for(payout, wallet)
         {
           createTx: {
-            inputs: [{ address: wallet.account, value: payout.amount.to_d }],
-            outputs: [{ address: payout.address, value: payout.amount.to_d }],
+            inputs: [{ address: wallet.account, value: amount_with_fee_of(payout: payout) }],
+            outputs: [{ address: payout.address, value: amount_with_fee_of(payout: payout) }],
             fee: {
               value: payout.fee
             }

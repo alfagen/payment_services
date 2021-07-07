@@ -28,7 +28,7 @@ class PaymentServices::CryptoApis
         {
           from: wallet.account,
           to: payout.address,
-          value: payout.amount.to_d,
+          value: amount_with_fee_of(payout: payout),
           fee: payout.fee,
           propertyID: TOKEN_PROPERTY_ID,
           wif: wallet.api_secret
