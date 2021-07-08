@@ -7,6 +7,10 @@ class PaymentServices::Obmenka
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     CARD_RU_SERVICE = 'visamaster.rur'
     QIWI_SERVICE    = 'qiwi'
+    PAYOUT_FEE_PERCENTS = {
+      'visamc' => 2.5,
+      'qiwi'   => 1
+    }
 
     Error = Class.new StandardError
     PayoutStatusRequestFailed = Class.new Error
@@ -39,7 +43,7 @@ class PaymentServices::Obmenka
       payout_params = {
         recipient: destination_account,
         currency: payment_service_by_payway,
-        amount: amount.to_f,
+        amount: amount_with_fee.to_f,
         description: "Payout #{payout.public_id}",
         payment_id: payout.public_id
       }
@@ -57,6 +61,16 @@ class PaymentServices::Obmenka
         'qiwi'   => QIWI_SERVICE
       }
       available_options[wallet.payment_system.payway]
+    end
+
+    def amount_with_fee
+      total = payout.amount + payout.amount * PAYOUT_FEE_PERCENTS[wallet.payment_system.payway] / 100
+      total += 35 if payway_visamc?
+      total
+    end
+
+    def payway_visamc?
+      wallet.payment_system.payway == 'visamc'
     end
 
     def client

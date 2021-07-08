@@ -7,6 +7,10 @@ class PaymentServices::Obmenka
   class Invoicer < ::PaymentServices::Base::Invoicer
     CARD_RU_SERVICE = 'visamaster.rur'
     QIWI_SERVICE    = 'qiwi'
+    INVOICE_FEE_PERCENTS = {
+      'visamc' => 3,
+      'qiwi'   => 2
+    }
 
     def create_invoice(money)
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -44,12 +48,16 @@ class PaymentServices::Obmenka
       {
         payment_id: order.public_id.to_s,
         currency: payment_service_by_payway,
-        amount: invoice.amount.to_f,
+        amount: amount_with_fee.to_f,
         description: "Payment for #{order.public_id}",
         sender: order.income_account,
         success_url: routes_helper.public_payment_status_success_url(order_id: order.public_id),
         fail_url: routes_helper.public_payment_status_fail_url(order_id: order.public_id)
       }
+    end
+
+    def amount_with_fee
+      invoice.amount - invoice.amount * INVOICE_FEE_PERCENTS[order.income_wallet.payment_system.payway] / 100
     end
 
     def payment_service_by_payway

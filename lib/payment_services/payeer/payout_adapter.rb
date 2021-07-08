@@ -5,6 +5,7 @@ require_relative 'client'
 
 class PaymentServices::Payeer
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    PAYOUT_FEE_PERCENTS = 0.95
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
@@ -38,7 +39,7 @@ class PaymentServices::Payeer
 
       params = {
         account: wallet.num_ps,
-        sumOut: amount.to_d,
+        sumOut: amount_with_fee.to_d,
         to: destination_account,
         comment: "Перевод по заявке №#{payout.order_payout.order.public_id} на сайте Kassa.cc",
         referenceId: payout.build_reference_id
@@ -48,6 +49,10 @@ class PaymentServices::Payeer
       raise "Can't process payout: #{response['errors']}" if response['errors'].is_a? Array
 
       payout.pay!
+    end
+
+    def amount_with_fee
+      payout.amount + payout.amount * PAYOUT_FEE_PERCENTS / 100
     end
 
     def client

@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::PerfectMoney
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    PAYOUT_FEE_PERCENTS = 0.5
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -29,10 +31,14 @@ class PaymentServices::PerfectMoney
     def make_payout(amount:, destination_account:, order_payout_id:)
       payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
 
-      response = client.create_payout(destination_account: destination_account, amount: amount.to_d.round(2), payment_id: payout.build_payment_id)
+      response = client.create_payout(destination_account: destination_account, amount: amount_with_fee.round(2), payment_id: payout.build_payment_id)
       raise "Can't process payout: #{response['ERROR']}" if response['ERROR']
 
       payout.pay!(payment_batch_number: response['PAYMENT_BATCH_NUM']) if response['PAYMENT_BATCH_NUM']
+    end
+
+    def amount_with_fee
+      payout.amount + payout.amount * PAYOUT_FEE_PERCENTS / 100
     end
 
     def client

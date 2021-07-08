@@ -7,6 +7,7 @@ require_relative 'invoice'
 class PaymentServices::AdvCash
   class Invoicer < ::PaymentServices::Base::Invoicer
     ADV_CASH_URL = 'https://wallet.advcash.com/sci/'
+    INVOICE_FEE_PERCENTS = 1
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -22,7 +23,7 @@ class PaymentServices::AdvCash
                raise("Не установлено поле adv_cash_merchant_email у кошелька #{order.income_wallet.id}"),
         shop_name: order.income_wallet.merchant_id.presence ||
                    raise("Не установлено поле merchant_id у кошелька #{order.income_wallet.id}"),
-        amount: invoice.formatted_amount,
+        amount: amount_with_fee.to_d.round(2),
         currency: invoice.amount.currency.to_s,
         order_id: invoice.order_public_id
       }
@@ -56,6 +57,16 @@ class PaymentServices::AdvCash
           ac_comments: I18n.t('payment_systems.default_product', order_id: order.public_id)
         }
       }
+    end
+
+    def invoice
+      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
+    end
+
+    private
+
+    def amount_with_fee
+      invoice.amount - invoice.amount * INVOICE_FEE_PERCENTS / 100
     end
   end
 end

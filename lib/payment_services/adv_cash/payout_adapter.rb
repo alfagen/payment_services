@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::AdvCash
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    PAYOUT_FEE_PERCENTS = 1
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -40,7 +42,7 @@ class PaymentServices::AdvCash
       payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
 
       params = {
-        amount: amount.to_d.round(2),
+        amount: amount_with_fee.to_d.round(2),
         currency: iso_code(wallet.currency),
         walletId: destination_account,
         savePaymentTemplate: false,
@@ -52,6 +54,10 @@ class PaymentServices::AdvCash
 
       withdrawal_id = response.dig(:send_money_response, :return)
       payout.pay!(withdrawal_id: withdrawal_id) if withdrawal_id
+    end
+
+    def amount_with_fee
+      payout.amount + payout.amount * PAYOUT_FEE_PERCENTS / 100
     end
 
     def client

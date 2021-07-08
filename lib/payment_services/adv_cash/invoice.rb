@@ -36,9 +36,5 @@ class PaymentServices::AdvCash
     def order
       Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
-
-    def formatted_amount
-      format('%.2f', amount.to_f)
-    end
   end
 end
