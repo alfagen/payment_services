@@ -5,13 +5,14 @@ require_relative 'client'
 
 class PaymentServices::CryptoApis
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:, wallets: nil)
       raise 'amount is not a Money' unless amount.is_a? Money
 
       make_payout(
         amount: amount,
         address: destination_account,
-        order_payout_id: order_payout_id
+        order_payout_id: order_payout_id,
+        wallets: wallets
       )
     end
 
@@ -35,13 +36,13 @@ class PaymentServices::CryptoApis
 
     attr_accessor :payout_id
 
-    def make_payout(amount:, address:, order_payout_id:)
+    def make_payout(amount:, address:, order_payout_id:, wallets:)
       fee = transaction_fee
       raise "Fee is too low: #{fee}" if fee < 0.00000001
 
       @payout_id = Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
 
-      response = client.make_payout(payout: payout, wallet: wallet)
+      response = client.make_payout(payout: payout, wallet: wallet, wallets: wallets)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
       # NOTE: hex for: ETH/ETC. txid for: BTC/OMNI/BCH/LTC/DOGE/DASH

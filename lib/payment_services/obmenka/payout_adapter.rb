@@ -13,7 +13,7 @@ class PaymentServices::Obmenka
     PayoutCreateRequestFailed = Class.new Error
     PayoutProcessRequestFailed = Class.new Error
 
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:, wallets:)
       make_payout(
         amount: amount,
         destination_account: destination_account,

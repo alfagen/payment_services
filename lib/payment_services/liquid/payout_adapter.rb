@@ -7,7 +7,7 @@ class PaymentServices::Liquid
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     WALLET_NAME_GROUP = 'LIQUID_API_KEYS'
 
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:, wallets:)
       make_payout(
         amount: amount,
         address: destination_account,

@@ -5,7 +5,7 @@ require_relative 'client'
 
 class PaymentServices::AdvCash
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:, wallets:)
       make_payout(
         amount: amount,
         destination_account: destination_account,

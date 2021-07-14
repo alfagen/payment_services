@@ -5,7 +5,7 @@ require_relative '../clients/ethereum_client'
 class PaymentServices::CryptoApis
   module PayoutClients
     class EthereumClient < PaymentServices::CryptoApis::Clients::EthereumClient
-      def make_payout(payout:, wallet:)
+      def make_payout(payout:, wallet:, wallets: nil)
         safely_parse http_request(
           url: "#{base_url}/txs/new-pvtkey",
           method: :POST,
