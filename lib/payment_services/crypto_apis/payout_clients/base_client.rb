@@ -25,12 +25,17 @@ class PaymentServices::CryptoApis
       private
 
       def api_query_for(payout, wallet, wallets)
+        inputs = []
+        wifs = []
+
         if wallets
-          inputs = wallets.map { |wallet, amount| { address: wallet.account, value: amount } }
-          wifs = wallets.map { |wallet, amount| wallet.api_secret }
+          wallets.each do |current_wallet, amount| 
+            inputs.push({ address: current_wallet.account, value: amount })
+            wifs.push(current_wallet.api_secret)
+          end
         else
-          inputs = [{ address: wallet.account, value: payout.amount.to_d }]
-          wifs = [ wallet.api_secret ]
+          inputs.push({ address: wallet.account, value: payout.amount.to_d })
+          wifs.push(wallet.api_secret)
         end
 
         {
