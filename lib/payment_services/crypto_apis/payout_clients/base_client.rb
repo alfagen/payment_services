@@ -30,7 +30,7 @@ class PaymentServices::CryptoApis
 
         if wallets
           wallets.each do |current_wallet| 
-            inputs.push({ address: current_wallet['account'], value: current_wallet['amount'] })
+            inputs.push({ address: current_wallet['account'], value: current_wallet['amount'].to_d })
             wifs.push(current_wallet['wif'])
           end
         else

@@ -42,7 +42,6 @@ class PaymentServices::CryptoApis
 
       @payout_id = Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
 
-      raise "Can't: #{wallets.first.to_s} - #{wallets.first['amount']} - #{wallets.first['amount'].class}"
       response = client.make_payout(payout: payout, wallet: wallet, wallets: wallets)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
