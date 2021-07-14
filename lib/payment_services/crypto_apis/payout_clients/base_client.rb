@@ -28,6 +28,8 @@ class PaymentServices::CryptoApis
         inputs = []
         wifs = []
 
+        raise wallets.to_s
+
         if wallets
           wallets.each do |current_wallet, amount| 
             inputs.push({ address: current_wallet.account, value: amount })
