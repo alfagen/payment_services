@@ -29,9 +29,9 @@ class PaymentServices::CryptoApis
         wifs = []
 
         if wallets
-          wallets.each do |current_wallet, amount| 
-            inputs.push({ address: current_wallet.account, value: amount })
-            wifs.push(current_wallet.api_secret)
+          wallets.each do |current_wallet| 
+            inputs.push({ address: current_wallet['account'], value: current_wallet['amount'] })
+            wifs.push(current_wallet['wif']
           end
         else
           inputs.push({ address: wallet.account, value: payout.amount.to_d })
