@@ -7,7 +7,7 @@ require_relative 'client'
 
 class PaymentServices::CryptoApis
   class Invoicer < ::PaymentServices::Base::Invoicer
-    TRANSACTION_TIME_THRESHOLD = 20.minutes
+    TRANSACTION_TIME_THRESHOLD = 30.minutes
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
