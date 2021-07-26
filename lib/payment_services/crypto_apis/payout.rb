@@ -36,6 +36,8 @@ class PaymentServices::CryptoApis
     end
 
     def fee_amount
+      return 0 unless fee
+
       if amount_currency == 'ETH'
         fee * GWEI_TO_ETH
       elsif amount_currency == 'ETC'
