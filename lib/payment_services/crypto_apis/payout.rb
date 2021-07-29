@@ -3,8 +3,6 @@
 class PaymentServices::CryptoApis
   class Payout < ApplicationRecord
     CONFIRMATIONS_FOR_COMPLETE = 2
-    GWEI_TO_ETH = 0.000000001
-    GWEI_TO_ETC = 0.00000004
     include Workflow
     self.table_name = 'crypto_apis_payouts'
 
@@ -33,16 +31,6 @@ class PaymentServices::CryptoApis
       return false if confirmations.nil?
 
       confirmations >= CONFIRMATIONS_FOR_COMPLETE
-    end
-
-    def fee_amount
-      if amount_currency == 'ETH'
-        fee * GWEI_TO_ETH
-      elsif amount_currency == 'ETC'
-        fee * GWEI_TO_ETC
-      else
-        fee
-      end
     end
   end
 end
