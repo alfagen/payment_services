@@ -17,6 +17,7 @@ class PaymentServices::CryptoApis
       transaction = transaction_for(invoice)
       return if transaction.nil?
 
+      order.make_reserve! unless order.order_reservation
       update_invoice_details(invoice: invoice, transaction: transaction)
       invoice.pay!(payload: transaction) if invoice.complete_payment?
     end
