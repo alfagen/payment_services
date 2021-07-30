@@ -22,6 +22,10 @@ class PaymentServices::CryptoApis
       response = client.transaction_details(payout.txid)
 
       payout.update!(confirmations: response[:payload][:confirmations]) if response[:payload]
+      # payout.update!(
+      #   confirmations: response[:payload][:confirmations]
+      #   fee: response[:payload][:fee].to_f
+      # ) if response[:payload]
       payout.confirm! if payout.success?
 
       response[:payload]
