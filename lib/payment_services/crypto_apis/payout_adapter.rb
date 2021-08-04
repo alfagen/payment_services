@@ -41,7 +41,7 @@ class PaymentServices::CryptoApis
     attr_accessor :payout_id
 
     def make_payout(amount:, address:, order_payout_id:)
-      fee = outcome_transaction_fee&.amount || provider_fee
+      fee = outcome_transaction_fee || provider_fee
       raise "Fee is too low: #{fee}" if fee < 0.00000001
 
       @payout_id = Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
