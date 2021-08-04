@@ -11,6 +11,8 @@ class PaymentServices::Base
 
     attribute :wallet # , Wallet
 
+    delegate :payment_system, to: :wallet
+
     # amount - сумма выплаты (Money)
     # transaction_id - идентификатор транзакции (платежки) для записи в журнал на внешнем API
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
