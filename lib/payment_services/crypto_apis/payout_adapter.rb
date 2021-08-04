@@ -55,7 +55,7 @@ class PaymentServices::CryptoApis
     end
 
     def regular_fee
-      wallet.payment_system.outcome_provider_fees.last&.amount
+      wallet.payment_system.transaction_fees.find_by(direction: :outcome)&.amount
     end
 
     def provider_fee
