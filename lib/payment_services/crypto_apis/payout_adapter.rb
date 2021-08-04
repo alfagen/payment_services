@@ -39,7 +39,7 @@ class PaymentServices::CryptoApis
     attr_accessor :payout_id
 
     def make_payout(amount:, address:, order_payout_id:)
-      fee = regular_fee || provider_fee
+      fee = outcome_direction_fee || provider_fee
       raise "Fee is too low: #{fee}" if fee < 0.00000001
 
       @payout_id = Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
@@ -54,7 +54,7 @@ class PaymentServices::CryptoApis
       payout.pay!(txid: hash)
     end
 
-    def regular_fee
+    def outcome_direction_fee
       wallet.payment_system.transaction_fees.find_by(direction: :outcome)&.amount
     end
 
