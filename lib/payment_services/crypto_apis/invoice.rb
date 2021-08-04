@@ -16,6 +16,12 @@ class PaymentServices::CryptoApis
     workflow_column :state
     workflow do
       state :pending do
+        event :has_transaction, transitions_to: :with_transaction
+      end
+      state :with_transaction do
+        on_entry do
+          order.make_reserve!
+        end
         event :pay, transitions_to: :paid
         event :cancel, transitions_to: :cancelled
       end
