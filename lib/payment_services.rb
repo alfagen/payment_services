@@ -27,6 +27,7 @@ module PaymentServices
   autoload :Kuna, 'payment_services/kuna'
   autoload :Liquid, 'payment_services/liquid'
   autoload :Obmenka, 'payment_services/obmenka'
+  autoload :Exmo, 'payment_services/exmo'
 
   UnauthorizedPayout = Class.new StandardError
 
