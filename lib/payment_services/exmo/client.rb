@@ -13,7 +13,7 @@ class PaymentServices::Exmo
 
     def create_payout(params:)
       safely_parse http_request(
-        url: "#{API_URL} + /withdraw_crypt",
+        url: "#{API_URL}/withdraw_crypt",
         method: :POST,
         body: params.merge(
           nonce: nonce
@@ -23,7 +23,7 @@ class PaymentServices::Exmo
 
     def wallet_operations(currency:, type:)
       safely_parse http_request(
-        url: "#{API_URL} + /wallet_operations",
+        url: "#{API_URL}/wallet_operations",
         method: :POST,
         body: {
           currency: currency,
