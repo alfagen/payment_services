@@ -9,6 +9,9 @@ class PaymentServices::Exmo
     PayoutCreateRequestFailed = Class.new Error
     WalletOperationsRequestFailed = Class.new Error
 
+    delegate :outcome_transaction_fee_amount, to: :payment_system
+
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -36,7 +39,7 @@ class PaymentServices::Exmo
     def make_payout(amount:, destination_account:, order_payout_id:)
       payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
       payout_params = {
-        amount: amount.to_d,
+        amount: amount.to_d + (outcome_transaction_fee_amount || 0),
         currency: wallet.currency.to_s,
         address: destination_account
       }
