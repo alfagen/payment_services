@@ -35,10 +35,6 @@ class PaymentServices::Exmo
       fail!     if status_failed?
     end
 
-    def public_id
-      "#{order_payout.order.public_id}-#{order_payout.id}"
-    end
-
     private
 
     def order_payout

@@ -38,8 +38,7 @@ class PaymentServices::Exmo
       payout_params = {
         amount: amount.to_d,
         currency: wallet.currency.to_s,
-        address: destination_account,
-        invoice: "Payout #{payout.public_id}"
+        address: destination_account
       }
       response = client.create_payout(params: payout_params)
       raise PayoutCreateRequestFailed, "Can't create payout: #{response['error']}" unless response['result']
