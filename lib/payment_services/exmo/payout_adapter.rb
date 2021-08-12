@@ -28,7 +28,7 @@ class PaymentServices::Exmo
       return if transaction.nil?
 
       payout.update_state_by_provider(transaction['status'])
-      response
+      transaction
     end
 
     private
