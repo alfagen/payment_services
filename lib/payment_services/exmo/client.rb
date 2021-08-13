@@ -15,9 +15,7 @@ class PaymentServices::Exmo
       safely_parse http_request(
         url: "#{API_URL}/withdraw_crypt",
         method: :POST,
-        body: params.merge(
-          nonce: nonce
-        )
+        body: params.merge(nonce: nonce)
       )
     end
 
