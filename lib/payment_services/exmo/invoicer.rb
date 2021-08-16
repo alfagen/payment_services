@@ -49,7 +49,7 @@ class PaymentServices::Exmo
     end
 
     def created_in_valid_interval?(transaction_time, invoice_time)
-      interval = (transaction_time - invoice_time
+      interval = (transaction_time - invoice_time)
       interval_in_minutes = (interval / 1.minute).round.minutes
       interval_in_minutes < TRANSACTION_TIME_THRESHOLD
     end
