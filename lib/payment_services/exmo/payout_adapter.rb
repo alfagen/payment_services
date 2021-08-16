@@ -51,7 +51,7 @@ class PaymentServices::Exmo
 
     def find_transaction_of(payout:, transactions:)
       transactions.find do |transaction|
-        transaction['order_id'] == payout.task_id && payout.amount.to_d == transaction['amount'].to_d
+        transaction['order_id'] == payout.task_id && (payout.amount.to_d + (outcome_transaction_fee_amount || 0)) == transaction['amount'].to_d
       end
     end
 

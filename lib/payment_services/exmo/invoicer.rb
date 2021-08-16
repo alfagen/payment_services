@@ -23,6 +23,7 @@ class PaymentServices::Exmo
       transaction = find_transaction(transactions: response['items'])
       return if transaction.nil?
 
+      invoice.update!(transaction_created_at: DateTime.strptime(transaction[:created].to_s,'%s').utc)
       invoice.update_state_by_provider(transaction['status'])
     end
 
@@ -33,16 +34,26 @@ class PaymentServices::Exmo
     private
 
     def find_transaction(transactions:)
-      transactions.find do |transaction|
-        transaction_created_at = DateTime.strptime(transaction[:created].to_s,'%s').utc
-        invoice_created_at = invoice.created_at.utc
-        next if invoice_created_at >= transaction_created_at
-
-        time_diff = (transaction_created_at - invoice_created_at) / 1.minute
-        transaction['amount'] == invoice.amount.to_d && time_diff.round.minutes < TRANSACTION_TIME_THRESHOLD
-      end
+      transactions.find { |transaction| matches_amount_and_timing?(transaction) }
     end
-  
+
+    def matches_amount_and_timing?(transaction)
+      transaction['amount'] == invoice.amount.to_d && match_time_invertal?(transaction)
+    end
+
+    def match_time_interval?(transaction)
+      transaction_created_at_utc = DateTime.strptime(transaction[:created].to_s,'%s').utc
+      invoice_created_at_utc = invoice.created_at.utc
+
+      invoice_created_at_utc < transaction_created_at_utc && created_in_valid_interval?(transaction_created_at_utc, invoice_created_at_utc)
+    end
+
+    def created_in_valid_interval?(transaction_time, invoice_time)
+      interval = (transaction_time - invoice_time
+      interval_in_minutes = (interval / 1.minute).round.minutes
+      interval_in_minutes < TRANSACTION_TIME_THRESHOLD
+    end
+
     def client
       @client ||= begin
         wallet = order.income_wallet
