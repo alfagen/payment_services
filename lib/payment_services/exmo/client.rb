@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::Exmo
-  class Client
-    include AutoLogger
+  class Client < ::PaymentServices::Base::Client
     TIMEOUT = 30
     API_URL = 'https://api.exmo.com/v1.1'
 
@@ -12,22 +11,26 @@ class PaymentServices::Exmo
     end
 
     def create_payout(params:)
+      body = URI.encode_www_form(params.merge(nonce: nonce))
       safely_parse http_request(
         url: "#{API_URL}/withdraw_crypt",
         method: :POST,
-        body: params.merge(nonce: nonce)
+        body: body,
+        headers: build_headers(build_signature(body))
       )
     end
 
     def wallet_operations(currency:, type:)
+      body = URI.encode_www_form({
+        currency: currency,
+        type: type,
+        nonce: nonce
+      })
       safely_parse http_request(
         url: "#{API_URL}/wallet_operations",
         method: :POST,
-        body: {
-          currency: currency,
-          type: type,
-          nonce: nonce
-        }
+        body: body,
+        headers: build_headers(build_signature(body))
       )
     end
 
@@ -35,28 +38,7 @@ class PaymentServices::Exmo
 
     attr_reader :public_key, :secret_key
 
-    def http_request(url:, method:, body: nil)
-      uri = URI.parse(url)
-      https = http(uri)
-      request = build_request(uri: uri, method: method, body: body)
-      logger.info "Request type: #{method} to #{uri} with payload #{request.body}"
-      https.request(request)
-    end
-
-    def build_request(uri:, method:, body: nil)
-      body = URI.encode_www_form(body || {})
-      request = if method == :POST
-                  Net::HTTP::Post.new(uri.request_uri, headers(build_signature(body)))
-                elsif method == :GET
-                  Net::HTTP::Get.new(uri.request_uri, headers)
-                else
-                  raise "Запрос #{method} не поддерживается!"
-                end
-      request.body = body
-      request
-    end
-
-    def headers(signature)
+    def build_headers(signature)
       {
         'Content-Type'  => 'application/x-www-form-urlencoded',
         'Key' => public_key,
@@ -70,26 +52,6 @@ class PaymentServices::Exmo
 
     def build_signature(request_body)
       OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha512'), secret_key, request_body)
-    end
-
-    def http(uri)
-      Net::HTTP.start(uri.host, uri.port,
-                      use_ssl: true,
-                      verify_mode: OpenSSL::SSL::VERIFY_NONE,
-                      open_timeout: TIMEOUT,
-                      read_timeout: TIMEOUT)
-    end
-
-    def safely_parse(response)
-      res = JSON.parse(response.body)
-      logger.info "Response: #{res}"
-      res
-    rescue JSON::ParserError => err
-      logger.warn "Request failed #{response.class} #{response.body}"
-      Bugsnag.notify err do |report|
-        report.add_tab(:response, response_class: response.class, response_body: response.body)
-      end
-      response.body
     end
   end
 end
