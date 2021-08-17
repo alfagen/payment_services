@@ -3,6 +3,7 @@
 class PaymentServices::Base
   class Client
     include AutoLogger
+    TIMEOUT = 30
 
     def http_request(url:, method:, body: nil, headers: nil)
       uri = URI.parse(url)

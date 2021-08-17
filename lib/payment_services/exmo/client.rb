@@ -2,7 +2,6 @@
 
 class PaymentServices::Exmo
   class Client < ::PaymentServices::Base::Client
-    TIMEOUT = 30
     API_URL = 'https://api.exmo.com/v1.1'
 
     def initialize(public_key:, secret_key:)
