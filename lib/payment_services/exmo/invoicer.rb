@@ -42,7 +42,7 @@ class PaymentServices::Exmo
     end
 
     def match_time_interval?(transaction)
-      transaction_created_at_utc = DateTime.strptime(transaction[:created].to_s,'%s').utc
+      transaction_created_at_utc = DateTime.strptime(transaction['created'].to_s,'%s').utc
       invoice_created_at_utc = invoice.created_at.utc
 
       invoice_created_at_utc < transaction_created_at_utc && created_in_valid_interval?(transaction_created_at_utc, invoice_created_at_utc)
