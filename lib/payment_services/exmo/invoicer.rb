@@ -23,7 +23,7 @@ class PaymentServices::Exmo
       transaction = find_transaction(transactions: response['items'])
       return if transaction.nil?
 
-      invoice.update!(transaction_created_at: DateTime.strptime(transaction[:created].to_s,'%s').utc)
+      invoice.update!(transaction_created_at: DateTime.strptime(transaction['created'].to_s,'%s').utc)
       invoice.update_state_by_provider(transaction['status'])
     end
 
@@ -34,14 +34,14 @@ class PaymentServices::Exmo
     private
 
     def find_transaction(transactions:)
-      transactions.find { |transaction| matches_amount_and_timing?(transaction) }
+      transactions.find { |transaction| matches_amount_and_timing?(transaction, invoice) }
     end
 
-    def matches_amount_and_timing?(transaction)
-      transaction['amount'].to_d == invoice.amount.to_d && match_time_interval?(transaction)
+    def matches_amount_and_timing?(transaction, invoice)
+      transaction['amount'].to_d == invoice.amount.to_d && match_time_interval?(transaction, invoice)
     end
 
-    def match_time_interval?(transaction)
+    def match_time_interval?(transaction, invoice)
       transaction_created_at_utc = DateTime.strptime(transaction['created'].to_s,'%s').utc
       invoice_created_at_utc = invoice.created_at.utc
 
