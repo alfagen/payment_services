@@ -38,7 +38,7 @@ class PaymentServices::Exmo
     end
 
     def matches_amount_and_timing?(transaction)
-      transaction['amount'].to_d == invoice.amount.to_d && match_time_invertal?(transaction)
+      transaction['amount'].to_d == invoice.amount.to_d && match_time_interval?(transaction)
     end
 
     def match_time_interval?(transaction)
