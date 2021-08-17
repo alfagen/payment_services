@@ -13,6 +13,7 @@ module PaymentServices
   require 'payment_services/base'
   require 'payment_services/base/invoicer'
   require 'payment_services/base/payout_adapter'
+  require 'payment_services/base/client'
 
   autoload :QIWI, 'payment_services/qiwi'
   autoload :AdvCash, 'payment_services/adv_cash'
