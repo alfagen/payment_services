@@ -2,7 +2,7 @@
 
 class PaymentServices::CryptoApis
   class Payout < ApplicationRecord
-    CONFIRMATIONS_FOR_COMPLETE = 2
+    CONFIRMATIONS_FOR_COMPLETE = 1
     include Workflow
     self.table_name = 'crypto_apis_payouts'
 
