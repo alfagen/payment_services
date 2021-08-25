@@ -6,7 +6,7 @@ class PaymentServices::CryptoApis
   module Clients
     class BaseClient
       include AutoLogger
-      TIMEOUT = 10
+      TIMEOUT = 30
       API_URL = 'https://api.cryptoapis.io/v1'
       NETWORK = 'mainnet'
 
