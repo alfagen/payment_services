@@ -3,6 +3,8 @@
 class PaymentServices::Kuna
   class Invoice < ApplicationRecord
     FEE_PERCENT = 0.5
+    UAH_FEE_PERCENT = 1
+    UAH_FEE_REGULAR = 5
     KOPECK_EPSILON = 1
 
     include Workflow
@@ -45,7 +47,11 @@ class PaymentServices::Kuna
     private
 
     def amount_with_fee
-      amount * (1 - FEE_PERCENT / 100)
+      if amount.currency.to_s == 'UAH'
+        amount * (1 - UAH_FEE_PERCENT / 100) - UAH_FEE_REGULAR
+      else
+        amount * (1 - FEE_PERCENT / 100)
+      end
     end
   end
 end
