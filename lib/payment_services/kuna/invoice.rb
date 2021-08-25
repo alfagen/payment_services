@@ -47,7 +47,7 @@ class PaymentServices::Kuna
     private
 
     def amount_with_fee
-      if amount.currency.to_s == 'UAH'
+      if amount_currency == 'UAH'
         amount * (1 - UAH_FEE_PERCENT / 100) - UAH_FEE_REGULAR
       else
         amount * (1 - FEE_PERCENT / 100)
