@@ -3,7 +3,7 @@
 class PaymentServices::Kuna
   class Invoice < ApplicationRecord
     FEE_PERCENT = 0.5
-    UAH_FEE_PERCENT = 1
+    UAH_FEE_PERCENT = 1.0
     UAH_FEE_REGULAR = 5
     KOPECK_EPSILON = 1
 
@@ -47,10 +47,14 @@ class PaymentServices::Kuna
     private
 
     def amount_with_fee
+      amount - fee
+    end
+
+    def fee
       if amount_currency == 'UAH'
-        amount * (1 - UAH_FEE_PERCENT / 100) - UAH_FEE_REGULAR
+        amount * UAH_FEE_PERCENT / 100 + UAH_FEE_REGULAR
       else
-        amount * (1 - FEE_PERCENT / 100)
+        amount * FEE_PERCENT / 100
       end
     end
   end
