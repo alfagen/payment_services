@@ -33,7 +33,7 @@ class PaymentServices::Kuna
     end
 
     def can_be_confirmed?(income_money:)
-      pending? && (amount_with_fee - income_money) <= Money.new(KOPECK_EPSILON, amount.currency)
+      pending? && amount_matches?(income_money)
     end
 
     def pay(payload:)
@@ -46,8 +46,8 @@ class PaymentServices::Kuna
 
     private
 
-    def amount_with_fee
-      amount - fee
+    def amount_matches?(income_amount)
+      (amount - income_amount - fee) <= Money.new(KOPECK_EPSILON, amount.currency)
     end
 
     def fee
