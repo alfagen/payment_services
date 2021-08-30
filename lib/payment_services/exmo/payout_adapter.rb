@@ -43,6 +43,7 @@ class PaymentServices::Exmo
         currency: wallet.currency.to_s,
         address: destination_account
       }
+      payout_params[:invoice] = payout.order_fio_out if payout.order_fio_out.present?
       response = client.create_payout(params: payout_params)
       raise PayoutCreateRequestFailed, "Can't create payout: #{response['error']}" unless response['result']
 
