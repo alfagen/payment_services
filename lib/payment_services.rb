@@ -29,6 +29,7 @@ module PaymentServices
   autoload :Liquid, 'payment_services/liquid'
   autoload :Obmenka, 'payment_services/obmenka'
   autoload :Exmo, 'payment_services/exmo'
+  autoload :Binance, 'payment_services/binance'
 
   UnauthorizedPayout = Class.new StandardError
 
