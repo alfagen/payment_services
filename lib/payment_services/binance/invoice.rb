@@ -21,7 +21,7 @@ class PaymentServices::Binance
 
       state :paid do
         on_entry do
-          order.auto_confirm!(income_amount: amount)
+          order.auto_confirm!(income_amount: amount, hash: transaction_id)
         end
       end
       state :cancelled
