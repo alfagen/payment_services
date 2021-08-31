@@ -5,12 +5,12 @@ require_relative 'client'
 
 class PaymentServices::Exmo
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    INVOICED_CURRENCIES = %w[XRP XEM]
     Error = Class.new StandardError
     PayoutCreateRequestFailed = Class.new Error
     WalletOperationsRequestFailed = Class.new Error
 
     delegate :outcome_transaction_fee_amount, to: :payment_system
-
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
@@ -43,7 +43,7 @@ class PaymentServices::Exmo
         currency: wallet.currency.to_s,
         address: destination_account
       }
-      payout_params[:invoice] = payout.order_fio_out if payout.order_fio_out.present?
+      payout_params[:invoice] = payout.order_fio_out if invoice_required?
       response = client.create_payout(params: payout_params)
       raise PayoutCreateRequestFailed, "Can't create payout: #{response['error']}" unless response['result']
 
@@ -60,6 +60,10 @@ class PaymentServices::Exmo
       @client ||= begin
         Client.new(public_key: wallet.api_key, secret_key: wallet.api_secret)
       end
+    end
+
+    def invoice_required?
+      INVOICED_CURRENCIES.include?(wallet.currency.to_s)
     end
   end
 end

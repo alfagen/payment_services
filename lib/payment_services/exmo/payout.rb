@@ -36,7 +36,7 @@ class PaymentServices::Exmo
     end
 
     def order_fio_out
-      @order_fio_out ||= order_payout.order.fio_out
+      order_payout.order.fio_out
     end
 
     private
