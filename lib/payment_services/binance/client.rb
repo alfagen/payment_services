@@ -10,11 +10,8 @@ class PaymentServices::Binance
     end
 
     def deposit_history(currency:)
-      body = { currency: currency, timestamp: Time.now.to_i * 1000 }.to_query
-      body += "&signature=#{build_signature(body)}"
-      url = "#{API_URL}/sapi/v1/capital/deposit/hisrec?#{body}"
       safely_parse http_request(
-        url: url,
+        url: build_url(body: build_body(params: { currency: currency })),
         method: :GET,
         headers: build_headers
       )
@@ -23,6 +20,16 @@ class PaymentServices::Binance
     private
 
     attr_reader :api_key, :secret_key
+
+    def build_body(params:)
+      body = params.merge(timestamp: Time.now.to_i * 1000).to_query
+      body += "&signature=#{build_signature(body)}"
+      body
+    end
+
+    def build_url(body:)
+      "#{API_URL}/sapi/v1/capital/deposit/hisrec?#{body}"
+    end
 
     def build_headers
       {

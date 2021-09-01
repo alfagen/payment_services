@@ -4,6 +4,9 @@ class PaymentServices::Binance
   class Invoice < ApplicationRecord
     include Workflow
 
+    BINANCE_SUCCESS = 1
+    BINANCE_FAILED  = 6
+
     self.table_name = 'binance_invoices'
 
     scope :ordered, -> { order(id: :desc) }
@@ -41,11 +44,11 @@ class PaymentServices::Binance
     private
 
     def success?
-      provider_state == 1
+      provider_state == BINANCE_SUCCESS
     end
 
     def failed?
-      provider_state == 6
+      provider_state == BINANCE_FAILED
     end
   end
 end
