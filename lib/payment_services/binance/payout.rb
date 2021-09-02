@@ -29,7 +29,7 @@ class PaymentServices::Binance
     end
 
     def pay(withdraw_id:)
-      update(withdraw_id: withdrawal_id)
+      update(withdraw_id: withdraw_id)
     end
 
     def update_state_by_provider(state)
