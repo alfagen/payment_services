@@ -10,10 +10,28 @@ class PaymentServices::Binance
     end
 
     def deposit_history(currency:)
-      query = build_query(params: { currency: currency })
+      query = build_query(params: { coin: currency })
       safely_parse http_request(
         url: "#{API_URL}/sapi/v1/capital/deposit/hisrec?#{query}",
         method: :GET,
+        headers: build_headers
+      )
+    end
+
+    def withdraw_history(currency:)
+      query = build_query(params: { coin: currency })
+      safely_parse http_request(
+        url: "#{API_URL}/sapi/v1/capital/withdraw/history?#{query}",
+        method: :GET,
+        headers: build_headers
+      )
+    end
+
+    def create_payout(params:)
+      query = build_query(params: params)
+      safely_parse http_request(
+        url: "#{API_URL}/sapi/v1/capital/withdraw/apply?#{query}",
+        method: :POST,
         headers: build_headers
       )
     end
