@@ -44,7 +44,7 @@ class PaymentServices::Binance
     end
 
     def network
-      order.outcome_payment_system.token_network
+      order.outcome_payment_system.token_network.presence
     end
 
     private
