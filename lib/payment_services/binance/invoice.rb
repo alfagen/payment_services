@@ -4,7 +4,7 @@ class PaymentServices::Binance
   class Invoice < ApplicationRecord
     include Workflow
 
-    BINANCE_SUCCESS = 1
+    BINANCE_SUCCESS = 6
     BINANCE_FAILED  = 3
 
     self.table_name = 'binance_invoices'
