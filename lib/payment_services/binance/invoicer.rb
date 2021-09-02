@@ -39,8 +39,8 @@ class PaymentServices::Binance
       invoice.save!
     end
 
-    def parse_datetime_utc(timestamp)
-      DateTime.strptime(timestamp.to_s,'%s').utc
+    def parse_datetime_utc(timestamp_milliseconds)
+      DateTime.strptime((timestamp_milliseconds / 1000).to_i.to_s,'%s').utc
     end
 
     def find_transaction(transactions:)
