@@ -9,8 +9,8 @@ class PaymentServices::Binance
       @secret_key = secret_key
     end
 
-    def deposit_history(currency:)
-      query = build_query(params: { coin: currency })
+    def deposit_history(currency:, network:)
+      query = build_query(params: { coin: currency, network: network })
       safely_parse http_request(
         url: "#{API_URL}/sapi/v1/capital/deposit/hisrec?#{query}",
         method: :GET,
@@ -18,8 +18,8 @@ class PaymentServices::Binance
       )
     end
 
-    def withdraw_history(currency:)
-      query = build_query(params: { coin: currency })
+    def withdraw_history(currency:, network:)
+      query = build_query(params: { coin: currency, network: network })
       safely_parse http_request(
         url: "#{API_URL}/sapi/v1/capital/withdraw/history?#{query}",
         method: :GET,
@@ -43,7 +43,7 @@ class PaymentServices::Binance
     def build_query(params:)
       query = params.merge(
         timestamp: time_now_milliseconds
-      ).to_query
+      ).compact.to_query
       query += "&signature=#{build_signature(query)}"
       query
     end

@@ -40,10 +40,18 @@ class PaymentServices::Binance
     end
 
     def order_fio_out
-      order_payout.order.fio_out
+      order.fio_out
+    end
+
+    def network
+      order.outcome_payment_system.token_network
     end
 
     private
+
+    def order
+      @order ||= order_payout.order
+    end
 
     def order_payout
       @order_payout ||= OrderPayout.find(order_payout_id)

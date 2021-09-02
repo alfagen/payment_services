@@ -22,7 +22,7 @@ class PaymentServices::Binance
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      response = client.withdraw_history(currency: payout.amount_currency)
+      response = client.withdraw_history(currency: payout.amount_currency, network: payout.network)
       raise WithdrawHistoryRequestFailed, "Can't get withdraw history: #{response['msg']}" if response.is_a? Hash
 
       transaction = find_transaction_of(payout: payout, transactions: response)
@@ -39,7 +39,8 @@ class PaymentServices::Binance
       payout_params = {
         coin: payout.amount_currency,
         amount: amount.to_d,
-        address: destination_account
+        address: destination_account,
+        network: payout.network
       }
       payout_params[:addressTag] = payout.order_fio_out if invoice_required?
       response = client.create_payout(params: payout_params)
