@@ -43,7 +43,7 @@ class PaymentServices::Binance
       order.fio_out
     end
 
-    def network
+    def token_network
       order.outcome_payment_system.token_network.presence
     end
 

@@ -17,7 +17,7 @@ class PaymentServices::Binance
     end
 
     def update_invoice_state!
-      response = client.deposit_history(currency: invoice.amount_currency, network: invoice.network)
+      response = client.deposit_history(currency: invoice.amount_currency, network: invoice.token_network)
       raise DepositHistoryRequestFailed, "Can't get deposit history: #{response['msg']}" if response.is_a? Hash
 
       transaction = find_transaction(transactions: response)

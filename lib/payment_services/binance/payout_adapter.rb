@@ -22,13 +22,11 @@ class PaymentServices::Binance
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      response = client.withdraw_history(currency: payout.amount_currency, network: payout.network)
-      raise WithdrawHistoryRequestFailed, "Can't get withdraw history: #{response['msg']}" if response.is_a? Hash
+      response = client.withdraw_history(currency: payout.amount_currency, network: payout.token_network)
+      raise WithdrawHistoryRequestFailed, "Can't get withdraw history: #{response['msg']}" if withdraw_history_response_failed?(response)
 
-      transaction = find_transaction_of(payout: payout, transactions: response)
-      return if transaction.nil?
-
-      payout.update_state_by_provider(transaction['status'])
+      transaction  = response.find { |t| matches?(payout: payout, transaction: t) }
+      payout.update_state_by_provider(transaction['status']) if transaction.present?
       transaction
     end
 
@@ -40,19 +38,25 @@ class PaymentServices::Binance
         coin: payout.amount_currency,
         amount: amount.to_d,
         address: destination_account,
-        network: payout.network
+        network: payout.token_network
       }
       payout_params[:addressTag] = payout.order_fio_out if invoice_required?
       response = client.create_payout(params: payout_params)
-      raise PayoutCreateRequestFailed, "Can't create payout: #{response['msg']}" if response['code']
+      raise PayoutCreateRequestFailed, "Can't create payout: #{response['msg']}" if create_payout_response_failed?(response)
 
       payout.pay!(withdraw_id: response['id'])
     end
 
-    def find_transaction_of(payout:, transactions:)
-      transactions.find do |transaction|
-        transaction['id'] == payout.withdraw_id && transaction['amount'].to_d == payout.amount.to_d
-      end
+    def withdraw_history_response_failed?(response)
+      response.is_a? Hash
+    end
+
+    def create_payout_response_failed?(response)
+      response['code'].present?
+    end
+
+    def matches?(payout:, transaction:)
+      transaction['id'] == payout.withdraw_id && transaction['amount'].to_d == payout.amount.to_d
     end
 
     def invoice_required?
