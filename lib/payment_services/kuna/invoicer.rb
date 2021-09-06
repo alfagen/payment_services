@@ -9,12 +9,14 @@ class PaymentServices::Kuna
 
     def create_invoice(money)
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
+      routes_helper = Rails.application.routes.url_helpers
+      redirect_url = order.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
 
       params = {
         amount: invoice.amount.to_f,
         currency: currency,
         payment_service: payment_service,
-        return_url: routes_helper.public_payment_status_success_url(order_id: order.public_id),
+        return_url: redirect_url,
         callback_url: order.income_payment_system.callback_url
       }
 

@@ -46,7 +46,6 @@ class PaymentServices::AliKassa
         customerEmail: order.user.try(:email),
         urlSuccess: redirect_url
       }
-      invoice_params[:urlSuccess] = order.income_payment_system.redirect_url if order.income_payment_system.redirect_url.present?
       invoice_params = assign_additional_params(invoice_params: invoice_params, pay_way: pay_way)
       invoice_params[:sign] = calculate_signature(invoice_params)
 
