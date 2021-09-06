@@ -13,7 +13,6 @@ class PaymentServices::PerfectMoney
     def invoice_form_data
       invoice = Invoice.find_by!(order_public_id: order.public_id)
       routes_helper = Rails.application.routes.url_helpers
-      redirect_url = order.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
 
       {
         url: 'https://perfectmoney.is/api/step1.asp',
@@ -25,9 +24,9 @@ class PaymentServices::PerfectMoney
           PAYMENT_AMOUNT: format('%.2f', invoice.amount.to_f),
           PAYMENT_UNITS: invoice.amount.currency.to_s,
           STATUS_URL: "#{routes_helper.public_public_callbacks_api_root_url}/v1/perfect_money/receive_payment",
-          PAYMENT_URL: redirect_url,
+          PAYMENT_URL: order.success_redirect,
           PAYMENT_URL_METHOD: 'GET',
-          NOPAYMENT_URL: routes_helper.public_payment_status_fail_url(order_id: order.public_id),
+          NOPAYMENT_URL: order.failed_redirect,
           NOPAYMENT_URL_METHOD: 'GET',
           SUGGESTED_MEMO: I18n.t('payment_systems.default_product', order_id: order.public_id),
           BAGGAGE_FIELDS: '',

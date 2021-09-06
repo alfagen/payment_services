@@ -15,7 +15,6 @@ class PaymentServices::AdvCash
     def invoice_form_data # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       routes_helper = Rails.application.routes.url_helpers
       invoice = Invoice.find_by!(order_public_id: order.public_id)
-      redirect_url = order.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
 
       form_data = {
         email: order.income_wallet.adv_cash_merchant_email.presence ||
@@ -46,9 +45,9 @@ class PaymentServices::AdvCash
           ac_order_id: form_data[:order_id],
           ac_sign: signature,
           ac_status_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/adv_cash/receive_payment",
-          ac_success_url: redirect_url,
+          ac_success_url: order.success_redirect,
           ac_success_method: 'get',
-          ac_fail_url: routes_helper.public_payment_status_fail_url(order_id: order.public_id),
+          ac_fail_url: order.failed_redirect,
           ac_fail_method: 'get',
           ac_status_url_method: 'post',
           ac_amount: form_data[:amount],

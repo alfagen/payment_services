@@ -41,17 +41,14 @@ class PaymentServices::Obmenka
     private
 
     def build_invoice_params
-      routes_helper = Rails.application.routes.url_helpers
-      redirect_url = order.redirect_url.presence || routes_helper.public_payment_status_success_url(order_id: order.public_id)
-
       {
         payment_id: order.public_id.to_s,
         currency: payment_service_by_payway,
         amount: invoice.amount.to_f,
         description: "Payment for #{order.public_id}",
         sender: order.income_account,
-        success_url: redirect_url,
-        fail_url: routes_helper.public_payment_status_fail_url(order_id: order.public_id)
+        success_url: order.success_redirect,
+        fail_url: order.failed_redirect
       }
     end
 
