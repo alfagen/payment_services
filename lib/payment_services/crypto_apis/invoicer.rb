@@ -8,6 +8,7 @@ require_relative 'client'
 class PaymentServices::CryptoApis
   class Invoicer < ::PaymentServices::Base::Invoicer
     TRANSACTION_TIME_THRESHOLD = 30.minutes
+    ETC_TIME_THRESHOLD = 20.seconds
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
@@ -53,6 +54,8 @@ class PaymentServices::CryptoApis
 
           transaction_created_at = DateTime.strptime(transaction[:timestamp].to_s,'%s').utc
           invoice_created_at = invoice.created_at.utc
+          invoice_created_at -= ETC_TIME_THRESHOLD if invoice.amount_currency == 'ETC'
+
           next if invoice_created_at >= transaction_created_at
 
           time_diff = (transaction_created_at - invoice_created_at) / 1.minute
