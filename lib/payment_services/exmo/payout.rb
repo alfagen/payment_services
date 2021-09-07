@@ -35,8 +35,8 @@ class PaymentServices::Exmo
       fail!     if status_failed?
     end
 
-    def order_fio_out
-      order_payout.order.fio_out
+    def order_fio
+      order_payout.order.outcome_fio.presence || order_payout.order.outcome_unk
     end
 
     private
