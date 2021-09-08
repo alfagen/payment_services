@@ -53,8 +53,7 @@ class PaymentServices::CryptoApis
           received_amount = transaction[:received][invoice.address] unless transaction[:received][invoice.address] == invoice.address 
 
           transaction_created_at = DateTime.strptime(transaction[:timestamp].to_s,'%s').utc
-          invoice_created_at = invoice.created_at.utc
-          invoice_created_at -= ETC_TIME_THRESHOLD if invoice.amount_currency == 'ETC'
+          invoice_created_at = expected_invoice_created_at
 
           next if invoice_created_at >= transaction_created_at
 
@@ -62,6 +61,12 @@ class PaymentServices::CryptoApis
           received_amount&.to_d == invoice.amount.to_d && time_diff.round.minutes < TRANSACTION_TIME_THRESHOLD
         end if response[:payload]
       end
+    end
+
+    def expected_invoice_created_at
+      invoice_created_at = invoice.created_at.utc
+      invoice_created_at -= ETC_TIME_THRESHOLD if invoice.amount_currency == 'ETC'
+      invoice_created_at
     end
 
     def client
