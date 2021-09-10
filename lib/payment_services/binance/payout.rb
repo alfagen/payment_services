@@ -40,7 +40,7 @@ class PaymentServices::Binance
     end
 
     def additional_info
-      order.outcome_wallet.memo.presence || order.outcome_fio.presence || order.outcome_unk.presence
+      order.outcome_fio.presence || order.outcome_unk.presence
     end
 
     def has_additional_info?
