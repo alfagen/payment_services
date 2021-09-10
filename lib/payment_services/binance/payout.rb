@@ -39,8 +39,12 @@ class PaymentServices::Binance
       fail!     if status_failed?
     end
 
-    def order_fio_out
-      order.fio_out
+    def additional_info
+      order.outcome_wallet.memo.presence || order.outcome_fio.presence || order.outcome_unk.presence
+    end
+
+    def has_additional_info?
+      !additional_info.nil?
     end
 
     def token_network
