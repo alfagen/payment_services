@@ -44,7 +44,7 @@ class PaymentServices::CryptoApis
       fee = outcome_transaction_fee_amount || provider_fee
       raise "Fee is too low: #{fee}" if fee < 0.00000001
 
-      @payout_id = Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
+      @payout_id = create_payout(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
 
       response = client.make_payout(payout: payout, wallet: wallet)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
@@ -73,6 +73,10 @@ class PaymentServices::CryptoApis
 
         Client.new(currency: currency).payout.new(api_key: api_key, currency: currency)
       end
+    end
+
+    def create_payout(amount:, address:, fee:, order_payout_id:)
+      Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
     end
   end
 end
