@@ -4,7 +4,7 @@ class PaymentServices::Binance
   class Invoice < ApplicationRecord
     include Workflow
 
-    BINANCE_SUCCESS = 6
+    BINANCE_SUCCESS = [1, 6]
     BINANCE_FAILED  = 3
 
     self.table_name = 'binance_invoices'
@@ -48,7 +48,7 @@ class PaymentServices::Binance
     private
 
     def success?
-      provider_state == BINANCE_SUCCESS
+      BINANCE_SUCCESS.include? provider_state
     end
 
     def failed?
