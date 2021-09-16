@@ -17,7 +17,7 @@ class PaymentServices::Binance
     end
 
     def update_invoice_state!
-      response = client.deposit_history(currency: invoice.amount_currency, network: invoice.token_network)
+      response = client.deposit_history(currency: invoice.amount_currency)
       raise DepositHistoryRequestFailed, "Can't get deposit history: #{response['msg']}" if response.is_a? Hash
 
       transaction = find_transaction(transactions: response)
@@ -44,11 +44,17 @@ class PaymentServices::Binance
     end
 
     def find_transaction(transactions:)
-      transactions.find { |transaction| matches_amount_and_timing?(transaction) }
+      transactions.find { |transaction| matches_amount_network_and_timing?(transaction) }
     end
 
-    def matches_amount_and_timing?(transaction)
-      transaction['amount'].to_d == invoice.amount.to_d && match_time_interval?(transaction)
+    def matches_amount_network_and_timing?(transaction)
+      transaction['amount'].to_d == invoice.amount.to_d && match_network?(transaction) && match_time_interval?(transaction)
+    end
+
+    def match_network?(transaction)
+      return true unless invoice.token_network
+
+      transaction['network'] == invoice.token_network
     end
 
     def match_time_interval?(transaction)

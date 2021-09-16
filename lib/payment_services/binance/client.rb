@@ -9,8 +9,8 @@ class PaymentServices::Binance
       @secret_key = secret_key
     end
 
-    def deposit_history(currency:, network:)
-      query = build_query(params: { coin: currency, network: network })
+    def deposit_history(currency:)
+      query = build_query(params: { coin: currency })
       safely_parse http_request(
         url: "#{API_URL}/sapi/v1/capital/deposit/hisrec?#{query}",
         method: :GET,
