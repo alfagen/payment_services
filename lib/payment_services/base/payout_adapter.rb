@@ -9,7 +9,7 @@ class PaymentServices::Base
   class PayoutAdapter
     include Virtus.model strict: true
 
-    attribute :wallet # , Wallet
+    attribute :wallet_transfers # , Array[WalletTransfer]
 
     delegate :payment_system, to: :wallet
 
@@ -30,6 +30,11 @@ class PaymentServices::Base
 
     def make_payout(*)
       raise 'not implemented'
+    end
+
+    # NOTE: для адаптеров, которые использую один кошелек для выплат
+    def wallet
+      wallet_transfers.first.wallet
     end
   end
 end

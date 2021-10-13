@@ -46,7 +46,7 @@ class PaymentServices::CryptoApis
 
       @payout_id = create_payout!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
 
-      response = client.make_payout(payout: payout, wallet: wallet)
+      response = client.make_payout(payout: payout, wallet_transfers: wallet_transfers)
       raise "Can't process payout: #{response[:meta][:error][:message]}" if response.dig(:meta, :error, :message)
 
       # NOTE: hex for: ETH/ETC. txid for: BTC/OMNI/BCH/LTC/DOGE/DASH

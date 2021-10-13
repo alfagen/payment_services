@@ -7,11 +7,11 @@ class PaymentServices::CryptoApis
     class BaseClient < PaymentServices::CryptoApis::Clients::BaseClient
       DEFAULT_PARAMS = { replaceable: true }
 
-      def make_payout(payout:, wallet:)
+      def make_payout(payout:, wallet_transfers:)
         safely_parse http_request(
           url: "#{base_url}/txs/new",
           method: :POST,
-          body: api_query_for(payout, wallet)
+          body: api_query_for(payout, wallet_transfers)
         )
       end
 
@@ -24,17 +24,25 @@ class PaymentServices::CryptoApis
 
       private
 
-      def api_query_for(payout, wallet)
+      def api_query_for(payout, wallet_transfers)
         {
           createTx: {
-            inputs: [{ address: wallet.account, value: payout.amount.to_d }],
+            inputs: inputs(wallet_transfers),
             outputs: [{ address: payout.address, value: payout.amount.to_d }],
             fee: {
               value: payout.fee
             }
           },
-          wifs: [ wallet.api_secret ]
+          wifs: wifs(wallet_transfers)
         }.merge(DEFAULT_PARAMS)
+      end
+
+      def inputs(wallet_transfers)
+        wallet_transfers.map { |wallet_transfer| { 'address' => wallet_transfer.wallet.account, 'value' => wallet_transfer.amount.to_f } }
+      end
+
+      def wifs(wallet_transfers)
+        wallet_transfers.map { |wallet_transfer| wallet_transfer.wallet.api_secret }
       end
     end
   end
