@@ -11,7 +11,7 @@ class PaymentServices::CryptoApis
         safely_parse http_request(
           url: "#{base_url}/txs/new-pvtkey",
           method: :POST,
-          body: api_query_for(payout, wallet_transfers.first.wallet)
+          body: api_query_for(payout, wallet)
         )
       end
 
