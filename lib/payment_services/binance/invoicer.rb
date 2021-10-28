@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::Binance
   class Invoicer < ::PaymentServices::Base::Invoicer
     TRANSACTION_TIME_THRESHOLD = 30.minutes
-    WalletDepositsRequestFailed = Class.new StandardError
+    DepositHistoryRequestFailed = Class.new StandardError
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
