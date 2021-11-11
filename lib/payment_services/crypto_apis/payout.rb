@@ -32,5 +32,16 @@ class PaymentServices::CryptoApis
 
       confirmations >= CONFIRMATIONS_FOR_COMPLETE
     end
+
+    def wallet_fee_address
+      @wallet_fee_address ||= OrderPayout.find(order_payout_id).wallet_fee_address
+    end
+
+    def wallet_fee_address_present?
+      wallet_fee_address.present?
+    end
+
+    private
+
   end
 end

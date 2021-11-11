@@ -25,13 +25,14 @@ class PaymentServices::CryptoApis
       private
 
       def api_query_for(payout, wallet_transfers)
+        fee = { value: payout.fee }
+        fee[:address] = payout.wallet_fee_address if payout.wallet_fee_address_present?
+
         {
           createTx: {
             inputs: inputs(wallet_transfers),
             outputs: [{ address: payout.address, value: payout.amount.to_d }],
-            fee: {
-              value: payout.fee
-            }
+            fee: fee
           },
           wifs: wifs(wallet_transfers)
         }.merge(DEFAULT_PARAMS)
