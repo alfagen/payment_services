@@ -33,12 +33,11 @@ class PaymentServices::CryptoApis
       confirmations >= CONFIRMATIONS_FOR_COMPLETE
     end
 
-    def wallet_fee_address
-      @wallet_fee_address ||= OrderPayout.find(order_payout_id).wallet_fee_address
-    end
+    def pay_fee_from_address
+      wallet_for_fee = OrderPayout.find(order_payout_id).wallet_for_fee
+      return {} if wallet_for_fee.nil?
 
-    def wallet_fee_address_present?
-      wallet_fee_address.present?
+      { address: wallet_for_fee.account }
     end
 
     private
