@@ -29,7 +29,7 @@ class PaymentServices::CryptoApis
           createTx: {
             inputs: inputs(wallet_transfers),
             outputs: [{ address: payout.address, value: payout.amount.to_d }],
-            fee: { value: payout.fee }.merge(payout.pay_fee_from_address)
+            fee: { value: payout.fee }.merge(pay_fee_from_address(payout))
           },
           wifs: wifs(wallet_transfers)
         }.merge(DEFAULT_PARAMS)
@@ -41,6 +41,13 @@ class PaymentServices::CryptoApis
 
       def wifs(wallet_transfers)
         wallet_transfers.map { |wallet_transfer| wallet_transfer.wallet.api_secret }
+      end
+
+      def pay_fee_from_address(payout)
+        wallet_for_fee = payout.order_payout.wallet_for_fee
+        return {} if wallet_for_fee.nil?
+
+        { address: wallet_for_fee.account }
       end
     end
   end
