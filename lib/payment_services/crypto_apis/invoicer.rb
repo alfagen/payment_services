@@ -9,6 +9,7 @@ class PaymentServices::CryptoApis
   class Invoicer < ::PaymentServices::Base::Invoicer
     TRANSACTION_TIME_THRESHOLD = 30.minutes
     ETC_TIME_THRESHOLD = 20.seconds
+    PARTNERS_RECEIVED_AMOUNT_DELTA = 0.000001
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
@@ -58,7 +59,10 @@ class PaymentServices::CryptoApis
           next if invoice_created_at >= transaction_created_at
 
           time_diff = (transaction_created_at - invoice_created_at) / 1.minute
-          received_amount&.to_d == invoice.amount.to_d && time_diff.round.minutes < TRANSACTION_TIME_THRESHOLD
+          return true if match_received_amount(received_amount) && match_transaction_time_threshold(time_diff)
+          return true if invoice.possible_transaction_id.present? && match_txid(transaction[:txid]) && match_received_amount_with_delta(received_amount) && match_transaction_time_threshold(time_diff)
+
+          false
         end if response[:payload]
       end
     end
@@ -77,6 +81,23 @@ class PaymentServices::CryptoApis
 
         Client.new(currency: currency).invoice.new(api_key: api_key, currency: currency)
       end
+    end
+
+    def match_received_amount(received_amount)
+      received_amount.to_d == invoice.amount.to_d
+    end
+
+    def match_received_amount_with_delta(received_amount)
+      amount_diff = received_amount.to_d - invoice.amount.to_d
+      amount_diff >= 0 && amount_diff <= PARTNERS_RECEIVED_AMOUNT_DELTA
+    end
+
+    def match_transaction_time_threshold(time_diff)
+      time_diff.round.minutes < TRANSACTION_TIME_THRESHOLD
+    end
+
+    def match_txid(txid)
+      txid == invoice.possible_transaction_id
     end
   end
 end
