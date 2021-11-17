@@ -59,10 +59,9 @@ class PaymentServices::CryptoApis
           next if invoice_created_at >= transaction_created_at
 
           time_diff = (transaction_created_at - invoice_created_at) / 1.minute
-          return true if match_received_amount(received_amount) && match_transaction_time_threshold(time_diff)
-          return true if invoice.possible_transaction_id.present? && match_txid(transaction[:txid]) && match_received_amount_with_delta(received_amount) && match_transaction_time_threshold(time_diff)
 
-          false
+          match_received_amount(received_amount) && match_transaction_time_threshold(time_diff) ||
+          invoice.possible_transaction_id.present? && match_txid(transaction[:txid]) && match_received_amount_with_delta(received_amount) && match_transaction_time_threshold(time_diff)
         end if response[:payload]
       end
     end
