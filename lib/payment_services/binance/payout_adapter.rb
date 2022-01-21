@@ -37,7 +37,7 @@ class PaymentServices::Binance
       payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
       payout_params = {
         coin: payout.amount_currency,
-        amount: amount.to_d + (outcome_transaction_fee_amount.to_d || 0),
+        amount: amount.to_d + (outcome_transaction_fee_amount&.to_f || 0),
         address: destination_account,
         network: payout.token_network
       }

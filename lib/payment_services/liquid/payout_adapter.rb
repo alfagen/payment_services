@@ -50,7 +50,7 @@ class PaymentServices::Liquid
       @payout_id = Payout.create!(amount: amount, address: address, order_payout_id: order_payout_id).id
 
       payout_params = {
-        amount: amount.to_d.round(2) + (outcome_transaction_fee_amount || 0),
+        amount: amount.to_d.round(2) + (outcome_transaction_fee_amount&.to_f || 0),
         address: address,
         payment_id: nil,
         memo_type: nil,
