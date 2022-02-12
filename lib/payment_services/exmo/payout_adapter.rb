@@ -44,6 +44,7 @@ class PaymentServices::Exmo
         address: destination_account
       }
       payout_params[:invoice] = payout.order_fio if invoice_required?
+      payout_params[:amount] = payout_params[:amount].to_i if currency_neo?
       response = client.create_payout(params: payout_params)
       raise PayoutCreateRequestFailed, "Can't create payout: #{response['error']}" unless response['result']
 
@@ -64,6 +65,10 @@ class PaymentServices::Exmo
 
     def invoice_required?
       INVOICED_CURRENCIES.include?(wallet.currency.to_s)
+    end
+
+    def currency_neo?
+      wallet.currency.to_s == 'NEO'
     end
   end
 end
