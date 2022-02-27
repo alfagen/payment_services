@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'digest'
-require 'base64'
-
 class PaymentServices::MasterProcessing
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://masterprocessingvip.ru/api/payment'
