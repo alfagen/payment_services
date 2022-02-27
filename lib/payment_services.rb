@@ -30,6 +30,7 @@ module PaymentServices
   autoload :Obmenka, 'payment_services/obmenka'
   autoload :Exmo, 'payment_services/exmo'
   autoload :Binance, 'payment_services/binance'
+  autoload :MasterProcessing, 'payment_services/master_processing'
 
   UnauthorizedPayout = Class.new StandardError
 
