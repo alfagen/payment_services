@@ -9,7 +9,7 @@ class PaymentServices::MasterProcessing
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
 
       params = {
-        amount: invoice.amount.to_i,
+        amount: invoice.amount.to_f,
         expireAt: expire_at,
         callbackURL: order.income_payment_system.callback_url
       }
