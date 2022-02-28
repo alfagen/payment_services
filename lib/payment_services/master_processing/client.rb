@@ -13,7 +13,7 @@ class PaymentServices::MasterProcessing
       safely_parse http_request(
         url: "#{API_URL}/generate_invoice",
         method: :POST,
-        body: params,
+        body: params.to_json,
         headers: build_headers(build_signature(params))
       )
     end
