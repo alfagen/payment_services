@@ -28,8 +28,8 @@ class PaymentServices::MasterProcessing
       raise "Can't create invoice: #{response['cause']}" unless response['success']
 
       invoice.update!(
-        deposit_id: response['externalID'],
-        pay_invoice_url: response['walletList'].first
+        deposit_id: response['billID'],
+        pay_invoice_url: response['paymentLinks'].first
       )
     end
 
