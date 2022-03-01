@@ -6,6 +6,8 @@ require_relative 'client'
 
 class PaymentServices::MasterProcessing
   class Invoicer < ::PaymentServices::Base::Invoicer
+    SHARED_PUBLIC_KEY = "04d08e67c1371b7201aabf03b933c23b540cce0c007a59137f50d70bb4cc5ebd860344af03a47b6bb503b05952200d264c5f8fee57d54da40cd38cb7b004c629c5"
+
     def create_invoice(money)
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
 
@@ -75,10 +77,9 @@ class PaymentServices::MasterProcessing
 
     def generate_hsid(params)
       data = params.to_json
-      wallet_public_key = order.income_wallet.api_key
-      wallet_public_key_bin = [wallet_public_key].pack('H*')
+      public_key_bin = [SHARED_PUBLIC_KEY].pack('H*')
       group = OpenSSL::PKey::EC::Group.new("prime256v1")
-      public_point  = OpenSSL::PKey::EC::Point.new(group, OpenSSL::BN.new(wallet_public_key_bin, 2))
+      public_point  = OpenSSL::PKey::EC::Point.new(group, OpenSSL::BN.new(public_key_bin, 2))
       key = OpenSSL::PKey::EC.new(group)
       key.generate_key!
       key.public_key = public_point
