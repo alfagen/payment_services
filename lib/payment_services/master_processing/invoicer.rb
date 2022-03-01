@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
-require 'base64'
 require_relative 'invoice'
 require_relative 'client'
 
 class PaymentServices::MasterProcessing
   class Invoicer < ::PaymentServices::Base::Invoicer
-    SHARED_PUBLIC_KEY = "04d08e67c1371b7201aabf03b933c23b540cce0c007a59137f50d70bb4cc5ebd860344af03a47b6bb503b05952200d264c5f8fee57d54da40cd38cb7b004c629c5"
-
     def create_invoice(money)
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
 
@@ -77,18 +74,6 @@ class PaymentServices::MasterProcessing
         'qiwi'   => '9999'
       }
       available_options[payway]
-    end
-
-    def generate_hsid(params)
-      data = params.to_json
-      public_key_bin = [SHARED_PUBLIC_KEY].pack('H*')
-      group = OpenSSL::PKey::EC::Group.new("prime256v1")
-      public_point  = OpenSSL::PKey::EC::Point.new(group, OpenSSL::BN.new(public_key_bin, 2))
-      key = OpenSSL::PKey::EC.new(group)
-      key.generate_key!
-      key.public_key = public_point
-
-      Base64.encode64(key.dsa_sign_asn1(data))
     end
   end
 end
