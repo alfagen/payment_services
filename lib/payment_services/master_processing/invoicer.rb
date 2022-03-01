@@ -70,7 +70,7 @@ class PaymentServices::MasterProcessing
         'visamc' => 'card',
         'qiwi'   => 'qw'
       }
-      available_options[payway] || raise "No option for payway #{payway}"
+      available_options[payway]
     end
 
     def generate_hsid(params)
