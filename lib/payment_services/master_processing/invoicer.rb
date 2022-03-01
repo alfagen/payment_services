@@ -75,7 +75,7 @@ class PaymentServices::MasterProcessing
 
     def generate_hsid(params)
       data = params.to_json
-      wallet_public_key = wallet.api_key
+      wallet_public_key = order.income_wallet.api_key
       wallet_public_key_bin = [wallet_public_key].pack('H*')
       group = OpenSSL::PKey::EC::Group.new("prime256v1")
       public_point  = OpenSSL::PKey::EC::Point.new(group, OpenSSL::BN.new(wallet_public_key_bin, 2))
