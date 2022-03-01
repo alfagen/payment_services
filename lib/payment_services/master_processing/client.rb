@@ -11,7 +11,7 @@ class PaymentServices::MasterProcessing
 
     def create_invoice(params:)
       safely_parse http_request(
-        url: "#{API_URL}/generate_invoice",
+        url: "#{API_URL}/generate_p2p_v3",
         method: :POST,
         body: params.to_json,
         headers: build_headers(build_signature(params))
