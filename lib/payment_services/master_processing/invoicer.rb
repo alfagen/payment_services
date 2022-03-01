@@ -12,7 +12,7 @@ class PaymentServices::MasterProcessing
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
 
       params = {
-        amount: invoice.amount.to_f,
+        amount: invoice.amount.to_i,
         expireAt: expire_at,
         callbackURL: order.income_payment_system.callback_url,
         comment: comment,
@@ -56,7 +56,7 @@ class PaymentServices::MasterProcessing
     end
 
     def comment
-      "Оплата по заявке: #{order.public_id}"
+      "Order: #{order.public_id}"
     end
 
     def client_ip
