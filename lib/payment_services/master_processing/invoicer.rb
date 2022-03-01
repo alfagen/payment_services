@@ -18,7 +18,6 @@ class PaymentServices::MasterProcessing
         cardNumber: card_number,
         email: order.email
       }
-      params[:hsid] = generate_hsid(params)
 
       response = client.create_invoice(params: params)
 
