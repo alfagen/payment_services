@@ -60,7 +60,7 @@ class PaymentServices::MasterProcessing
       {
         'visamc' => 'withdraw_to_card',
         'qiwi'   => 'withdraw_to_qiwi'
-      }[order.outcome_wallet.payment_system.payway]
+      }[wallet.payment_system.payway]
     end
   end
 end
