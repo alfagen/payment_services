@@ -13,12 +13,12 @@ class PaymentServices::MasterProcessing
 
       params = {
         amount: invoice.amount.to_i,
-        expireAt: expire_at,
+        expireAt: PreliminaryOrder::MAX_LIVE.to_i,
         callbackURL: order.income_payment_system.callback_url,
         comment: comment,
         clientIP: client_ip,
         paySourcesFilter: pay_source,
-        cardNumber: order.income_account,
+        cardNumber: card_number,
         email: order.email
       }
       params[:hsid] = generate_hsid(params)
@@ -51,10 +51,6 @@ class PaymentServices::MasterProcessing
       end
     end
 
-    def expire_at
-      Time.now.utc.to_i + PreliminaryOrder::MAX_LIVE.to_i
-    end
-
     def comment
       "Order: #{order.public_id}"
     end
@@ -64,13 +60,21 @@ class PaymentServices::MasterProcessing
     end
 
     def payway
-      order.income_wallet.payment_system.payway
+      @payway ||= order.income_wallet.payment_system.payway
     end
 
     def pay_source
       available_options = {
         'visamc' => 'card',
         'qiwi'   => 'qw'
+      }
+      available_options[payway]
+    end
+
+    def card_number
+      available_options = {
+        'visamc' => order.income_account,
+        'qiwi'   => '9999'
       }
       available_options[payway]
     end
