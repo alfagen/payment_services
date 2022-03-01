@@ -22,6 +22,25 @@ class PaymentServices::MasterProcessing
       )
     end
 
+    def process_payout(endpoint:, params:)
+      params.merge!(HSID: generate_hsid(params))
+      safely_parse http_request(
+        url: "#{API_URL}/#{endpoint}",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(build_signature(params))
+      )
+    end
+
+    def payout_status(params:)
+      safely_parse http_request(
+        url: "#{API_URL}/get_withdraw_order_info",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(build_signature(params))
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key
