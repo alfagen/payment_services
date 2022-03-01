@@ -19,10 +19,9 @@ class PaymentServices::MasterProcessing
         clientIP: client_ip,
         paySourcesFilter: pay_source,
         cardNumber: order.income_account,
-        email: order.email,
-        clientInfo: client_info
+        email: order.email
       }
-      # params[:hsid] = generate_hsid(params)
+      params[:hsid] = generate_hsid(params)
 
       response = client.create_invoice(params: params)
 
