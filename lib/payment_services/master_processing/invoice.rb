@@ -27,22 +27,12 @@ class PaymentServices::MasterProcessing
       state :cancelled
     end
 
-    def can_be_confirmed?(income_amount:)
-      pending? && amount_matches?(income_amount)
-    end
-
     def pay(payload:)
       update(payload: payload)
     end
 
     def order
       Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
-    end
-
-    private
-
-    def amount_matches?(income_amount)
-      amount.to_i == income_amount.to_i
     end
   end
 end

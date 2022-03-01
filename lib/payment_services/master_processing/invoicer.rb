@@ -11,7 +11,7 @@ class PaymentServices::MasterProcessing
       params = {
         amount: invoice.amount.to_i,
         expireAt: PreliminaryOrder::MAX_LIVE.to_i,
-        callbackURL: order.income_payment_system.callback_url,
+        callbackURL: "#{order.income_payment_system.callback_url}/#{order.public_id}",
         comment: comment,
         clientIP: client_ip,
         paySourcesFilter: pay_source,
