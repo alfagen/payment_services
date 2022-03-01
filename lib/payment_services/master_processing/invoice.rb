@@ -27,8 +27,8 @@ class PaymentServices::MasterProcessing
       state :cancelled
     end
 
-    def can_be_confirmed?(income_money:)
-      pending? && amount_matches?(income_money)
+    def can_be_confirmed?(income_amount:)
+      pending? && amount_matches?(income_amount)
     end
 
     def pay(payload:)
