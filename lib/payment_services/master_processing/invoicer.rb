@@ -18,10 +18,11 @@ class PaymentServices::MasterProcessing
         comment: comment,
         clientIP: client_ip,
         paySourcesFilter: pay_source,
-        cardNumber: card_number,
-        email: order.email
+        cardNumber: order.income_account,
+        email: order.email,
+        clientInfo: client_info
       }
-      params[:hsid] = generate_hsid(params)
+      # params[:hsid] = generate_hsid(params)
 
       response = client.create_invoice(params: params)
 
@@ -60,21 +61,13 @@ class PaymentServices::MasterProcessing
     end
 
     def payway
-      @payway ||= order.income_wallet.payment_system.payway
+      order.income_wallet.payment_system.payway
     end
 
     def pay_source
       available_options = {
         'visamc' => 'card',
         'qiwi'   => 'qiwi'
-      }
-      available_options[payway]
-    end
-
-    def card_number
-      available_options = {
-        'visamc' => order.income_account,
-        'qiwi'   => '9999'
       }
       available_options[payway]
     end
