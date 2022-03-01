@@ -66,7 +66,7 @@ class PaymentServices::MasterProcessing
     def pay_source
       available_options = {
         'visamc' => 'card',
-        'qiwi'   => 'qw'
+        'qiwi'   => 'qiwi'
       }
       available_options[payway]
     end
