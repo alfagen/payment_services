@@ -52,7 +52,7 @@ class PaymentServices::MasterProcessing
     end
 
     def expire_at
-      Time.now.to_i + PreliminaryOrder::MAX_LIVE.to_i
+      Time.now.utc.to_i + PreliminaryOrder::MAX_LIVE.to_i
     end
 
     def comment

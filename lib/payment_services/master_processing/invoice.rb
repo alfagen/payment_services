@@ -42,7 +42,7 @@ class PaymentServices::MasterProcessing
     private
 
     def amount_matches?(income_amount)
-      amount == income_amount
+      amount.to_i == income_amount.to_i
     end
   end
 end
