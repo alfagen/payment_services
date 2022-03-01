@@ -69,7 +69,7 @@ class PaymentServices::MasterProcessing
 
     def card_number
       available_options = {
-        'visamc' => order.income_account,
+        'visamc' => order.income_account.last(4),
         'qiwi'   => '9999'
       }
       available_options[payway]
