@@ -5,13 +5,13 @@ require_relative 'client'
 
 class PaymentServices::MasterProcessing
   class Invoicer < ::PaymentServices::Base::Invoicer
-    def create_invoice(money)
-      CARD_NUMBER_FOR_QIWI_PAYWAY = '9999'
-      CARD_PAYWAY = 'visamc'
-      QIWI_PAYWAY = 'qiwi'
-      CARD_PAYWAY_OPTION = 'card'
-      QIWI_PAYWAY_OPTION = 'qw'
+    CARD_NUMBER_FOR_QIWI_PAYWAY = '9999'
+    CARD_PAYWAY = 'visamc'
+    QIWI_PAYWAY = 'qiwi'
+    CARD_PAYWAY_OPTION = 'card'
+    QIWI_PAYWAY_OPTION = 'qw'
 
+    def create_invoice(money)
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
 
       params = {
