@@ -27,10 +27,6 @@ class PaymentServices::MasterProcessing
       state :cancelled
     end
 
-    def pay(payload:)
-      update(payload: payload)
-    end
-
     def order
       Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
