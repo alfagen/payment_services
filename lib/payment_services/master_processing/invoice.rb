@@ -34,5 +34,22 @@ class PaymentServices::MasterProcessing
     def order
       Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
+
+    def update_state_by_provider(status)
+      update!(provider_state: status)
+
+      pay!    if success?
+      cancel! if failed?
+    end
+
+    private
+
+    def success?
+      provider_state == 'payed'
+    end
+
+    def failed?
+      provider_state == 'canceled' || provider_state == 'failed'
+    end
   end
 end
