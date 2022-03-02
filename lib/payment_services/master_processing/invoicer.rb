@@ -6,10 +6,10 @@ require_relative 'client'
 class PaymentServices::MasterProcessing
   class Invoicer < ::PaymentServices::Base::Invoicer
     CARD_NUMBER_FOR_QIWI_PAYWAY = '9999'
-    CARD_PAYWAY = 'visamc'
-    QIWI_PAYWAY = 'qiwi'
-    CARD_PAYWAY_OPTION = 'card'
-    QIWI_PAYWAY_OPTION = 'qw'
+    AVAILABLE_PAYSOURCE_OPTIONS = {
+      'visamc' => 'card',
+      'qiwi'   => 'qw'
+    }
 
     def create_invoice(money)
       invoice = Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -17,7 +17,6 @@ class PaymentServices::MasterProcessing
       params = {
         amount: invoice.amount.to_i,
         expireAt: PreliminaryOrder::MAX_LIVE.to_i,
-        callbackURL: "#{order.income_payment_system.callback_url}/#{order.public_id}",
         comment: comment,
         clientIP: client_ip,
         paySourcesFilter: pay_source,
@@ -77,11 +76,7 @@ class PaymentServices::MasterProcessing
     end
 
     def pay_source
-      available_options = {
-        CARD_PAYWAY   => CARD_PAYWAY_OPTION,
-        QIWI_PAYWAY   => QIWI_PAYWAY_OPTION
-      }
-      available_options[payway]
+      AVAILABLE_PAYSOURCE_OPTIONS[payway]
     end
 
     def card_number
