@@ -32,6 +32,15 @@ class PaymentServices::MasterProcessing
       )
     end
 
+    def invoice_status(params:)
+      safely_parse http_request(
+        url: "#{API_URL}/get_invoice_order_info",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(build_signature(params))
+      )
+    end
+
     def payout_status(params:)
       safely_parse http_request(
         url: "#{API_URL}/get_withdraw_order_info",
