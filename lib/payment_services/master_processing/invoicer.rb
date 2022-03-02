@@ -5,7 +5,7 @@ require_relative 'client'
 
 class PaymentServices::MasterProcessing
   class Invoicer < ::PaymentServices::Base::Invoicer
-    CARD_NUMBER_FOR_QIWI_PAYWAY = '9999'
+    QIWI_DUMMY_CARD_TAIL = '9999'
     AVAILABLE_PAYSOURCE_OPTIONS = {
       'visamc' => 'card',
       'qiwi'   => 'qw'
@@ -20,7 +20,7 @@ class PaymentServices::MasterProcessing
         comment: comment,
         clientIP: client_ip,
         paySourcesFilter: pay_source,
-        cardNumber: card_number,
+        cardNumber: the_last_four_card_number,
         email: order.email
       }
 
@@ -72,22 +72,16 @@ class PaymentServices::MasterProcessing
     end
 
     def payway
-      @payway ||= order.income_payment_system.payway
+      @payway ||= order.income_payment_system.payway.inquiry
     end
 
     def pay_source
       AVAILABLE_PAYSOURCE_OPTIONS[payway]
     end
 
-    def card_number
-      available_options = {
-        CARD_PAYWAY   => the_last_four_card_number,
-        QIWI_PAYWAY   => CARD_NUMBER_FOR_QIWI_PAYWAY
-      }
-      available_options[payway]
-    end
-
     def the_last_four_card_number
+      return QIWI_DUMMY_CARD_TAIL if payway.qiwi?
+
       order.income_account.last(4)
     end
   end
