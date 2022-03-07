@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::MasterProcessing
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    PAYOUT_ACCEPTED_RESPONSE = 'Accepted'
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -42,10 +44,10 @@ class PaymentServices::MasterProcessing
       params = {
         amount: amount.to_i,
         recipient: destination_account,
-        UID: order_payout_id.to_s
+        uid: order_payout_id.to_s
       }
       response = client.process_payout(endpoint: endpoint, params: params)
-      raise "Can't process payout: #{response['cause']}" unless response['success']
+      raise "Can't process payout: #{response['status']}" unless response['status'] == PAYOUT_ACCEPTED_RESPONSE
 
       payout.pay!(withdrawal_id: response['externalID'])
     end
@@ -58,8 +60,8 @@ class PaymentServices::MasterProcessing
 
     def endpoint
       {
-        'visamc' => 'withdraw_to_card',
-        'qiwi'   => 'withdraw_to_qiwi'
+        'visamc' => 'withdraw_to_card_v2',
+        'qiwi'   => 'withdraw_to_qiwi_v2'
       }[wallet.payment_system.payway]
     end
   end
