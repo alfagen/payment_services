@@ -31,6 +31,7 @@ module PaymentServices
   autoload :Exmo, 'payment_services/exmo'
   autoload :Binance, 'payment_services/binance'
   autoload :MasterProcessing, 'payment_services/master_processing'
+  autoload :CryptoApisV2, 'payment_services/crypto_apis_v2'
 
   UnauthorizedPayout = Class.new StandardError
 
