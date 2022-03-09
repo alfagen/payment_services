@@ -2,7 +2,6 @@
 
 class PaymentServices::CryptoApisV2
   class Invoice < ApplicationRecord
-    CONFIRMATIONS_FOR_COMPLETE = 1
     include Workflow
     self.table_name = 'crypto_apis_invoices'
 
@@ -34,10 +33,6 @@ class PaymentServices::CryptoApisV2
 
     def pay(payload:)
       update(payload: payload)
-    end
-
-    def complete_payment?
-      confirmations >= CONFIRMATIONS_FOR_COMPLETE
     end
 
     def order
