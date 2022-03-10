@@ -6,7 +6,7 @@ class PaymentServices::CryptoApisV2
 
     TIMEOUT = 30
     API_URL = 'https://rest.cryptoapis.io/v2'
-    NETWORK = 'mainnet'
+    NETWORK = 'testnet'
     CURRENCY_TO_BLOCKCHAIN = {
       'btc'   => 'bitcoin',
       'bch'   => 'bitcoin-cash',
