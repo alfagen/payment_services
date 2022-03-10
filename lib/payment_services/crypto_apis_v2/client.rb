@@ -27,14 +27,16 @@ class PaymentServices::CryptoApisV2
     def address_transactions(address)
       safely_parse http_request(
         url: "#{base_url}/addresses/#{address}/transactions",
-        method: :GET
+        method: :GET,
+        headers: build_headers
       )
     end
 
     def transaction_details(transaction_id)
       safely_parse http_request(
         url: "#{base_url}/transactions/#{transaction_id}",
-        method: :GET
+        method: :GET,
+        headers: build_headers
       )
     end
 
@@ -46,7 +48,7 @@ class PaymentServices::CryptoApisV2
       "#{API_URL}/blockchain-data/#{blockchain}/#{NETWORK}"
     end
 
-    def headers
+    def build_headers
       {
         'Content-Type'  => 'application/json',
         'Cache-Control' => 'no-cache',
