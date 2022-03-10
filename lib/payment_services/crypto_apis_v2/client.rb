@@ -48,9 +48,9 @@ class PaymentServices::CryptoApisV2
 
     def headers
       {
-        'Content-Type'  : 'application/json',
-        'Cache-Control' : 'no-cache',
-        'X-API-Key'     : api_key
+        'Content-Type'  => 'application/json',
+        'Cache-Control' => 'no-cache',
+        'X-API-Key'     => api_key
       }
     end
 
