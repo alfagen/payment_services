@@ -58,7 +58,7 @@ class PaymentServices::CryptoApisV2
               feePriority: DEFAULT_FEE_PRIORITY,
               recipients: [{
                 address: payout.address,
-                wallet_transfer.amount.to_f.to_s
+                amount: wallet_transfer.amount.to_f.to_s
               }]
             }
           }
