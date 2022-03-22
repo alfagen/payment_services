@@ -92,7 +92,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def parse_received_amount(transaction)
-      transaction['recipients'].find { |recipient| recipient['address'] == invoice.address }['amount']
+      transaction['recipients'].find { |recipient| recipient['address'].include?(invoice.address) }['amount']
     end
 
     def timestamp_in_utc(timestamp)
