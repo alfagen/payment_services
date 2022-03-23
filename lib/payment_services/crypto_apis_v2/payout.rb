@@ -20,6 +20,7 @@ class PaymentServices::CryptoApisV2
       end
       state :paid do
         event :confirm, transitions_to: :completed
+        event :fail, transitions_to: :failed
       end
       state :completed
       state :failed
@@ -31,6 +32,13 @@ class PaymentServices::CryptoApisV2
 
     def order_payout
       @order_payout ||= OrderPayout.find(order_payout_id)
+    end
+
+    def update_state_by_provider!(provider_state)
+      update!(provider_state: provider_state)
+
+      confirm!  if provider_state == PAYOUT_SUCCESS_PROVIDER_STATE
+      fail!     if PAYOUT_FAILED_PROVIDER_STATES.include?(provider_state)
     end
   end
 end

@@ -21,16 +21,12 @@ class PaymentServices::CryptoApisV2
       @payout_id = payout_id
       return if payout.pending?
 
-      response = client.transaction_details(payout.txid)
+      response = client.request_details(payout.txid)
       raise response['error']['message'] if response.dig(:error, :message)
 
-      transaction = response['data']['item']
-      payout.update!(
-        confirmed: transaction['isConfirmed'],
-        fee: transaction['fee']['amount'].to_f
-      )
-      payout.confirm! if payout.confirmed?
-      transaction
+      provider_state = response['data']['item']['transactionRequestStatus']
+      payout.update_state_by_provider!(provider_state)
+      response
     end
 
     def payout
@@ -48,11 +44,7 @@ class PaymentServices::CryptoApisV2
       raise response['error']['message'] if response.dig(:error, :message)
 
       request_id = response['data']['item']['transactionRequestId']
-      response = client.get_transaction_id(request_id)
-      raise response['error']['message'] if response.dig(:error, :message)
-
-      transaction_id = response['data']['item']['transactionId']
-      payout.pay!(txid: transaction_id)
+      payout.pay!(txid: request_id)
     end
 
     def client

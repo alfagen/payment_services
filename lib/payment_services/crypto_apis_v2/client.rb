@@ -41,7 +41,7 @@ class PaymentServices::CryptoApisV2
       )
     end
 
-    def get_transaction_id(request_id)
+    def request_details(request_id)
       safely_parse http_request(
         url: "#{API_URL}/wallet-as-a-service/transactionRequests/#{request_id}",
         method: :GET,
