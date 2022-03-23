@@ -45,7 +45,7 @@ class PaymentServices::CryptoApisV2
         client.transaction_details(invoice.transaction_id)['data']['item']
       else
         response = client.address_transactions(invoice.address)
-        raise response['error']['message'] if response.dig(:error, :message)
+        raise response['error']['message'] if response['error']
 
         response['data']['items'].find do |transaction|
           match_transaction?(transaction)
