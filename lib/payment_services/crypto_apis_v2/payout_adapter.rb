@@ -26,12 +26,12 @@ class PaymentServices::CryptoApisV2
         raise response['error']['message'] if response['error']
 
         transaction_id = response['data']['item']['transactionId']
-        payout.update!(txid: transactionId) if transaction_id
+        payout.update!(txid: transaction_id) if transaction_id
       else
         response = client.transaction_details(payout.txid)
         raise response['error']['message'] if response['error']
 
-        payout.update!(confirmed: response['data']['item']['isConfirmed'])
+        update_payout_details(response['data']['item'])
         payout.confirm! if payout.confirmed?
       end
 
@@ -67,6 +67,11 @@ class PaymentServices::CryptoApisV2
 
     def create_payout!(amount:, address:, fee:, order_payout_id:)
       Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id)
+    end
+
+    def update_payout_details(transaction)
+      payout.confirmed = transaction['isConfirmed'])
+      payout.fee ||= transaction['fee']['amount'].to_f
     end
   end
 end
