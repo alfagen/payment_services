@@ -50,26 +50,26 @@ class PaymentServices::CryptoApisV2
     end
 
     def make_payout(payout:, wallet_transfers:)
-      wallet_transfers.each do |wallet_transfer|
-        body = {
-          data: {
-            item: {
-              callbackSecretKey: wallet_transfer.wallet.api_secret,
-              feePriority: DEFAULT_FEE_PRIORITY,
-              recipients: [{
-                address: payout.address,
-                amount: wallet_transfer.amount.to_f.to_s
-              }]
-            }
+      wallet_transfer = wallet_transfers.first
+
+      body = {
+        data: {
+          item: {
+            callbackSecretKey: wallet_transfer.wallet.api_secret,
+            feePriority: DEFAULT_FEE_PRIORITY,
+            recipients: [{
+              address: payout.address,
+              amount: wallet_transfer.amount.to_f.to_s
+            }]
           }
         }
-        safely_parse http_request(
-          url: "#{API_URL}/wallet-as-a-service/wallets/#{wallet_transfer.wallet.merchant_id}/#{blockchain}/#{NETWORK}/transaction-requests",
-          method: :POST,
-          body: body.to_json,
-          headers: build_headers
-        )
-      end
+      }
+      safely_parse http_request(
+        url: "#{API_URL}/wallet-as-a-service/wallets/#{wallet_transfer.wallet.merchant_id}/#{blockchain}/#{NETWORK}/transaction-requests",
+        method: :POST,
+        body: body.to_json,
+        headers: build_headers
+      )
     end
 
     private
