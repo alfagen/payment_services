@@ -45,11 +45,11 @@ class PaymentServices::CryptoApisV2
       @payout_id = create_payout!(amount: amount, address: address, fee: 0, order_payout_id: order_payout_id).id
 
       response = client.make_payout(payout: payout, wallet_transfers: wallet_transfers)
+      raise response.to_s
+
       raise response['error']['message'] if response.dig(:error, :message)
 
       request_id = response['data']['item']['transactionRequestId']
-      raise request_id
-
       response = client.get_transaction_id(request_id)
       raise response['error']['message'] if response.dig(:error, :message)
 
