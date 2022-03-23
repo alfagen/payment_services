@@ -70,8 +70,10 @@ class PaymentServices::CryptoApisV2
     end
 
     def update_payout_details(transaction)
-      payout.confirmed = transaction['isConfirmed'])
+      payout.confirmed = transaction['isConfirmed']
       payout.fee ||= transaction['fee']['amount'].to_f
+
+      payout.save!
     end
   end
 end
