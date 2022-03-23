@@ -42,7 +42,7 @@ class PaymentServices::CryptoApisV2
     attr_accessor :payout_id
 
     def make_payout(amount:, address:, order_payout_id:)
-      @payout_id = create_payout!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id).id
+      @payout_id = create_payout!(amount: amount, address: address, fee: 0, order_payout_id: order_payout_id).id
 
       response = client.make_payout(payout: payout, wallet_transfers: wallet_transfers)
       raise response['error']['message'] if response.dig(:error, :message)
