@@ -66,7 +66,7 @@ class PaymentServices::CryptoApisV2
         safely_parse http_request(
           url: "#{API_URL}/wallet-as-a-service/wallets/#{wallet_transfer.wallet.merchant_id}/#{blockchain}/#{NETWORK}/transaction-requests",
           method: :POST,
-          body: body,
+          body: body.to_json,
           headers: build_headers
         )
       end
