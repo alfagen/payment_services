@@ -5,9 +5,6 @@ class PaymentServices::CryptoApisV2
     include Workflow
     self.table_name = 'crypto_apis_payouts'
 
-    PAYOUT_SUCCESS_PROVIDER_STATE = 'success'
-    PAYOUT_FAILED_PROVIDER_STATES = %w(failed rejected)
-
     scope :ordered, -> { order(id: :desc) }
 
     monetize :amount_cents, as: :amount

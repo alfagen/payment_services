@@ -16,9 +16,11 @@ class PaymentServices::CryptoApisV2
       'eth'   => 'ethereum',
       'etc'   => 'ethereum-classic',
       'bnb'   => 'binance-smart-chain',
-      'zec'   => 'zcash'
+      'zec'   => 'zcash',
+      'xrp'   => 'xrp'
     }
     DEFAULT_FEE_PRIORITY = 'standard'
+    ADDRESS_BLOCKCHAINS  = %w(ethereum ethereum-classic binance-smart-chain xrp)
 
     def initialize(api_key:, currency:)
       @api_key  = api_key
@@ -27,7 +29,7 @@ class PaymentServices::CryptoApisV2
 
     def address_transactions(address)
       safely_parse http_request(
-        url: "#{base_url}/addresses/#{address}/transactions",
+        url: address_transactions_endpoint(address),
         method: :GET,
         headers: build_headers
       )
@@ -35,7 +37,7 @@ class PaymentServices::CryptoApisV2
 
     def transaction_details(transaction_id)
       safely_parse http_request(
-        url: "#{API_URL}/wallet-as-a-service/wallets/#{blockchain}/#{NETWORK}/transactions/#{transaction_id}",
+        url: transaction_details_endpoint(transaction_id),
         method: :GET,
         headers: build_headers
       )
@@ -52,22 +54,10 @@ class PaymentServices::CryptoApisV2
     def make_payout(payout:, wallet_transfers:)
       wallet_transfer = wallet_transfers.first
 
-      body = {
-        data: {
-          item: {
-            callbackSecretKey: wallet_transfer.wallet.api_secret,
-            feePriority: DEFAULT_FEE_PRIORITY,
-            recipients: [{
-              address: payout.address,
-              amount: wallet_transfer.amount.to_f.to_s
-            }]
-          }
-        }
-      }
       safely_parse http_request(
-        url: "#{API_URL}/wallet-as-a-service/wallets/#{wallet_transfer.wallet.merchant_id}/#{blockchain}/#{NETWORK}/transaction-requests",
+        url: payout_endpoint(wallet_transfer.wallet),
         method: :POST,
-        body: body.to_json,
+        body: build_body(wallet_transfer, payout).to_json,
         headers: build_headers
       )
     end
@@ -89,7 +79,56 @@ class PaymentServices::CryptoApisV2
     end
 
     def blockchain
-      CURRENCY_TO_BLOCKCHAIN[currency]
+      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency]
+    end
+
+    def payout_endpoint(wallet)
+      if ADDRESS_BLOCKCHAINS.include(blockchain)
+        "#{API_URL}/wallet-as-a-service/wallets/#{wallet.merchant_id}/#{blockchain}/#{NETWORK}/addresses/#{wallet.account}/transaction-requests"
+      else
+        "#{API_URL}/wallet-as-a-service/wallets/#{wallet.merchant_id}/#{blockchain}/#{NETWORK}/transaction-requests"
+      end
+    end
+
+    def build_body(wallet_transfer, payout)
+      item =  if ADDRESS_BLOCKCHAINS.include(blockchain)
+                {
+                  amount: wallet_transfer.amount.to_f.to_s,
+                  feePriority: DEFAULT_FEE_PRIORITY,
+                  callbackSecretKey: wallet_transfer.wallet.api_secret,
+                  recipientAddress: payout.address
+                }
+              else
+                {
+                  callbackSecretKey: wallet_transfer.wallet.api_secret,
+                  feePriority: DEFAULT_FEE_PRIORITY,
+                  recipients: [{
+                    address: payout.address,
+                    amount: wallet_transfer.amount.to_f.to_s
+                  }]
+                }
+              end
+      {
+        data: {
+          item: item
+        }
+      }
+    end
+
+    def address_transactions_endpoint(address)
+      unless blockchain == 'xrp'
+        "#{API_URL}/blockchain-data/#{blockchain}/#{NETWORK}/addresses/#{address}/transactions"
+      else
+        "#{API_URL}/blockchain-data/xrp-specific/#{NETWORK}/addresses/#{address}/transactions"
+      end
+    end
+
+    def transaction_details_endpoint(transaction_id)
+      unless blockchain == 'xrp'
+        "#{API_URL}/wallet-as-a-service/wallets/#{blockchain}/#{NETWORK}/transactions/#{transaction_id}"
+      else
+        "#{API_URL}/blockchain-data/xrp-specific/#{NETWORK}/transactions/#{transaction_id}"
+      end  
     end
   end
 end
