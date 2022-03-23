@@ -48,6 +48,8 @@ class PaymentServices::CryptoApisV2
       raise response['error']['message'] if response.dig(:error, :message)
 
       request_id = response['data']['item']['transactionRequestId']
+      raise request_id
+
       response = client.get_transaction_id(request_id)
       raise response['error']['message'] if response.dig(:error, :message)
 
