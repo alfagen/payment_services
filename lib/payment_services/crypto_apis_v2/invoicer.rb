@@ -8,7 +8,6 @@ class PaymentServices::CryptoApisV2
     TRANSACTION_TIME_THRESHOLD = 30.minutes
     ETC_TIME_THRESHOLD = 20.seconds
     PARTNERS_RECEIVED_AMOUNT_DELTA = 0.000001
-    XRP_SUCCESS_TRANSACTION_STATUS = 'tesSUCCESS'
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
@@ -37,7 +36,7 @@ class PaymentServices::CryptoApisV2
     def update_invoice_details(invoice:, transaction:)
       invoice.transaction_created_at ||= timestamp_in_utc(transaction['timestamp'])
       invoice.transaction_id ||= transaction['transactionId']
-      invoice.confirmed = confirmed?(transaction)
+      invoice.confirmed = transaction['isConfirmed'] if transaction['isConfirmed']
       invoice.save!
     end
 
@@ -104,13 +103,6 @@ class PaymentServices::CryptoApisV2
       invoice_created_at = invoice.created_at.utc
       invoice_created_at -= ETC_TIME_THRESHOLD if invoice.amount_currency == 'ETC'
       invoice_created_at
-    end
-
-    def confirmed?(transaction)
-      return transaction['isConfirmed'] if transaction['isConfirmed']
-      return true if transaction['status'] == XRP_SUCCESS_PAYOUT_STATUS
-
-      false
     end
 
     def client

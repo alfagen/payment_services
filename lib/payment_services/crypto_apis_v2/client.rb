@@ -66,10 +66,6 @@ class PaymentServices::CryptoApisV2
 
     attr_reader :api_key, :currency
 
-    def base_url
-      "#{API_URL}/blockchain-data/#{blockchain}/#{NETWORK}"
-    end
-
     def build_headers
       {
         'Content-Type'  => 'application/json',
@@ -92,26 +88,34 @@ class PaymentServices::CryptoApisV2
 
     def build_body(wallet_transfer, payout)
       item =  if ADDRESS_BLOCKCHAINS.include?(blockchain)
-                {
-                  amount: wallet_transfer.amount.to_f.to_s,
-                  feePriority: DEFAULT_FEE_PRIORITY,
-                  callbackSecretKey: wallet_transfer.wallet.api_secret,
-                  recipientAddress: payout.address
-                }
+                build_address_body(payout, wallet_transfer)
               else
-                {
-                  callbackSecretKey: wallet_transfer.wallet.api_secret,
-                  feePriority: DEFAULT_FEE_PRIORITY,
-                  recipients: [{
-                    address: payout.address,
-                    amount: wallet_transfer.amount.to_f.to_s
-                  }]
-                }
+                build_utxo_body(payout, wallet_transfer)
               end
       {
         data: {
           item: item
         }
+      }
+    end
+
+    def build_address_body(payout, wallet_transfer)
+      {
+        amount: wallet_transfer.amount.to_f.to_s,
+        feePriority: DEFAULT_FEE_PRIORITY,
+        callbackSecretKey: wallet_transfer.wallet.api_secret,
+        recipientAddress: payout.address
+      }
+    end
+
+    def build_utxo_body(payout, wallet_transfer)
+      {
+        callbackSecretKey: wallet_transfer.wallet.api_secret,
+        feePriority: DEFAULT_FEE_PRIORITY,
+        recipients: [{
+          address: payout.address,
+          amount: wallet_transfer.amount.to_f.to_s
+        }]
       }
     end
 
