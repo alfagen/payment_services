@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::CryptoApisV2
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    FAILED_PAYOUT_STATUSES = %w(failed rejected)
+
     delegate :outcome_transaction_fee_amount, to: :payment_system
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
@@ -25,8 +27,10 @@ class PaymentServices::CryptoApisV2
         response = client.request_details(payout.request_id)
         raise response['error']['message'] if response['error']
 
-        transaction_id = response['data']['item']['transactionId']
-        payout.update!(txid: transaction_id) if transaction_id
+        transaction = response['data']['item']
+        raise 'Withdrawal was not accepted' if FAILED_PAYOUT_STATUSES.include?(transaction['transactionRequestStatus'])
+
+        payout.update!(txid: transaction['transactionId']) if transaction['transactionId']
       else
         response = client.transaction_details(payout.txid)
         raise response['error']['message'] if response['error']
