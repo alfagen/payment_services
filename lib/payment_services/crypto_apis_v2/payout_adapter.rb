@@ -28,7 +28,7 @@ class PaymentServices::CryptoApisV2
         raise response['error']['message'] if response['error']
 
         transaction = response['data']['item']
-        raise 'Withdrawal was not accepted' if FAILED_PAYOUT_STATUSES.include?(transaction['transactionRequestStatus'])
+        payout.fail! if FAILED_PAYOUT_STATUSES.include?(transaction['transactionRequestStatus'])
 
         payout.update!(txid: transaction['transactionId']) if transaction['transactionId']
       else

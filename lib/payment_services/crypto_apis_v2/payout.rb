@@ -17,6 +17,7 @@ class PaymentServices::CryptoApisV2
       end
       state :paid do
         event :confirm, transitions_to: :completed
+        event :fail, transitions_to: :failed
       end
       state :completed
       state :failed
