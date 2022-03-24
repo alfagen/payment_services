@@ -83,7 +83,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def payout_endpoint(wallet)
-      if ADDRESS_BLOCKCHAINS.include(blockchain)
+      if ADDRESS_BLOCKCHAINS.include?(blockchain)
         "#{API_URL}/wallet-as-a-service/wallets/#{wallet.merchant_id}/#{blockchain}/#{NETWORK}/addresses/#{wallet.account}/transaction-requests"
       else
         "#{API_URL}/wallet-as-a-service/wallets/#{wallet.merchant_id}/#{blockchain}/#{NETWORK}/transaction-requests"
@@ -91,7 +91,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def build_body(wallet_transfer, payout)
-      item =  if ADDRESS_BLOCKCHAINS.include(blockchain)
+      item =  if ADDRESS_BLOCKCHAINS.include?(blockchain)
                 {
                   amount: wallet_transfer.amount.to_f.to_s,
                   feePriority: DEFAULT_FEE_PRIORITY,
