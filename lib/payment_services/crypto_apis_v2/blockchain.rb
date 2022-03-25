@@ -15,7 +15,8 @@ class PaymentServices::CryptoApisV2
       'etc'   => 'ethereum-classic',
       'bnb'   => 'binance-smart-chain',
       'zec'   => 'zcash',
-      'xrp'   => 'xrp'
+      'xrp'   => 'xrp',
+      'usdt'  => 'ethereum'
     }
     ACCOUNT_MODEL_BLOCKCHAINS  = %w(ethereum ethereum-classic binance-smart-chain xrp)
     FUNGIBLE_TOKENS = %w(usdt)
