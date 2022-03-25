@@ -15,6 +15,7 @@ class PaymentServices::CryptoApisV2
       'xrp'   => 'xrp'
     }
     ACCOUNT_MODEL_BLOCKCHAINS  = %w(ethereum ethereum-classic binance-smart-chain xrp)
+    FUNGIBLE_TOKENS = %w(usdt bnb)
 
     def initialize(currency:)
       @currency = currency
@@ -41,7 +42,9 @@ class PaymentServices::CryptoApisV2
     end
 
     def process_payout_endpoint(wallet:)
-      if account_model_blockchain?
+      if fungible_tokens?
+        "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/token-transaction-requests"
+      elsif account_model_blockchain?
         "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/transaction-requests"
       else
         "#{proccess_payout_base_url(wallet.merchant_id)}/transaction-requests"
@@ -50,7 +53,9 @@ class PaymentServices::CryptoApisV2
 
     def build_payout_request_body(payout:, wallet_transfer:)
       transaction_body = 
-        if account_model_blockchain?
+        if fungible_tokens?
+          build_fungible_payout_body(payout, wallet_transfer)
+        elsif account_model_blockchain?
           build_account_payout_body(payout, wallet_transfer)
         else
           build_utxo_payout_body(payout, wallet_transfer)
@@ -69,6 +74,10 @@ class PaymentServices::CryptoApisV2
 
     def xrp_blockchain?
       blockchain == 'xrp'
+    end
+
+    def fungible_tokens?
+      FUNGIBLE_TOKENS.include?(currency)
     end
 
     def account_model_blockchain?
@@ -97,6 +106,11 @@ class PaymentServices::CryptoApisV2
           amount: wallet_transfer.amount.to_f.to_s
         }]
       }
+    end
+
+    def build_fungible_payout_body(payout, wallet_transfer)
+      token_network = wallet_transfer.wallet.payment_system.token_network
+      build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network)
     end
   end
 end
