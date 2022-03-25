@@ -15,7 +15,7 @@ class PaymentServices::CryptoApisV2
       'xrp'   => 'xrp'
     }
     ACCOUNT_MODEL_BLOCKCHAINS  = %w(ethereum ethereum-classic binance-smart-chain xrp)
-    FUNGIBLE_TOKENS = %w(usdt bnb)
+    FUNGIBLE_TOKENS = %w(usdt)
 
     def initialize(currency:)
       @currency = currency
