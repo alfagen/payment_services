@@ -15,8 +15,7 @@ class PaymentServices::CryptoApisV2
       'etc'   => 'ethereum-classic',
       'bnb'   => 'binance-smart-chain',
       'zec'   => 'zcash',
-      'xrp'   => 'xrp',
-      'usdt'  => 'ethereum'
+      'xrp'   => 'xrp'
     }
     ACCOUNT_MODEL_BLOCKCHAINS  = %w(ethereum ethereum-classic binance-smart-chain xrp)
     FUNGIBLE_TOKENS = %w(usdt)
@@ -26,18 +25,20 @@ class PaymentServices::CryptoApisV2
     end
 
     def address_transactions_endpoint(address)
-      unless xrp_blockchain?
-        "#{API_URL}/blockchain-data/#{blockchain}/#{NETWORK}/addresses/#{address}/transactions"
-      else
+      if xrp_blockchain?
         "#{API_URL}/blockchain-data/xrp-specific/#{NETWORK}/addresses/#{address}/transactions"
+      elsif fungible_token?
+        "#{API_URL}/blockchain-data/#{blockchain}/#{NETWORK}/addresses/#{address}/tokens-transfers"
+      else
+        "#{API_URL}/blockchain-data/#{blockchain}/#{NETWORK}/addresses/#{address}/transactions"
       end
     end
 
     def transaction_details_endpoint(transaction_id)
-      unless xrp_blockchain?
-        "#{API_URL}/wallet-as-a-service/wallets/#{blockchain}/#{NETWORK}/transactions/#{transaction_id}"
-      else
+      if xrp_blockchain?
         "#{API_URL}/blockchain-data/xrp-specific/#{NETWORK}/transactions/#{transaction_id}"
+      else
+        "#{API_URL}/wallet-as-a-service/wallets/#{blockchain}/#{NETWORK}/transactions/#{transaction_id}"
       end  
     end
 
@@ -46,7 +47,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def process_payout_endpoint(wallet:)
-      if fungible_tokens?
+      if fungible_token?
         "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/token-transaction-requests"
       elsif account_model_blockchain?
         "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/transaction-requests"
@@ -57,7 +58,7 @@ class PaymentServices::CryptoApisV2
 
     def build_payout_request_body(payout:, wallet_transfer:)
       transaction_body = 
-        if fungible_tokens?
+        if fungible_token?
           build_fungible_payout_body(payout, wallet_transfer)
         elsif account_model_blockchain?
           build_account_payout_body(payout, wallet_transfer)
@@ -80,7 +81,7 @@ class PaymentServices::CryptoApisV2
       blockchain == 'xrp'
     end
 
-    def fungible_tokens?
+    def fungible_token?
       FUNGIBLE_TOKENS.include?(currency)
     end
 
