@@ -8,6 +8,7 @@ class PaymentServices::CryptoApisV2
     TRANSACTION_TIME_THRESHOLD = 30.minutes
     ETC_TIME_THRESHOLD = 20.seconds
     PARTNERS_RECEIVED_AMOUNT_DELTA = 0.000001
+    BASIC_TIME_COUNTDOWN = 1.minute
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
@@ -59,7 +60,7 @@ class PaymentServices::CryptoApisV2
       invoice_created_at = expected_invoice_created_at
       return false if invoice_created_at >= transaction_created_at
 
-      time_diff = (transaction_created_at - invoice_created_at) / 1.minute
+      time_diff = (transaction_created_at - invoice_created_at) / BASIC_TIME_COUNTDOWN
       match_by_amount_and_time?(amount, time_diff) || match_by_txid_amount_and_time?(amount, transaction['transactionId'], time_diff)
     end
 
