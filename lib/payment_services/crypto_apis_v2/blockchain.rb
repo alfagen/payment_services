@@ -2,6 +2,9 @@
 
 class PaymentServices::CryptoApisV2
   class Blockchain
+    API_URL = 'https://rest.cryptoapis.io/v2'
+    NETWORK = 'mainnet'
+    DEFAULT_FEE_PRIORITY = 'standard'
     CURRENCY_TO_BLOCKCHAIN = {
       'btc'   => 'bitcoin',
       'bch'   => 'bitcoin-cash',

@@ -6,10 +6,6 @@ class PaymentServices::CryptoApisV2
   class Client < ::PaymentServices::Base::Client
     include AutoLogger
 
-    API_URL = 'https://rest.cryptoapis.io/v2'
-    NETWORK = 'mainnet'
-    DEFAULT_FEE_PRIORITY = 'standard'
-
     def initialize(api_key:, currency:)
       @api_key  = api_key
       @blockchain = Blockchain.new(currency: currency)
