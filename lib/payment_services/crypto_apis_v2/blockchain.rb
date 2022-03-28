@@ -77,6 +77,10 @@ class PaymentServices::CryptoApisV2
       ACCOUNT_MODEL_BLOCKCHAINS.include?(blockchain)
     end
 
+    def zcash_blockchain?
+      blockchain == 'zcash'
+    end
+
     private
 
     attr_reader :currency

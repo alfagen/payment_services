@@ -6,7 +6,8 @@ class PaymentServices::CryptoApisV2
   class Client < ::PaymentServices::Base::Client
     include AutoLogger
 
-    DEFAULT_FEE_PRIORITY = 'standard'
+    DEFAULT_FEE_PRIORITY  = 'standard'
+    ZCASH_FEE_PRIORITY    = 'slow'
 
     def initialize(api_key:, currency:)
       @api_key  = api_key
@@ -85,7 +86,7 @@ class PaymentServices::CryptoApisV2
     def build_utxo_payout_body(payout, wallet_transfer)
       {
         callbackSecretKey: wallet_transfer.wallet.api_secret,
-        feePriority: DEFAULT_FEE_PRIORITY,
+        feePriority: fee_priority,
         recipients: [{
           address: payout.address,
           amount: wallet_transfer.amount.to_f.to_s
@@ -96,6 +97,10 @@ class PaymentServices::CryptoApisV2
     def build_fungible_payout_body(payout, wallet_transfer)
       token_network = wallet_transfer.wallet.payment_system.token_network.downcase
       build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network)
+    end
+
+    def fee_priority
+      blockchain.zcash_blockchain? ? ZCASH_FEE_PRIORITY : DEFAULT_FEE_PRIORITY
     end
   end
 end
