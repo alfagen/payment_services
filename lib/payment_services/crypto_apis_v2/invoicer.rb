@@ -101,7 +101,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def match_by_contract_address?(transaction)
-      transaction['contractAddress'] == order.income_wallet.payment_system.token_network
+      transaction['contractAddress'] == order.income_wallet.payment_system.token_network.downcase
     end
 
     def parse_received_amount(transaction)

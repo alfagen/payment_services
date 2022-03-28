@@ -94,7 +94,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def build_fungible_payout_body(payout, wallet_transfer)
-      token_network = wallet_transfer.wallet.payment_system.token_network
+      token_network = wallet_transfer.wallet.payment_system.token_network.downcase
       build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network)
     end
   end
