@@ -6,6 +6,8 @@ class PaymentServices::CryptoApisV2
   class Client < ::PaymentServices::Base::Client
     include AutoLogger
 
+    DEFAULT_FEE_PRIORITY = 'standard'
+
     def initialize(api_key:, currency:)
       @api_key  = api_key
       @blockchain = Blockchain.new(currency: currency)
@@ -41,7 +43,7 @@ class PaymentServices::CryptoApisV2
       safely_parse http_request(
         url: blockchain.process_payout_endpoint(wallet: wallet_transfer.wallet),
         method: :POST,
-        body: blockchain.build_payout_request_body(payout: payout, wallet_transfer: wallet_transfer).to_json,
+        body: build_payout_request_body(payout: payout, wallet_transfer: wallet_transfer).to_json,
         headers: build_headers
       )
     end
@@ -56,6 +58,44 @@ class PaymentServices::CryptoApisV2
         'Cache-Control' => 'no-cache',
         'X-API-Key'     => api_key
       }
+    end
+
+    def build_payout_request_body(payout:, wallet_transfer:)
+      transaction_body = 
+        if blockchain.fungible_token?
+          build_fungible_payout_body(payout, wallet_transfer)
+        elsif blockchain.account_model_blockchain?
+          build_account_payout_body(payout, wallet_transfer)
+        else
+          build_utxo_payout_body(payout, wallet_transfer)
+        end
+
+      { data: { item: transaction_body } }
+    end
+
+    def build_account_payout_body(payout, wallet_transfer)
+      {
+        amount: wallet_transfer.amount.to_f.to_s,
+        feePriority: DEFAULT_FEE_PRIORITY,
+        callbackSecretKey: wallet_transfer.wallet.api_secret,
+        recipientAddress: payout.address
+      }
+    end
+
+    def build_utxo_payout_body(payout, wallet_transfer)
+      {
+        callbackSecretKey: wallet_transfer.wallet.api_secret,
+        feePriority: DEFAULT_FEE_PRIORITY,
+        recipients: [{
+          address: payout.address,
+          amount: wallet_transfer.amount.to_f.to_s
+        }]
+      }
+    end
+
+    def build_fungible_payout_body(payout, wallet_transfer)
+      token_network = wallet_transfer.wallet.payment_system.token_network
+      build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network)
     end
   end
 end

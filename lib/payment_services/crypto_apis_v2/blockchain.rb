@@ -4,7 +4,6 @@ class PaymentServices::CryptoApisV2
   class Blockchain
     API_URL = 'https://rest.cryptoapis.io/v2'
     NETWORK = 'mainnet'
-    DEFAULT_FEE_PRIORITY = 'standard'
     CURRENCY_TO_BLOCKCHAIN = {
       'btc'   => 'bitcoin',
       'bch'   => 'bitcoin-cash',
@@ -27,17 +26,17 @@ class PaymentServices::CryptoApisV2
 
     def address_transactions_endpoint(address)
       if xrp_blockchain?
-        "#{API_URL}/blockchain-data/xrp-specific/#{NETWORK}/addresses/#{address}/transactions"
+        "#{blockchain_data_prefix}/xrp-specific/#{NETWORK}/addresses/#{address}/transactions"
       elsif fungible_token?
-        "#{API_URL}/blockchain-data/#{blockchain}/#{NETWORK}/addresses/#{address}/tokens-transfers"
+        "#{blockchain_data_prefix}/#{blockchain}/#{NETWORK}/addresses/#{address}/tokens-transfers"
       else
-        "#{API_URL}/blockchain-data/#{blockchain}/#{NETWORK}/addresses/#{address}/transactions"
+        "#{blockchain_data_prefix}/#{blockchain}/#{NETWORK}/addresses/#{address}/transactions"
       end
     end
 
     def transaction_details_endpoint(transaction_id)
       if xrp_blockchain?
-        "#{API_URL}/blockchain-data/xrp-specific/#{NETWORK}/transactions/#{transaction_id}"
+        "#{blockchain_data_prefix}/xrp-specific/#{NETWORK}/transactions/#{transaction_id}"
       else
         "#{API_URL}/wallet-as-a-service/wallets/#{blockchain}/#{NETWORK}/transactions/#{transaction_id}"
       end  
@@ -70,6 +69,14 @@ class PaymentServices::CryptoApisV2
       { data: { item: transaction_body } }
     end
 
+    def fungible_token?
+      FUNGIBLE_TOKENS.include?(currency)
+    end
+
+    def account_model_blockchain?
+      ACCOUNT_MODEL_BLOCKCHAINS.include?(blockchain)
+    end
+
     private
 
     attr_reader :currency
@@ -82,41 +89,12 @@ class PaymentServices::CryptoApisV2
       blockchain == 'xrp'
     end
 
-    def fungible_token?
-      FUNGIBLE_TOKENS.include?(currency)
-    end
-
-    def account_model_blockchain?
-      ACCOUNT_MODEL_BLOCKCHAINS.include?(blockchain)
-    end
-
     def proccess_payout_base_url(merchant_id)
       "#{API_URL}/wallet-as-a-service/wallets/#{merchant_id}/#{blockchain}/#{NETWORK}"
     end
 
-    def build_account_payout_body(payout, wallet_transfer)
-      {
-        amount: wallet_transfer.amount.to_f.to_s,
-        feePriority: DEFAULT_FEE_PRIORITY,
-        callbackSecretKey: wallet_transfer.wallet.api_secret,
-        recipientAddress: payout.address
-      }
-    end
-
-    def build_utxo_payout_body(payout, wallet_transfer)
-      {
-        callbackSecretKey: wallet_transfer.wallet.api_secret,
-        feePriority: DEFAULT_FEE_PRIORITY,
-        recipients: [{
-          address: payout.address,
-          amount: wallet_transfer.amount.to_f.to_s
-        }]
-      }
-    end
-
-    def build_fungible_payout_body(payout, wallet_transfer)
-      token_network = wallet_transfer.wallet.payment_system.token_network
-      build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network)
+    def blockchain_data_prefix
+      "#{API_URL}/blockchain-data"
     end
   end
 end

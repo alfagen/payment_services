@@ -9,7 +9,6 @@ class PaymentServices::CryptoApisV2
     ETC_TIME_THRESHOLD = 20.seconds
     PARTNERS_RECEIVED_AMOUNT_DELTA = 0.000001
     BASIC_TIME_COUNTDOWN = 1.minute
-    FUNGIBLE_TOKENS = %w(usdt)
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
@@ -43,19 +42,13 @@ class PaymentServices::CryptoApisV2
     end
 
     def transaction_for(invoice)
-      if invoice.transaction_id
-        client.transaction_details(invoice.transaction_id)['data']['item']
-      else
-        response = client.address_transactions(invoice.address)
-        raise response['error']['message'] if response['error']
+      return client.transaction_details(invoice.transaction_id)['data']['item'] if invoice.transaction_id.present?
 
-        response['data']['items'].find do |transaction|
-          if fungible_token?
-            match_token?(transaction)
-          else
-            match_transaction?(transaction)
-          end
-        end
+      response = client.address_transactions(invoice.address)
+      raise response['error']['message'] if response['error']
+
+      response['data']['items'].find do |transaction|
+        fungible_token? && match_token?(transaction) || match_transaction?(transaction)
       end
     end
 
@@ -116,11 +109,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def parse_received_tokens(transaction)
-      if transaction['recipientAddress'] == invoice.address
-        transaction['tokensAmount']
-      else
-        0
-      end
+      transaction['recipientAddress'] == invoice.address ? transaction['tokensAmount'] : 0
     end
 
     def timestamp_in_utc(timestamp)
@@ -134,7 +123,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def fungible_token?
-      @fungible_token ||= FUNGIBLE_TOKENS.include?(order.income_wallet.currency.to_s.downcase)
+      @fungible_token ||= ::Blockchain.new(currency: order.income_wallet.currency.to_s.downcase).fungible_token?
     end
 
     def client
