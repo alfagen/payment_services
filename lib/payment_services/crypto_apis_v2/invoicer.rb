@@ -123,7 +123,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def fungible_token?
-      @fungible_token ||= ::Blockchain.new(currency: order.income_wallet.currency.to_s.downcase).fungible_token?
+      @fungible_token ||= Blockchain.new(currency: order.income_wallet.currency.to_s.downcase).fungible_token?
     end
 
     def client
