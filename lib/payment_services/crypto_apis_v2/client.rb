@@ -104,7 +104,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def utxo_fee_priority
-      blockchain.zcash_blockchain? ? LOW_FEE_PRIORITY : DEFAULT_FEE_PRIORITY
+      blockchain.bitcoin? ? LOW_FEE_PRIORITY : DEFAULT_FEE_PRIORITY
     end
   end
 end
