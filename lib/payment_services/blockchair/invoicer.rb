@@ -40,7 +40,7 @@ class PaymentServices::Blockchair
     end
 
     def transaction_for(invoice)
-      transaction_ids = client.transaction_ids(address: invoice.address)['data']['transactions']
+      transaction_ids = client.transaction_ids(address: invoice.address)['data'][invoice.address]['transactions']
       transactions_information = client.transactions(transaction_ids: transaction_ids.first(5))['data']
       transactions = []
 
