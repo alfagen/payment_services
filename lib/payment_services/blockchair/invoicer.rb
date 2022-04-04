@@ -45,16 +45,12 @@ class PaymentServices::Blockchair
       transactions = []
 
       transactions_information.each do |_transaction_id, transactions_information|
-        transactions << transactions_information['outputs'] if correct_inputs(transactions_information['inputs'])
+        transactions << transactions_information['outputs']
       end
 
       transactions.flatten.find do |transaction|
         match_transaction?(transaction)
       end
-    end
-
-    def correct_inputs?(inputs)
-      inputs.count == 1 && inputs.first['value'].to_d == invoice.amount.to_d
     end
 
     def match_transaction?(transaction)
