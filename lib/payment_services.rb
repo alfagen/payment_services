@@ -32,6 +32,7 @@ module PaymentServices
   autoload :Binance, 'payment_services/binance'
   autoload :MasterProcessing, 'payment_services/master_processing'
   autoload :CryptoApisV2, 'payment_services/crypto_apis_v2'
+  autoload :Blockchair, 'payment_services/blockchair'
 
   UnauthorizedPayout = Class.new StandardError
 
