@@ -25,9 +25,9 @@ class PaymentServices::Blockchair
       )
     end
 
-    def transactions_information(transaction_ids:)
+    def transactions_information(tx_ids:)
       safely_parse http_request(
-        url: "#{API_URL}/#{blockchain}/dashboards/transactions/#{transaction_ids.join(',')}#{api_suffix}",
+        url: "#{API_URL}/#{blockchain}/dashboards/transactions/#{tx_ids.join(',')}#{api_suffix}",
         method: :GET,
         headers: build_headers
       )
