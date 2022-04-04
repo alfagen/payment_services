@@ -8,6 +8,7 @@ class PaymentServices::Blockchair
     TRANSACTION_TIME_THRESHOLD = 30.minutes
     ETC_TIME_THRESHOLD = 20.seconds
     BASIC_TIME_COUNTDOWN = 1.minute
+    VALUE_DIVIDER = 1e+8
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
@@ -54,7 +55,7 @@ class PaymentServices::Blockchair
     end
 
     def match_transaction?(transaction)
-      amount = transaction['value']
+      amount = transaction['value'].to_f / VALUE_DIVIDER
       transaction_created_at = datetime_string_in_utc(transaction['time'])
       invoice_created_at = expected_invoice_created_at
       return false if invoice_created_at >= transaction_created_at
