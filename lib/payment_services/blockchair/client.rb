@@ -42,7 +42,9 @@ class PaymentServices::Blockchair
     end
 
     def api_suffix
-      "?key=#{api_key}"
+      return "?key=#{api_key}" if api_key
+
+      ''
     end
 
     def build_headers
