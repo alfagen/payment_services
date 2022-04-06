@@ -4,13 +4,13 @@ class PaymentServices::Blockchair
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://api.blockchair.com'
     CURRENCY_TO_BLOCKCHAIN = {
-      'btc'   => 'bitcoin',
-      'bch'   => 'bitcoin-cash',
-      'ltc'   => 'litecoin',
-      'doge'  => 'dogecoin',
-      'dsh'   => 'dash',
-      'zec'   => 'zcash'
-    }
+      btc:  'bitcoin',
+      bch:  'bitcoin-cash',
+      ltc:  'litecoin',
+      doge: 'dogecoin',
+      dsh:  'dash',
+      zec:  'zcash'
+    }.freeze
 
     def initialize(api_key:, currency:)
       @api_key  = api_key
@@ -38,13 +38,11 @@ class PaymentServices::Blockchair
     attr_reader :api_key, :currency
 
     def blockchain
-      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency]
+      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency.to_sym]
     end
 
     def api_suffix
-      return "?key=#{api_key}" if api_key
-
-      ''
+      api_key ? "?key=#{api_key}" : ''
     end
 
     def build_headers

@@ -42,10 +42,7 @@ class PaymentServices::Blockchair
     end
 
     def transaction_for(invoice)
-      transaction_ids_on_wallet = client.transaction_ids(address: invoice.address)['data'][invoice.address]['transactions']
-      transactions_data = client.transactions_data(tx_ids: transaction_ids_on_wallet.first(TRANSANSACTIONS_AMOUNT_TO_CHECK))['data']
-
-      transactions_outputs(transactions_data).find do |transaction|
+      transactions_outputs(transactions_data_for(invoice)).find do |transaction|
         match_transaction?(transaction)
       end
     end
@@ -78,6 +75,11 @@ class PaymentServices::Blockchair
 
     def transaction_added_to_block?(transaction)
       transaction['block_id'] != -1
+    end
+
+    def transactions_data_for(invoice)
+      transaction_ids_on_wallet = client.transaction_ids(address: invoice.address)['data'][invoice.address]['transactions']
+      client.transactions_data(tx_ids: transaction_ids_on_wallet.first(TRANSANSACTIONS_AMOUNT_TO_CHECK))['data']
     end
 
     def transactions_outputs(transactions_data)
