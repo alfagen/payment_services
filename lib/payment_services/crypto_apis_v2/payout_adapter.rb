@@ -62,7 +62,7 @@ class PaymentServices::CryptoApisV2
 
     def client
       @client ||= begin
-        api_key = wallet.api_key.presence || wallet.parent&.api_key
+        api_key = wallet.outcome_api_key.presence || wallet.parent&.outcome_api_key
         currency = wallet.currency.to_s.downcase
 
         Client.new(api_key: api_key, currency: currency)

@@ -68,7 +68,7 @@ class PaymentServices::Liquid
 
     def client
       @client ||= begin
-        Client.new(currency: wallet.currency.to_s, token_id: api_wallet.merchant_id.to_i, api_key: api_wallet.api_key)
+        Client.new(currency: wallet.currency.to_s, token_id: api_wallet.merchant_id.to_i, api_key: api_wallet.outcome_api_key)
       end
     end
   end

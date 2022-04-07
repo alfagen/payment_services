@@ -30,7 +30,7 @@ class PaymentServices::QIWI
     end
 
     def client
-      @client ||= Client.new phone: wallet.qiwi_phone, token: wallet.api_key
+      @client ||= Client.new phone: wallet.qiwi_phone, token: wallet.outcome_api_key
     end
   end
 end

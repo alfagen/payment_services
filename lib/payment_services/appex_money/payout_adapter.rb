@@ -65,8 +65,8 @@ class PaymentServices::AppexMoney
       @client ||= begin
         Client.new(
           num_ps: wallet.num_ps,
-          first_secret_key: wallet.api_key,
-          second_secret_key: wallet.api_secret
+          first_secret_key: wallet.outcome_api_key,
+          second_secret_key: wallet.outcome_api_secret
         )
       end
     end

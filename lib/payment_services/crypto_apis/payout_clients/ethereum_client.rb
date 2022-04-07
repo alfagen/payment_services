@@ -31,7 +31,7 @@ class PaymentServices::CryptoApis
           value: payout.amount.to_d,
           gasPrice: payout.fee.to_i,
           gasLimit: GAS_LIMIT,
-          privateKey: wallet.api_secret
+          privateKey: wallet.outcome_api_secret
         }
       end
     end

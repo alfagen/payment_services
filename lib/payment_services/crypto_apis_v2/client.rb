@@ -78,14 +78,14 @@ class PaymentServices::CryptoApisV2
       {
         amount: wallet_transfer.amount.to_f.to_s,
         feePriority: account_fee_priority,
-        callbackSecretKey: wallet_transfer.wallet.api_secret,
+        callbackSecretKey: wallet_transfer.wallet.outcome_api_secret,
         recipientAddress: payout.address
       }
     end
 
     def build_utxo_payout_body(payout, wallet_transfer)
       {
-        callbackSecretKey: wallet_transfer.wallet.api_secret,
+        callbackSecretKey: wallet_transfer.wallet.outcome_api_secret,
         feePriority: utxo_fee_priority,
         recipients: [{
           address: payout.address,

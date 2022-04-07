@@ -55,7 +55,7 @@ class PaymentServices::MasterProcessing
 
     def client
       @client ||= begin
-        Client.new(api_key: wallet.api_key, secret_key: wallet.api_secret)
+        Client.new(api_key: wallet.outcome_api_key, secret_key: wallet.outcome_api_secret)
       end
     end
 

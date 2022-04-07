@@ -57,7 +57,7 @@ class PaymentServices::Exmo
     def client
       @client ||= begin
         wallet = order.income_wallet
-        Client.new(public_key: wallet.api_key, secret_key: wallet.api_secret)
+        Client.new(public_key: wallet.api_key, secret_key: wallet.outcome_api_secret)
       end
     end
   end

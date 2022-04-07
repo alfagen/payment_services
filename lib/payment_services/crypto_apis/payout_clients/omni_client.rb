@@ -31,7 +31,7 @@ class PaymentServices::CryptoApis
           value: payout.amount.to_d,
           fee: payout.fee,
           propertyID: TOKEN_PROPERTY_ID,
-          wif: wallet.api_secret
+          wif: wallet.outcome_api_secret
         }
       end
     end

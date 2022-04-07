@@ -40,7 +40,7 @@ class PaymentServices::CryptoApis
       end
 
       def wifs(wallet_transfers)
-        wallet_transfers.map { |wallet_transfer| wallet_transfer.wallet.api_secret }
+        wallet_transfers.map { |wallet_transfer| wallet_transfer.wallet.outcome_api_secret }
       end
 
       def pay_fee_from_address(payout)

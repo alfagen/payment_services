@@ -24,7 +24,7 @@ class PaymentServices::BlockIo
     # rubocop:disable Lint/UnusedMethodArgument
     def make_payout(amount:, payment_card_details:, transaction_id:, destination_account:)
       # rubocop:enable Lint/UnusedMethodArgument
-      client = Client.new(api_key: wallet.api_key, pin: wallet.api_secret)
+      client = Client.new(api_key: wallet.outcome_api_key, pin: wallet.outcome_api_secret)
       client.make_payout(address: destination_account, amount: amount.format(decimal_mark: '.', symbol: nil), nonce: transaction_id)
     end
   end
