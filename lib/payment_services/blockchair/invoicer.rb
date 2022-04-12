@@ -9,6 +9,7 @@ class PaymentServices::Blockchair
     ETC_TIME_THRESHOLD = 20.seconds
     BASIC_TIME_COUNTDOWN = 1.minute
     AMOUNT_DIVIDER = 1e+8
+    ETH_AMOUNT_DIVIDER = 1e+18
     TRANSANSACTIONS_AMOUNT_TO_CHECK = 3
 
     def create_invoice(money)
@@ -56,7 +57,7 @@ class PaymentServices::Blockchair
     end
 
     def match_transaction?(transaction)
-      amount = transaction['value'].to_f / AMOUNT_DIVIDER
+      amount = transaction['value'].to_f / amount_divider
       transaction_created_at = datetime_string_in_utc(transaction['time'])
       invoice_created_at = invoice.created_at.utc
       return false if invoice_created_at >= transaction_created_at
@@ -102,6 +103,14 @@ class PaymentServices::Blockchair
 
     def blockchain
       @blockchain ||= Blockchain.new(currency: order.income_wallet.currency.to_s.downcase)
+    end
+
+    def amount_divider
+      if blockchain.blockchain.ethereum?
+        ETH_AMOUNT_DIVIDER
+      else
+        AMOUNT_DIVIDER
+      end
     end
 
     def client
