@@ -42,11 +42,11 @@ class PaymentServices::Blockchair
     end
 
     def transaction_for(invoice)
-      if blockchain.blockchain_ethereum?
+      if blockchain.blockchain.ethereum?
         client.transaction_ids(address: invoice.address)['data'][invoice.address]['calls'].find do |transaction|
           match_transaction?(transaction)
         end
-      elsif blockchain.blockchain_monero?
+      elsif blockchain.blockchain.monero?
         match_transaction?(transaction)
       else
         transactions_outputs(transactions_data_for(invoice)).find do |transaction|
