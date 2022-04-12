@@ -35,7 +35,7 @@ class PaymentServices::Blockchair
     end
 
     def blockchain
-      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency].inquiry
+      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency.to_sym].inquiry
     end
 
     private
