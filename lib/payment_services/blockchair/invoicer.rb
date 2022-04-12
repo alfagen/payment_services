@@ -42,8 +42,16 @@ class PaymentServices::Blockchair
     end
 
     def transaction_for(invoice)
-      transactions_outputs(transactions_data_for(invoice)).find do |transaction|
+      if blockchain.blockchain_ethereum?
+        client.transaction_ids(address: invoice.address)['data'][invoice.address]['calls'].find do |transaction|
+          match_transaction?(transaction)
+        end
+      elsif blockchain.blockchain_monero?
         match_transaction?(transaction)
+      else
+        transactions_outputs(transactions_data_for(invoice)).find do |transaction|
+          match_transaction?(transaction)
+        end
       end
     end
 
@@ -74,7 +82,7 @@ class PaymentServices::Blockchair
     end
 
     def transaction_added_to_block?(transaction)
-      transaction['block_id'] != -1
+      transaction['block_id'] > 0
     end
 
     def transactions_data_for(invoice)
@@ -90,6 +98,10 @@ class PaymentServices::Blockchair
       end
 
       outputs.flatten
+    end
+
+    def blockchain
+      @blockchain ||= Blockchain.new(currency: order.income_wallet.currency.to_s.downcase)
     end
 
     def client

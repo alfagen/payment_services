@@ -1,25 +1,17 @@
 # frozen_string_literal: true
 
+require_relative 'blockchain'
+
 class PaymentServices::Blockchair
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://api.blockchair.com'
-    CURRENCY_TO_BLOCKCHAIN = {
-      btc:  'bitcoin',
-      bch:  'bitcoin-cash',
-      ltc:  'litecoin',
-      doge: 'dogecoin',
-      dsh:  'dash',
-      zec:  'zcash'
-    }.freeze
-
     def initialize(api_key:, currency:)
       @api_key  = api_key
-      @currency = currency
+      @blockchain = Blockchain.new(currency: currency)
     end
 
     def transaction_ids(address:)
       safely_parse http_request(
-        url: "#{API_URL}/#{blockchain}/dashboards/address/#{address}#{api_suffix}",
+        url: "#{blockchain.transaction_ids_endpoint(address)}#{api_suffix}",
         method: :GET,
         headers: build_headers
       )
@@ -27,7 +19,7 @@ class PaymentServices::Blockchair
 
     def transactions_data(tx_ids:)
       safely_parse http_request(
-        url: "#{API_URL}/#{blockchain}/dashboards/transactions/#{tx_ids.join(',')}#{api_suffix}",
+        url: "#{blockchain.transactions_data_endpoint(tx_ids)}#{api_suffix}",
         method: :GET,
         headers: build_headers
       )
@@ -35,11 +27,7 @@ class PaymentServices::Blockchair
 
     private
 
-    attr_reader :api_key, :currency
-
-    def blockchain
-      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency.to_sym]
-    end
+    attr_reader :api_key, :blockchain
 
     def api_suffix
       api_key ? "?key=#{api_key}" : ''
