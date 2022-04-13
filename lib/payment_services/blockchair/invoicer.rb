@@ -49,11 +49,33 @@ class PaymentServices::Blockchair
         end
       elsif blockchain.blockchain.monero?
         match_transaction?(transaction)
+      elsif blockchain.blockchain.cardano?
+        client.transaction_ids(address: invoice.address)['data'][invoice.address]['caTxList'].find do |transaction|
+          match_cardano_transaction?(transaction)
+        end
       else
         transactions_outputs(transactions_data_for(invoice)).find do |transaction|
           match_transaction?(transaction)
         end
       end
+    end
+
+    def match_cardano_transaction?(transaction)
+      transaction_created_at = Time.at(transaction['ctbTimeIssued']).to_datetime.utc
+      invoice_created_at = invoice.created_at.utc
+      return false if invoice_created_at >= transaction_created_at
+
+      time_diff = (transaction_created_at - invoice_created_at) / BASIC_TIME_COUNTDOWN
+      transaction['ctbOutputs'].each do |output|
+        return true if match_by_output_and_time?(output, time_diff)
+      end
+
+      false
+    end
+
+    def match_by_output_and_time?(output, time_diff)
+      amount = output['ctaAmount']['getCoin'].to_f / amount_divider
+      match_by_amount_and_time?(amount, time_diff) && output['ctaAddress']['unCAddress'] == invoice.address
     end
 
     def match_transaction?(transaction)

@@ -11,7 +11,8 @@ class PaymentServices::Blockchair
       dsh:  'dash',
       zec:  'zcash',
       eth:  'ethereum',
-      xmr:  'monero'
+      xmr:  'monero',
+      ada:  'cardano'
     }.freeze
 
     def initialize(currency:)
@@ -21,6 +22,8 @@ class PaymentServices::Blockchair
     def transaction_ids_endpoint(address)
       if blockchain.monero?
         "#{API_URL}/#{blockchain}/raw/outputs?address=#{address}"
+      elsif blockchain.cardano?
+        "#{API_URL}/#{blockchain}/raw/address/#{address}"
       else
         "#{API_URL}/#{blockchain}/dashboards/address/#{address}"
       end
