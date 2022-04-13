@@ -10,6 +10,7 @@ class PaymentServices::Blockchair
     BASIC_TIME_COUNTDOWN = 1.minute
     AMOUNT_DIVIDER = 1e+8
     ETH_AMOUNT_DIVIDER = 1e+18
+    CARDANO_AMOUNT_DIVIDER = 1e+6
     TRANSANSACTIONS_AMOUNT_TO_CHECK = 3
 
     def create_invoice(money)
@@ -37,8 +38,14 @@ class PaymentServices::Blockchair
     private
 
     def update_invoice_details(invoice:, transaction:)
-      invoice.transaction_created_at ||= datetime_string_in_utc(transaction['time'])
-      invoice.transaction_id ||= transaction['transaction_hash']
+      if blockchain.blockchain.cardano?
+        invoice.transaction_created_at ||= timestamp_in_utc(transaction['ctbTimeIssued'])
+        invoice.transaction_id ||= transaction['ctbId']
+      else
+        invoice.transaction_created_at ||= datetime_string_in_utc(transaction['time'])
+        invoice.transaction_id ||= transaction['transaction_hash']
+      end
+
       invoice.save!
     end
 
@@ -50,7 +57,7 @@ class PaymentServices::Blockchair
       elsif blockchain.blockchain.monero?
         match_transaction?(transaction)
       elsif blockchain.blockchain.cardano?
-        client.transaction_ids(address: invoice.address)['data'][invoice.address]['caTxList'].find do |transaction|
+        client.transaction_ids(address: invoice.address)['data'][invoice.address]['address']['caTxList'].find do |transaction|
           match_cardano_transaction?(transaction)
         end
       else
@@ -61,7 +68,7 @@ class PaymentServices::Blockchair
     end
 
     def match_cardano_transaction?(transaction)
-      transaction_created_at = Time.at(transaction['ctbTimeIssued']).to_datetime.utc
+      transaction_created_at = timestamp_in_utc(transaction['ctbTimeIssued'])
       invoice_created_at = invoice.created_at.utc
       return false if invoice_created_at >= transaction_created_at
 
@@ -75,7 +82,7 @@ class PaymentServices::Blockchair
 
     def match_by_output_and_time?(output, time_diff)
       amount = output['ctaAmount']['getCoin'].to_f / amount_divider
-      match_by_amount_and_time?(amount, time_diff) && output['ctaAddress']['unCAddress'] == invoice.address
+      match_by_amount_and_time?(amount, time_diff) && output['ctaAddress'] == invoice.address
     end
 
     def match_transaction?(transaction)
@@ -104,8 +111,12 @@ class PaymentServices::Blockchair
       DateTime.parse(datetime_string).utc
     end
 
+    def timestamp_in_utc(timestamp)
+      Time.at(timestamp).to_datetime.utc
+    end
+
     def transaction_added_to_block?(transaction)
-      transaction['block_id'] > 0
+      transaction.key?('block_id') ? transaction['block_id'] > 0 : true
     end
 
     def transactions_data_for(invoice)
@@ -130,6 +141,8 @@ class PaymentServices::Blockchair
     def amount_divider
       if blockchain.blockchain.ethereum?
         ETH_AMOUNT_DIVIDER
+      elsif blockchain.blockchain.cardano?
+        CARDANO_AMOUNT_DIVIDER
       else
         AMOUNT_DIVIDER
       end
