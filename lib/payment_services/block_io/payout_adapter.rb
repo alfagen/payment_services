@@ -3,6 +3,7 @@
 # Copyright (c) 2020 FINFEX https://github.com/finfex
 
 require_relative 'client'
+require_relative 'payout'
 # Сервис выплаты на BlockIo. Выполняет запрос на BlockIo-Клиент.
 #
 class PaymentServices::BlockIo
