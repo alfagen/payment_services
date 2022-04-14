@@ -81,7 +81,7 @@ class PaymentServices::CryptoApisV2
         callbackSecretKey: wallet_transfer.wallet.outcome_api_secret,
         recipientAddress: payout.address
       }
-      body[:addressTag] = payout.order_fio if blockchain.xrp?
+      body[:addressTag] = payout.order_fio.to_i if blockchain.xrp?
       body
     end
 
