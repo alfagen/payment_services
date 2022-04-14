@@ -4,7 +4,7 @@
 
 require 'block_io'
 
-class PaymentServices::BlockIo
+class PaymentServices::BlockIoAdapter
   class Client
     include AutoLogger
     Error = Class.new StandardError
