@@ -11,6 +11,8 @@ class PaymentServices::BlockIo
     monetize :amount_cents, as: :amount
     validates :amount_cents, :address, :fee, :state, presence: true
 
+    alias_attribute :txid, :transaction_id
+
     workflow_column :state
     workflow do
       state :pending do

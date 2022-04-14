@@ -37,9 +37,10 @@ class PaymentServices::BlockIo
       transaction = response['data']['txs'].find do |transaction|
         transaction['txid'] == payout.transaction_id
       end
+      return if transaction.nil?
+
       update_payout_details(transaction)
       payout.confirm! if payout.confirmed?
-
       transaction
     end
 
@@ -64,6 +65,8 @@ class PaymentServices::BlockIo
       payout.transaction_created_at ||= Time.at(transaction['time']).to_datetime.utc
       payout.fee = transaction['total_amount_sent'].to_f - payout.amount.to_f
       payout.confirmations = transaction['confirmations']
+
+      payout.save!
     end
 
     def create_payout!(amount:, address:, order_payout_id:)
