@@ -5,7 +5,7 @@
 require_relative 'client'
 # Сервис выплаты на BlockIo. Выполняет запрос на BlockIo-Клиент.
 #
-class PaymentServices::BlockIoAdapter
+class PaymentServices::BlockIo
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     MIN_PAYOUT_AMOUNT = 0.00002 # Block.io restriction
     ALLOWED_CURRENCIES = %w(BTC LTC).freeze

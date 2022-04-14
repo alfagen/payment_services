@@ -21,7 +21,7 @@ module PaymentServices
   autoload :PerfectMoney, 'payment_services/perfect_money'
   autoload :RBK, 'payment_services/rbk'
   autoload :YandexMoney, 'payment_services/yandex_money'
-  autoload :BlockIoAdapter, 'payment_services/block_io_adapter'
+  autoload :BlockIo, 'payment_services/block_io'
   autoload :CryptoApis, 'payment_services/crypto_apis'
   autoload :AnyMoney, 'payment_services/any_money'
   autoload :AppexMoney, 'payment_services/appex_money'
