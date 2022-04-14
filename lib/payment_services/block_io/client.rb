@@ -24,7 +24,7 @@ class PaymentServices::BlockIo
       end
     end
 
-    def transaction_details(address)
+    def transactions(address)
       begin
         client.get_transactions(type: 'sent', addresses: address)
       rescue Exception => error
