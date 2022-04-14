@@ -20,7 +20,8 @@ class PaymentServices::BlockIoAdapter
       begin
         prepare_response = blockio.prepare_transaction(amounts: amount, to_addresses: address)
         sign_response = blockio.create_and_sign_transaction(prepare_response)
-        blockio.submit_transaction(transaction_data: sign_response)
+        submit_response = blockio.submit_transaction(transaction_data: sign_response)
+        logger.info "Response: #{submit_response}"
       rescue Exception => error # BlockIo uses Exceptions instead StandardError
         raise Error, error.to_s
       end
