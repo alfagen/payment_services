@@ -43,10 +43,16 @@ class PaymentServices::BlockIo
       transaction
     end
 
+    def payout
+      @payout ||= Payout.find_by(id: payout_id)
+    end
+
     private
 
+    attr_accessor :payout_id
+
     def make_payout(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
-      create_payout!(amount: amount, address: destination_account, order_payout_id: order_payout_id)
+      @payout_id = create_payout!(amount: amount, address: destination_account, order_payout_id: order_payout_id).id
       response = client.make_payout(address: destination_account, amount: amount.format(decimal_mark: '.', symbol: nil), nonce: transaction_id)
       transaction_id = response.dig('data', 'txid')
       raise response.to_s unless transaction_id
