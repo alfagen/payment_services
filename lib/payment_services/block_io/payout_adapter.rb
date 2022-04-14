@@ -10,7 +10,7 @@ class PaymentServices::BlockIo
     MIN_PAYOUT_AMOUNT = 0.00002 # Block.io restriction
     ALLOWED_CURRENCIES = %w(BTC LTC).freeze
 
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:)
+    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       raise "Можно делать выплаты только в #{ALLOWED_CURRENCIES.join(', ')}" unless ALLOWED_CURRENCIES.include?(amount.currency.to_s)
       raise "Кошелек должен быть в  #{ALLOWED_CURRENCIES.join(', ')}" unless ALLOWED_CURRENCIES.include?(wallet.currency.to_s)
       raise 'Валюты должны совпадать' unless amount.currency.to_s == wallet.currency.to_s
