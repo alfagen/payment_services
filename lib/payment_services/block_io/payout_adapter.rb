@@ -16,7 +16,12 @@ class PaymentServices::BlockIo
       raise 'Валюты должны совпадать' unless amount.currency.to_s == wallet.currency.to_s
       raise "Минимальная выплата #{MIN_PAYOUT_AMOUNT}, к выплате #{amount}" if amount.to_f < MIN_PAYOUT_AMOUNT
 
-      super
+      make_payout(
+        amount: amount,
+        payment_card_details: payment_card_details,
+        transaction_id: transaction_id,
+        destination_account: destination_account
+      )
     end
 
     private
