@@ -30,5 +30,9 @@ class PaymentServices::CryptoApisV2
     def order_payout
       @order_payout ||= OrderPayout.find(order_payout_id)
     end
+
+    def order_fio
+      order_payout.order.outcome_fio.presence || order_payout.order.outcome_unk
+    end
   end
 end

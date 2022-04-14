@@ -75,12 +75,14 @@ class PaymentServices::CryptoApisV2
     end
 
     def build_account_payout_body(payout, wallet_transfer)
-      {
+      body = {
         amount: wallet_transfer.amount.to_f.to_s,
         feePriority: account_fee_priority,
         callbackSecretKey: wallet_transfer.wallet.outcome_api_secret,
         recipientAddress: payout.address
       }
+      body[:addressTag] = payout.order_fio if blockchain.xrp?
+      body
     end
 
     def build_utxo_payout_body(payout, wallet_transfer)

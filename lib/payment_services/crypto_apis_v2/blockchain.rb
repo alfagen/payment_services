@@ -25,7 +25,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def address_transactions_endpoint(address)
-      if xrp_blockchain?
+      if xrp?
         "#{blockchain_data_prefix}/xrp-specific/#{NETWORK}/addresses/#{address}/transactions"
       elsif fungible_token?
         "#{blockchain_data_prefix}/#{blockchain}/#{NETWORK}/addresses/#{address}/tokens-transfers"
@@ -35,7 +35,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def transaction_details_endpoint(transaction_id)
-      if xrp_blockchain?
+      if xrp?
         "#{blockchain_data_prefix}/xrp-specific/#{NETWORK}/transactions/#{transaction_id}"
       else
         "#{API_URL}/wallet-as-a-service/wallets/#{blockchain}/#{NETWORK}/transactions/#{transaction_id}"
@@ -56,19 +56,6 @@ class PaymentServices::CryptoApisV2
       end
     end
 
-    def build_payout_request_body(payout:, wallet_transfer:)
-      transaction_body = 
-        if fungible_token?
-          build_fungible_payout_body(payout, wallet_transfer)
-        elsif account_model_blockchain?
-          build_account_payout_body(payout, wallet_transfer)
-        else
-          build_utxo_payout_body(payout, wallet_transfer)
-        end
-
-      { data: { item: transaction_body } }
-    end
-
     def fungible_token?
       FUNGIBLE_TOKENS.include?(currency)
     end
@@ -81,16 +68,16 @@ class PaymentServices::CryptoApisV2
       blockchain == 'bitcoin'
     end
 
+    def xrp?
+      blockchain == 'xrp'
+    end
+
     private
 
     attr_reader :currency
 
     def blockchain
       @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency]
-    end
-
-    def xrp_blockchain?
-      blockchain == 'xrp'
     end
 
     def proccess_payout_base_url(merchant_id)
