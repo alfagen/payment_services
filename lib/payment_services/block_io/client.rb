@@ -2,6 +2,8 @@
 
 # Copyright (c) 2020 FINFEX https://github.com/finfex
 
+require 'block_io'
+
 class PaymentServices::BlockIo
   class Client
     include AutoLogger
