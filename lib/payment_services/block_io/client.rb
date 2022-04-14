@@ -13,9 +13,12 @@ class PaymentServices::BlockIo
     end
 
     def make_payout(address:, amount:, nonce:)
-      BlockIo.set_options(api_key: api_key, pin: pin)
+      blockio = BlockIo::Client.new(api_key: api_key, pin: pin, version: 2)
+
       begin
-        BlockIo.withdraw(to_addresses: address, amounts: amount, nonce: nonce)
+        prepare_response = blockio.prepare_transaction(amounts: amount, to_addresses: address)
+        sign_response = blockio.create_and_sign_transaction(prepare_response)
+        blockio.submit_transaction(transaction_data: sign_response)
       rescue Exception => error # BlockIo uses Exceptions instead StandardError
         raise Error, error.to_s
       end
