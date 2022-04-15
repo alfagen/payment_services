@@ -33,11 +33,9 @@ class PaymentServices::BlockIo
       payout = Payout.find(payout_id)
       return if payout.pending? || payout.transaction_id.nil?
 
-      transaction_api_response = find_transaction(txid: payout.transaction_id, transactions: client.transactions(address: wallet.account)['data']['txs'])
-      transaction = Transaction.new(api_response: transaction_api_response)
-      update_payout_details(payout, transaction)
-      payout.confirm! if payout.confirmed?
-      transaction_api_response
+      transaction = build_transaction(payout)
+      payout.update_payout_details!(transaction: transaction)
+      transaction
     end
 
     def payout
@@ -61,22 +59,19 @@ class PaymentServices::BlockIo
       payout.pay!(transaction_id: transaction_id)
     end
 
-    def update_payout_details(payout, transaction)
-      payout.transaction_created_at ||= transaction.transaction_created_at
-      payout.fee = transaction.total_spend - payout.amount.to_f
-      payout.confirmations = transaction.confirmations
-
-      payout.save!
-    end
-
     def find_transaction(txid:, transactions:)
-      transactions.find do |transaction|
-        transaction['txid'] == txid
-      end
+      transactions.find { |transaction| transaction['txid'] == txid }
     end
 
     def create_payout!(amount:, address:, order_payout_id:)
       Payout.create!(amount: amount, address: address, order_payout_id: order_payout_id)
+    end
+
+    def build_transaction(payout)
+      wallet_transactions = client.transactions(address: wallet.account)['data']['txs']
+      raw_transaction = find_transaction(txid: payout.transaction_id, transactions: wallet_transactions)
+
+      Transaction.build_from(raw_transaction: raw_transaction)
     end
 
     def client

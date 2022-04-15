@@ -18,11 +18,11 @@ class PaymentServices::BlockIo
     def make_payout(address:, amount:, nonce:)
       logger.info "---- Request payout to: #{address}, on #{amount} ----"
       begin
-        prepare_response = client.prepare_transaction(amounts: amount, to_addresses: address)
-        sign_response = client.create_and_sign_transaction(prepare_response)
-        submit_response = client.submit_transaction(transaction_data: sign_response)
-        logger.info "---- Response: #{submit_response.to_s} ----"
-        submit_response
+        transaction = client.prepare_transaction(amounts: amount, to_addresses: address)
+        signed_transaction = client.create_and_sign_transaction(transaction)
+        submit_transaction_response = client.submit_transaction(transaction_data: signed_transaction)
+        logger.info "---- Response: #{submit_transaction_response.to_s} ----"
+        submit_transaction_response
       rescue Exception => error # BlockIo uses Exceptions instead StandardError
         logger.error error.to_s
         raise Error, error.to_s

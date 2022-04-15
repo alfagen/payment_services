@@ -29,12 +29,23 @@ class PaymentServices::BlockIo
       update(transaction_id: transaction_id)
     end
 
-    def confirmed?
-      confirmations >= CONFIRMATIONS_FOR_COMPLETE
-    end
-
     def order_payout
       @order_payout ||= OrderPayout.find(order_payout_id)
+    end
+
+    def update_payout_details!(transaction:)
+      update!(
+        transaction_created_at: transaction.transaction_created_at,
+        fee: transaction.total_spend - amount.to_f,
+        confirmations: transaction.confirmations
+      )
+      confirm! if confirmed?
+    end
+
+    private
+
+    def confirmed?
+      confirmations >= CONFIRMATIONS_FOR_COMPLETE
     end
   end
 end
