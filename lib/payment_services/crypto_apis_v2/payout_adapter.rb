@@ -6,6 +6,7 @@ require_relative 'client'
 class PaymentServices::CryptoApisV2
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     FAILED_PAYOUT_STATUSES = %w(failed rejected)
+    SUCCESS_PAYOUT_STATUS = 'tesSUCCESS'
 
     delegate :outcome_transaction_fee_amount, to: :payment_system
 
@@ -74,10 +75,14 @@ class PaymentServices::CryptoApisV2
     end
 
     def update_payout_details(transaction)
-      payout.confirmed = transaction['isConfirmed'] if transaction['isConfirmed']
+      payout.confirmed = transaction_confirmed?(transaction)
       payout.fee = transaction['fee']['amount'].to_f
 
       payout.save!
+    end
+
+    def transaction_confirmed?(transaction)
+      (transaction['isConfirmed'] || transaction['status'] == SUCCESS_PAYOUT_STATUS) ? true : false
     end
   end
 end
