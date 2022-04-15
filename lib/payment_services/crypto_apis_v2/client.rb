@@ -49,6 +49,14 @@ class PaymentServices::CryptoApisV2
       )
     end
 
+    def classic_to_x_address(classic_address, address_tag)
+      safely_parse http_request(
+        url: "https://rest.cryptoapis.io/v2/blockchain-tools/xrp/mainnet/encode-x-address/#{classic_address}/#{address_tag}",
+        method: :GET,
+        headers: build_headers
+      )
+    end
+
     private
 
     attr_reader :api_key, :blockchain
@@ -81,7 +89,7 @@ class PaymentServices::CryptoApisV2
         callbackSecretKey: wallet_transfer.wallet.outcome_api_secret,
         recipientAddress: payout.address
       }
-      body[:addressTag] = payout.order_fio.to_i if blockchain.xrp?
+      body[:recipientAddress] = classic_to_x_address(body[:recipientAddress], payout.order_fio)['data']['item']['xAddress'] if blockchain.xrp?
       body
     end
 
