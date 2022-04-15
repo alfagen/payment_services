@@ -19,13 +19,14 @@ class PaymentServices::CryptoApisV2
     }
     ACCOUNT_MODEL_BLOCKCHAINS  = %w(ethereum ethereum-classic binance-smart-chain xrp)
     FUNGIBLE_TOKENS = %w(usdt)
+    delegate :xrp?, :bitcoin?, to: :blockchain
 
     def initialize(currency:)
       @currency = currency
     end
 
     def address_transactions_endpoint(address)
-      if xrp?
+      if blockchain.xrp?
         "#{blockchain_data_prefix}/xrp-specific/#{NETWORK}/addresses/#{address}/transactions"
       elsif fungible_token?
         "#{blockchain_data_prefix}/#{blockchain}/#{NETWORK}/addresses/#{address}/tokens-transfers"
@@ -35,7 +36,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def transaction_details_endpoint(transaction_id)
-      if xrp?
+      if blockchain.xrp?
         "#{blockchain_data_prefix}/xrp-specific/#{NETWORK}/transactions/#{transaction_id}"
       else
         "#{API_URL}/wallet-as-a-service/wallets/#{blockchain}/#{NETWORK}/transactions/#{transaction_id}"
@@ -64,20 +65,12 @@ class PaymentServices::CryptoApisV2
       ACCOUNT_MODEL_BLOCKCHAINS.include?(blockchain)
     end
 
-    def bitcoin?
-      blockchain == 'bitcoin'
-    end
-
-    def xrp?
-      blockchain == 'xrp'
-    end
-
     private
 
     attr_reader :currency
 
     def blockchain
-      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency]
+      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency].inquiry
     end
 
     def proccess_payout_base_url(merchant_id)

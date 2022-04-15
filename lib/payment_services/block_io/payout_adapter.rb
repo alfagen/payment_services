@@ -4,13 +4,15 @@
 
 require_relative 'client'
 require_relative 'payout'
+require_relative 'transaction'
 # Сервис выплаты на BlockIo. Выполняет запрос на BlockIo-Клиент.
 #
 class PaymentServices::BlockIo
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     MIN_PAYOUT_AMOUNT = 0.00002 # Block.io restriction
     ALLOWED_CURRENCIES = %w(BTC LTC).freeze
-    RESPONSE_SUCCESS = 'success'
+    Error = Class.new StandardError
+    TansactionIdNotReceived = Class.new Error
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       raise "Можно делать выплаты только в #{ALLOWED_CURRENCIES.join(', ')}" unless ALLOWED_CURRENCIES.include?(amount.currency.to_s)
@@ -28,18 +30,11 @@ class PaymentServices::BlockIo
     end
 
     def refresh_status!(payout_id)
-      @payout_id = payout_id
-      return if payout.pending?
+      payout = Payout.find(payout_id)
+      return if payout.pending? || payout.transaction_id.nil?
 
-      response = client.transactions(address: wallet.account)
-      raise response.to_s unless response['status'] == RESPONSE_SUCCESS
-
-      transaction = response['data']['txs'].find do |transaction|
-        transaction['txid'] == payout.transaction_id
-      end
-      return if transaction.nil?
-
-      update_payout_details(transaction)
+      transaction = Transaction.new(api_response: find_transaction(txid: payout.transaction_id, transactions: client.transactions(address: wallet.account)['data']['txs']))
+      update_payout_details(payout, transaction)
       payout.confirm! if payout.confirmed?
       transaction
     end
@@ -53,20 +48,30 @@ class PaymentServices::BlockIo
     attr_accessor :payout_id
 
     def make_payout(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
-      @payout_id = create_payout!(amount: amount, address: destination_account, order_payout_id: order_payout_id).id
-      response = client.make_payout(address: destination_account, amount: amount.format(decimal_mark: '.', symbol: nil), nonce: transaction_id)
-      transaction_id = response.dig('data', 'txid')
-      raise response.to_s unless transaction_id
+      payout = create_payout!(amount: amount, address: destination_account, order_payout_id: order_payout_id)
+      response = client.make_payout(
+        address: destination_account,
+        amount: amount.format(decimal_mark: '.', symbol: nil),
+        nonce: transaction_id
+      )
+      transaction_id = client.extract_transaction_id(response)
+      raise TansactionIdNotReceived, response.to_s unless transaction_id
 
       payout.pay!(transaction_id: transaction_id)
     end
 
-    def update_payout_details(transaction)
-      payout.transaction_created_at ||= Time.at(transaction['time']).to_datetime.utc
-      payout.fee = transaction['total_amount_sent'].to_f - payout.amount.to_f
-      payout.confirmations = transaction['confirmations']
+    def update_payout_details(payout, transaction)
+      payout.transaction_created_at ||= transaction.transaction_created_at
+      payout.fee = transaction.total_spend - payout.amount.to_f
+      payout.confirmations = transaction.confirmations
 
       payout.save!
+    end
+
+    def find_transaction(txid:, transactions:)
+      transactions.find do |transaction|
+        transaction['txid'] == txid
+      end
     end
 
     def create_payout!(amount:, address:, order_payout_id:)

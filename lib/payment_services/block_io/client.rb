@@ -41,6 +41,10 @@ class PaymentServices::BlockIo
       end
     end
 
+    def extract_transaction_id(response)
+      response.dig('data', 'txid')
+    end
+
     private
 
     def client
