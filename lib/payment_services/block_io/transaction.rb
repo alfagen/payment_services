@@ -19,7 +19,7 @@ class PaymentServices::BlockIo
     end
 
     def to_s
-      "txid: #{transaction_id}, created_at: #{transaction_created_at}, confirmations: #{confirmations}"
+      attributes.to_s
     end
   end
 end
