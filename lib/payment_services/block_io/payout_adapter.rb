@@ -33,10 +33,11 @@ class PaymentServices::BlockIo
       payout = Payout.find(payout_id)
       return if payout.pending? || payout.transaction_id.nil?
 
-      transaction = Transaction.new(api_response: find_transaction(txid: payout.transaction_id, transactions: client.transactions(address: wallet.account)['data']['txs']))
+      transaction_api_response = find_transaction(txid: payout.transaction_id, transactions: client.transactions(address: wallet.account)['data']['txs'])
+      transaction = Transaction.new(api_response: transaction_api_response)
       update_payout_details(payout, transaction)
       payout.confirm! if payout.confirmed?
-      transaction
+      transaction_api_response
     end
 
     def payout

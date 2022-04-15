@@ -110,7 +110,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def account_fee_priority
-      blockchain.fungible_token? ? LOW_FEE_PRIORITY : DEFAULT_FEE_PRIORITY
+      blockchain.fungible_token? || blockchain.xrp? ? LOW_FEE_PRIORITY : DEFAULT_FEE_PRIORITY
     end
 
     def utxo_fee_priority
