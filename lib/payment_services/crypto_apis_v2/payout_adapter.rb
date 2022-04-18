@@ -6,6 +6,8 @@ require_relative 'transaction'
 
 class PaymentServices::CryptoApisV2
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    FAILED_PAYOUT_STATUSES = %w(failed rejected)
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       raise 'amount is not a Money' unless amount.is_a? Money
 
@@ -24,6 +26,7 @@ class PaymentServices::CryptoApisV2
         response = client.request_details(payout.request_id)
         raise response['error']['message'] if response['error']
 
+        payout.fail! if FAILED_PAYOUT_STATUSES.include?(response['data']['item']['transactionRequestStatus'])
         transaction = Transaction.build_from(raw_transaction: response['data']['item'])
         payout.update!(txid: transaction.transaction_id)
       else
