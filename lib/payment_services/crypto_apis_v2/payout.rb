@@ -34,5 +34,14 @@ class PaymentServices::CryptoApisV2
     def order_fio
       order_payout.order.outcome_fio.presence || order_payout.order.outcome_unk
     end
+
+    def update_payout_details!(transaction:)
+      update!(
+        confirmed: transaction.confirmed?, 
+        fee: transaction.fee
+      )
+
+      confirm! if confirmed?
+    end
   end
 end

@@ -17,28 +17,24 @@ class PaymentServices::BlockIo
 
     def make_payout(address:, amount:, nonce:)
       logger.info "---- Request payout to: #{address}, on #{amount} ----"
-      begin
-        transaction = client.prepare_transaction(amounts: amount, to_addresses: address)
-        signed_transaction = client.create_and_sign_transaction(transaction)
-        submit_transaction_response = client.submit_transaction(transaction_data: signed_transaction)
-        logger.info "---- Response: #{submit_transaction_response.to_s} ----"
-        submit_transaction_response
-      rescue Exception => error # BlockIo uses Exceptions instead StandardError
-        logger.error error.to_s
-        raise Error, error.to_s
-      end
+      transaction = block_io_client.prepare_transaction(amounts: amount, to_addresses: address)
+      signed_transaction = block_io_client.create_and_sign_transaction(transaction)
+      submit_transaction_response = block_io_client.submit_transaction(transaction_data: signed_transaction)
+      logger.info "---- Response: #{submit_transaction_response.to_s} ----"
+      submit_transaction_response
+    rescue Exception => error # BlockIo uses Exceptions instead StandardError
+      logger.error error.to_s
+      raise Error, error.to_s
     end
 
     def transactions(address)
       logger.info "---- Request transactions info on #{address} ----"
-      begin
-        transactions = client.get_transactions(type: 'sent', addresses: address)
-        logger.info "---- Response: #{transactions} ----"
-        transactions
-      rescue Exception => error
-        logger.error error.to_s
-        raise Error, error.to_s
-      end
+      transactions = block_io_client.get_transactions(type: 'sent', addresses: address)
+      logger.info "---- Response: #{transactions} ----"
+      transactions
+    rescue Exception => error
+      logger.error error.to_s
+      raise Error, error.to_s
     end
 
     def extract_transaction_id(response)
@@ -47,8 +43,8 @@ class PaymentServices::BlockIo
 
     private
 
-    def client
-      @client ||= BlockIo::Client.new(api_key: api_key, pin: pin, version: API_VERSION)
+    def block_io_client
+      @block_io_client ||= BlockIo::Client.new(api_key: api_key, pin: pin, version: API_VERSION)
     end
 
     attr_reader :api_key, :pin
