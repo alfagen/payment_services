@@ -36,10 +36,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def update_payout_details!(transaction:)
-      update!(
-        confirmed: transaction.confirmed?, 
-        fee: transaction.fee
-      )
+      update!(confirmed: transaction.confirmed?, fee: transaction.fee)
 
       confirm! if confirmed?
     end
