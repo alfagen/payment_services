@@ -20,7 +20,7 @@ class PaymentServices::CryptoApisV2
 
     private
 
-    def confirmed_status?(raw_transaction)
+    def self.confirmed_status?(raw_transaction)
       (raw_transaction['isConfirmed'] || raw_transaction['status'] == SUCCESS_PAYOUT_STATUS) ? true : false
     end
   end
