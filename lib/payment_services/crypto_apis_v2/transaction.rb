@@ -12,7 +12,7 @@ class PaymentServices::CryptoApisV2
 
     def self.build_from(raw_transaction:)
       new(
-        transaction_id: raw_transaction['transactionId'],
+        transaction_id: raw_transaction['transactionHash'],
         confirmed: confirmed_status?(raw_transaction),
         fee: raw_transaction['fee']['amount'].to_f
       )

@@ -26,9 +26,9 @@ class PaymentServices::CryptoApisV2
         response = client.request_details(payout.request_id)
         raise response['error']['message'] if response['error']
 
-        payout.fail! if FAILED_PAYOUT_STATUSES.include?(response['data']['item']['transactionRequestStatus'])
-        transaction = Transaction.build_from(raw_transaction: response['data']['item'])
-        payout.update!(txid: transaction.transaction_id)
+        transaction = response['data']['item']
+        payout.fail! if FAILED_PAYOUT_STATUSES.include?(transaction['transactionRequestStatus'])
+        payout.update!(txid: transaction['transactionId']) if transaction['transactionId']
       else
         response = client.transaction_details(payout.txid)
         raise response['error']['message'] if response['error']
