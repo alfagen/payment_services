@@ -26,7 +26,7 @@ class PaymentServices::Blockchair
       elsif blockchain.cardano?
         "#{API_URL}/#{blockchain}/raw/address/#{address}"
       elsif blockchain.stellar?
-        "#{API_URL}/#{blockchain}/raw/account/#{address}"
+        "#{API_URL}/#{blockchain}/raw/account/#{address}?payments=true&account=false"
       else
         "#{API_URL}/#{blockchain}/dashboards/address/#{address}"
       end
