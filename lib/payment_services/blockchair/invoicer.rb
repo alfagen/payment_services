@@ -24,7 +24,7 @@ class PaymentServices::Blockchair
       invoice.has_transaction! if invoice.pending?
 
       update_invoice_details(invoice: invoice, transaction: transaction)
-      invoice.pay!(payload: transaction) if transaction_added_to_block?(transaction)
+      invoice.pay!(payload: transaction) if transaction_added_to_block?(transaction) || transaction['transaction_successful']
     end
 
     def invoice
@@ -41,6 +41,9 @@ class PaymentServices::Blockchair
       if blockchain.blockchain.cardano?
         invoice.transaction_created_at ||= timestamp_in_utc(transaction['ctbTimeIssued'])
         invoice.transaction_id ||= transaction['ctbId']
+      elsif blockchain.blockchain.stellar?
+        invoice.transaction_created_at ||= DateTime.parse(transaction['created_at']).utc
+        invoice.transaction_id ||= transaction['transaction_hash']
       else
         invoice.transaction_created_at ||= datetime_string_in_utc(transaction['time'])
         invoice.transaction_id ||= transaction['transaction_hash']
@@ -60,11 +63,26 @@ class PaymentServices::Blockchair
         client.transaction_ids(address: invoice.address)['data'][invoice.address]['address']['caTxList'].find do |transaction|
           match_cardano_transaction?(transaction)
         end
+      elsif blockchain.blockchain.stellar?
+        client.transaction_ids(address: invoice.address)['data'][invoice.address]['account']['payments'].find do |transaction|
+          match_stellar_transaction?(transaction)
+        end
       else
         transactions_outputs(transactions_data_for(invoice)).find do |transaction|
           match_transaction?(transaction)
         end
       end
+    end
+
+    def match_stellar_transaction?(transaction)
+      return false unless transaction['type'] == 'payment'
+
+      transaction_created_at = DateTime.parse(transaction['created_at']).utc
+      invoice_created_at = invoice.created_at.utc
+      return false if invoice_created_at >= transaction_created_at
+
+      time_diff = (transaction_created_at - invoice_created_at) / BASIC_TIME_COUNTDOWN
+      match_by_amount_and_time?(transaction['amount'], time_diff)
     end
 
     def match_cardano_transaction?(transaction)

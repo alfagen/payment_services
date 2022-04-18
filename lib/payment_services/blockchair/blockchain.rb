@@ -12,7 +12,8 @@ class PaymentServices::Blockchair
       zec:  'zcash',
       eth:  'ethereum',
       xmr:  'monero',
-      ada:  'cardano'
+      ada:  'cardano',
+      xlm:  'stellar'
     }.freeze
 
     def initialize(currency:)
@@ -24,6 +25,8 @@ class PaymentServices::Blockchair
         "#{API_URL}/#{blockchain}/raw/outputs?address=#{address}"
       elsif blockchain.cardano?
         "#{API_URL}/#{blockchain}/raw/address/#{address}"
+      elsif blockchain.stellar?
+        "#{API_URL}/#{blockchain}/raw/account/#{address}"
       else
         "#{API_URL}/#{blockchain}/dashboards/address/#{address}"
       end
