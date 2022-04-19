@@ -10,9 +10,8 @@ class PaymentServices::BlockIo
     Error = Class.new StandardError
     API_VERSION = 2
 
-    def initialize(api_key:, pin:)
+    def initialize(api_key:)
       @api_key = api_key
-      @pin = pin
     end
 
     def make_payout(address:, amount:, nonce:)
@@ -44,9 +43,9 @@ class PaymentServices::BlockIo
     private
 
     def block_io_client
-      @block_io_client ||= BlockIo::Client.new(api_key: api_key, pin: pin, version: API_VERSION)
+      @block_io_client ||= BlockIo::Client.new(api_key: api_key, version: API_VERSION)
     end
 
-    attr_reader :api_key, :pin
+    attr_reader :api_key
   end
 end
