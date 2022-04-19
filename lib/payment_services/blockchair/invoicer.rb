@@ -64,8 +64,14 @@ class PaymentServices::Blockchair
           match_cardano_transaction?(transaction)
         end
       elsif blockchain.blockchain.stellar?
+        memo = order.income_wallet.name
+        transactions = client.stellar_transactions(address: invoice.address)['data'][invoice.address]['account']['transactions']
+        tx = transactions.find { |transaction| transaction['memo'] == order.income_wallet.name }
+        return false unless tx
+
+        txid = tx['hash']
         client.transaction_ids(address: invoice.address)['data'][invoice.address]['account']['payments'].find do |transaction|
-          match_stellar_transaction?(transaction)
+          match_stellar_transaction?(transaction, txid)
         end
       else
         transactions_outputs(transactions_data_for(invoice)).find do |transaction|
@@ -74,7 +80,8 @@ class PaymentServices::Blockchair
       end
     end
 
-    def match_stellar_transaction?(transaction)
+    def match_stellar_transaction?(transaction, txid)
+      return false unless transaction['transaction_hash'] == txid
       return false unless transaction['type'] == 'payment'
 
       transaction_created_at = DateTime.parse(transaction['created_at']).utc

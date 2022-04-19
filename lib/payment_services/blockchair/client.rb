@@ -25,6 +25,14 @@ class PaymentServices::Blockchair
       )
     end
 
+    def stellar_transactions(address:)
+      safely_parse http_request(
+        url: "https://api.blockchair.com/stellar/raw/account/#{address}?transactions=true&account=false",
+        method: :GET,
+        headers: build_headers
+      )
+    end
+
     private
 
     attr_reader :api_key, :blockchain
