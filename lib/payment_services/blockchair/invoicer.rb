@@ -70,7 +70,7 @@ class PaymentServices::Blockchair
         return false unless tx
 
         txid = tx['hash']
-        client.transaction_ids(address: invoice.address)['data'][invoice.address]['account']['payments'].find do |transaction|
+        client.transaction_ids(address: invoice.address)['data'][invoice.address]['payments'].find do |transaction|
           match_stellar_transaction?(transaction, txid)
         end
       else
