@@ -65,7 +65,7 @@ class PaymentServices::Blockchair
         end
       elsif blockchain.blockchain.stellar?
         memo = order.income_wallet.name
-        transactions = client.stellar_transactions(address: invoice.address)['data'][invoice.address]['account']['transactions']
+        transactions = client.stellar_transactions(address: invoice.address)['data'][invoice.address]['transactions']
         tx = transactions.find { |transaction| transaction['memo'] == order.income_wallet.name }
         return false unless tx
 
