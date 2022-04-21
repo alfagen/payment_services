@@ -39,7 +39,7 @@ class PaymentServices::Blockchair
     end
 
     def build_transaction(id:, created_at:, source:)
-      source.nil? ? nil : Transaction.build_from({ transaction_hash: id, created_at: created_at, source: source })
+      source.nil? ? nil : Transaction.build_from(raw_transaction: { transaction_hash: id, created_at: created_at, source: source })
     end
 
     def match_cardano_transaction?(transaction)
