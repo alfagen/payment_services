@@ -38,5 +38,12 @@ class PaymentServices::Blockchair
     def order
       Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
+
+    def update_invoice_details(transaction:)
+      has_transaction! if pending?
+      update!(transaction_created_at: transaction.created_at, transaction_id: transaction.id)
+
+      pay!(payload: transaction) if transaction.successful?
+    end
   end
 end

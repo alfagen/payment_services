@@ -9,9 +9,9 @@ class PaymentServices::Blockchair
       @blockchain = Blockchain.new(currency: currency)
     end
 
-    def transaction_ids(address:)
+    def transactions(address:)
       safely_parse http_request(
-        url: "#{blockchain.transaction_ids_endpoint(address)}#{api_suffix}",
+        url: "#{blockchain.transactions_endpoint(address)}#{api_suffix}",
         method: :GET,
         headers: build_headers
       )
@@ -20,14 +20,6 @@ class PaymentServices::Blockchair
     def transactions_data(tx_ids:)
       safely_parse http_request(
         url: "#{blockchain.transactions_data_endpoint(tx_ids)}#{api_suffix}",
-        method: :GET,
-        headers: build_headers
-      )
-    end
-
-    def stellar_transactions(address:)
-      safely_parse http_request(
-        url: "https://api.blockchair.com/stellar/raw/account/#{address}?transactions=true&account=false",
         method: :GET,
         headers: build_headers
       )

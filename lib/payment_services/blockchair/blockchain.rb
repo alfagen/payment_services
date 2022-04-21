@@ -11,21 +11,20 @@ class PaymentServices::Blockchair
       dsh:  'dash',
       zec:  'zcash',
       eth:  'ethereum',
-      xmr:  'monero',
       ada:  'cardano',
       xlm:  'stellar'
     }.freeze
+
+    delegate :ethereum?, :cardano?, :stellar?, to: :blockchain
 
     def initialize(currency:)
       @currency = currency
     end
 
-    def transaction_ids_endpoint(address)
-      if blockchain.monero?
-        "#{API_URL}/#{blockchain}/raw/outputs?address=#{address}"
-      elsif blockchain.cardano?
+    def transactions_endpoint(address)
+      if cardano?
         "#{API_URL}/#{blockchain}/raw/address/#{address}"
-      elsif blockchain.stellar?
+      elsif stellar?
         "#{API_URL}/#{blockchain}/raw/account/#{address}?payments=true&account=false"
       else
         "#{API_URL}/#{blockchain}/dashboards/address/#{address}"
@@ -33,19 +32,15 @@ class PaymentServices::Blockchair
     end
 
     def transactions_data_endpoint(tx_ids)
-      if blockchain.monero?
-        "#{API_URL}/#{blockchain}/dashboards/raw/transactions/#{tx_ids.first}"
-      else
-        "#{API_URL}/#{blockchain}/dashboards/transactions/#{tx_ids.join(',')}"
-      end
-    end
-
-    def blockchain
-      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency.to_sym].inquiry
+      "#{API_URL}/#{blockchain}/dashboards/transactions/#{tx_ids.join(',')}"
     end
 
     private
 
     attr_reader :currency
+
+    def blockchain
+      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency.to_sym].inquiry
+    end
   end
 end
