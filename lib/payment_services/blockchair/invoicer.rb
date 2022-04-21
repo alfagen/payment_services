@@ -7,7 +7,7 @@ require_relative 'transaction_matcher'
 
 class PaymentServices::Blockchair
   class Invoicer < ::PaymentServices::Base::Invoicer
-    TRANSANSACTIONS_AMOUNT_TO_CHECK = 5
+    TRANSANSACTIONS_AMOUNT_TO_CHECK = 3
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)

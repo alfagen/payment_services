@@ -5,9 +5,6 @@ require_relative 'blockchain'
 
 class PaymentServices::Blockchair
   class TransactionMatcher
-    TRANSACTION_TIME_THRESHOLD = 30.minutes
-    ETC_TIME_THRESHOLD = 20.seconds
-    BASIC_TIME_COUNTDOWN = 1.minute
     AMOUNT_DIVIDER = 1e+8
     ETH_AMOUNT_DIVIDER = 1e+18
     CARDANO_AMOUNT_DIVIDER = 1e+6
@@ -47,21 +44,20 @@ class PaymentServices::Blockchair
       invoice_created_at = invoice.created_at.utc
       return false if invoice_created_at >= transaction_created_at
 
-      time_diff = (transaction_created_at - invoice_created_at) / BASIC_TIME_COUNTDOWN
       transaction['ctbOutputs'].each do |output|
-        return true if match_by_output_and_time?(output, time_diff)
+        return true if match_by_output?(output)
       end
 
       false
     end
 
     def match_stellar_transaction?(transaction)
+      amount = transaction['amount']
       transaction_created_at = datetime_string_in_utc(transaction['created_at'])
       invoice_created_at = invoice.created_at.utc
       return false if invoice_created_at >= transaction_created_at
 
-      time_diff = (transaction_created_at - invoice_created_at) / BASIC_TIME_COUNTDOWN
-      match_by_amount_and_time?(transaction['amount'], time_diff)
+      match_amount?(amount)
     end
 
     def match_default_transaction?(transaction)
@@ -70,25 +66,16 @@ class PaymentServices::Blockchair
       invoice_created_at = invoice.created_at.utc
       return false if invoice_created_at >= transaction_created_at
 
-      time_diff = (transaction_created_at - invoice_created_at) / BASIC_TIME_COUNTDOWN
-      match_by_amount_and_time?(amount, time_diff)
+      match_amount?(amount)
     end
 
-    def match_by_output_and_time?(output, time_diff)
+    def match_by_output?(output)
       amount = output['ctaAmount']['getCoin'].to_f / amount_divider
-      match_by_amount_and_time?(amount, time_diff) && output['ctaAddress'] == invoice.address
-    end
-
-    def match_by_amount_and_time?(amount, time_diff)
-      match_amount?(amount) && match_transaction_time_threshold?(time_diff)
+      match_amount?(amount) && output['ctaAddress'] == invoice.address
     end
 
     def match_amount?(received_amount)
       received_amount.to_d == invoice.amount.to_d
-    end
-
-    def match_transaction_time_threshold?(time_diff)
-      time_diff.round.minutes < TRANSACTION_TIME_THRESHOLD
     end
 
     def datetime_string_in_utc(datetime_string)
