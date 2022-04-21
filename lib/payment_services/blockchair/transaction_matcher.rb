@@ -26,7 +26,7 @@ class PaymentServices::Blockchair
         build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), source: raw_transaction)
       else
         raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
-        build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), source: raw_transaction)
+        build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['time']), source: raw_transaction)
       end
     end
 
