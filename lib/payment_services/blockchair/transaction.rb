@@ -27,7 +27,7 @@ class PaymentServices::Blockchair
     private
 
     def transaction_added_to_block?
-      source.key?('block_id') ? source['block_id'] > 0 : true
+      source.key?('block_id') ? source['block_id'] > 0 : false
     end
   end
 end

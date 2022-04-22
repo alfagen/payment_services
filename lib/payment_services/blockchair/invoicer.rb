@@ -9,6 +9,9 @@ class PaymentServices::Blockchair
   class Invoicer < ::PaymentServices::Base::Invoicer
     TRANSANSACTIONS_AMOUNT_TO_CHECK = 3
 
+    delegate :income_wallet, to: :order
+    delegate :currency, to: :income_wallet
+
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
@@ -31,26 +34,27 @@ class PaymentServices::Blockchair
     private
 
     def transaction_for(invoice)
-      transactions = 
-        if blockchain.ethereum?
-          blockchair_transactions(invoice: invoice)['calls']
-        elsif blockchain.cardano?
-          blockchair_transactions(invoice: invoice)['address']['caTxList']
-        elsif blockchain.stellar?
-          blockchair_transactions(invoice: invoice)['payments']
-        else
-          transactions_outputs(transactions_data_for(invoice))
-        end
-
-      TransactionMatcher.new(invoice: invoice, transactions: transactions).matched_transaction
+      TransactionMatcher.new(invoice: invoice, transactions: collect_transactions).perform
     end
 
-    def blockchair_transactions(invoice:)
-      client.transactions(address: invoice.address)['data'][invoice.address]
+    def collect_transactions
+      if blockchain.ethereum?
+        blockchair_transactions_by_address(invoice.address)['calls']
+      elsif blockchain.cardano?
+        blockchair_transactions_by_address(invoice.address)['address']['caTxList']
+      elsif blockchain.stellar?
+        blockchair_transactions_by_address(invoice.address)['payments']
+      else
+        transactions_outputs(transactions_data_for_address(invoice.address))
+      end
     end
 
-    def transactions_data_for(invoice)
-      transaction_ids_on_wallet = blockchair_transactions(invoice: invoice)['transactions']
+    def blockchair_transactions_by_address(address)
+      client.transactions(address: address)['data'][address]
+    end
+
+    def transactions_data_for_address(address)
+      transaction_ids_on_wallet = blockchair_transactions_by_address(address)['transactions']
       client.transactions_data(tx_ids: transaction_ids_on_wallet.first(TRANSANSACTIONS_AMOUNT_TO_CHECK))['data']
     end
 
@@ -65,16 +69,14 @@ class PaymentServices::Blockchair
     end
 
     def blockchain
-      @blockchain ||= Blockchain.new(currency: order.income_wallet.currency.to_s.downcase)
+      @blockchain ||= Blockchain.new(currency: currency.to_s.downcase)
     end
 
     def client
       @client ||= begin
-        wallet = order.income_wallet
-        api_key = wallet.api_key.presence || wallet.parent&.api_key
-        currency = wallet.currency.to_s.downcase
+        api_key = income_wallet.api_key.presence || income_wallet.parent&.api_key
 
-        Client.new(api_key: api_key, currency: currency)
+        Client.new(api_key: api_key, currency: currency.to_s.downcase)
       end
     end
   end

@@ -14,17 +14,8 @@ class PaymentServices::Blockchair
       @transactions = transactions
     end
 
-    def matched_transaction
-      if blockchain.cardano?
-        raw_transaction = transactions.find { |transaction| match_cardano_transaction?(transaction) }
-        build_transaction(id: raw_transaction['ctbId'], created_at: timestamp_in_utc(raw_transaction['ctbTimeIssued']), source: raw_transaction) if raw_transaction
-      elsif blockchain.stellar?
-        raw_transaction = transactions.find { |transaction| match_stellar_transaction?(transaction) }
-        build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), source: raw_transaction) if raw_transaction
-      else
-        raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
-        build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['time']), source: raw_transaction) if raw_transaction
-      end
+    def perform
+      send("match_#{blockchain}_transaction")
     end
 
     private
@@ -37,6 +28,21 @@ class PaymentServices::Blockchair
 
     def build_transaction(id:, created_at:, source:)
       Transaction.build_from(raw_transaction: { transaction_hash: id, created_at: created_at, source: source })
+    end
+
+    def match_cardano_transaction
+      raw_transaction = transactions.find { |transaction| match_cardano_transaction?(transaction) }
+      build_transaction(id: raw_transaction['ctbId'], created_at: timestamp_in_utc(raw_transaction['ctbTimeIssued']), source: raw_transaction) if raw_transaction
+    end
+
+    def match_stellar_transaction
+      raw_transaction = transactions.find { |transaction| match_stellar_transaction?(transaction) }
+      build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), source: raw_transaction) if raw_transaction
+    end
+
+    def method_missing
+      raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
+      build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['time']), source: raw_transaction) if raw_transaction
     end
 
     def match_cardano_transaction?(transaction)

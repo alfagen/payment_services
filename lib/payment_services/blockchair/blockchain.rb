@@ -23,16 +23,16 @@ class PaymentServices::Blockchair
 
     def transactions_endpoint(address)
       if cardano?
-        "#{API_URL}/#{blockchain}/raw/address/#{address}"
+        "#{blockchain_base_api}/raw/address/#{address}"
       elsif stellar?
-        "#{API_URL}/#{blockchain}/raw/account/#{address}?payments=true&account=false"
+        "#{blockchain_base_api}/raw/account/#{address}?payments=true&account=false"
       else
-        "#{API_URL}/#{blockchain}/dashboards/address/#{address}"
+        "#{blockchain_base_api}/dashboards/address/#{address}"
       end
     end
 
     def transactions_data_endpoint(tx_ids)
-      "#{API_URL}/#{blockchain}/dashboards/transactions/#{tx_ids.join(',')}"
+      "#{blockchain_base_api}/dashboards/transactions/#{tx_ids.join(',')}"
     end
 
     private
@@ -41,6 +41,10 @@ class PaymentServices::Blockchair
 
     def blockchain
       @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency.to_sym].inquiry
+    end
+
+    def blockchain_base_api
+      "#{API_URL}/#{blockchain}"
     end
   end
 end

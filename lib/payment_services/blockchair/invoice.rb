@@ -13,7 +13,7 @@ class PaymentServices::Blockchair
     workflow_column :state
     workflow do
       state :pending do
-        event :has_transaction, transitions_to: :with_transaction
+        event :bind_transaction, transitions_to: :with_transaction
       end
       state :with_transaction do
         on_entry do
@@ -40,7 +40,7 @@ class PaymentServices::Blockchair
     end
 
     def update_invoice_details(transaction:)
-      has_transaction! if pending?
+      bind_transaction! if pending?
       update!(transaction_created_at: transaction.created_at, transaction_id: transaction.id)
 
       pay!(payload: transaction) if transaction.successful?
