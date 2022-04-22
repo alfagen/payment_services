@@ -8,7 +8,7 @@ class PaymentServices::BlockIo
     scope :ordered, -> { order(id: :desc) }
 
     monetize :amount_cents, as: :amount
-    validates :amount_cents, :order_public_id, :state, presence: true
+    validates :amount_cents, :address, :order_public_id, :state, presence: true
 
     workflow_column :state
     workflow do
@@ -44,5 +44,6 @@ class PaymentServices::BlockIo
       update!(transaction_created_at: transaction.created_at, transaction_id: transaction.id)
 
       pay!(payload: transaction) if transaction.successful?
+    end
   end
 end

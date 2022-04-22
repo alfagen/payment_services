@@ -12,7 +12,7 @@ class PaymentServices::BlockIo
     delegate :income_wallet, to: :order
 
     def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
+      Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
 
     def async_invoice_state_updater?
