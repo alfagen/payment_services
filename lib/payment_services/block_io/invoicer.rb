@@ -47,7 +47,7 @@ class PaymentServices::BlockIo
     end
 
     def match_transaction?(transaction)
-      transaction_created_at = Time.at(raw_transaction['time']).to_datetime.utc
+      transaction_created_at = Time.at(transaction['time']).to_datetime.utc
       invoice_created_at = invoice.created_at.utc
       amount = parse_amount(transaction)
 
