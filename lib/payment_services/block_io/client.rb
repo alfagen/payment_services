@@ -28,14 +28,12 @@ class PaymentServices::BlockIo
       raise Error, error.to_s
     end
 
-    def transactions(address)
-      logger.info "---- Request transactions info on #{address} ----"
-      transactions = block_io_client.get_transactions(type: 'sent', addresses: address)
-      logger.info "---- Response: #{transactions} ----"
-      transactions
-    rescue Exception => error
-      logger.error error.to_s
-      raise Error, error.to_s
+    def income_transactions(address)
+      transactions(address: address, type: :received)
+    end
+
+    def outcome_transactions(address)
+      transactions(address: address, type: :sent)
     end
 
     def extract_transaction_id(response)
@@ -43,6 +41,16 @@ class PaymentServices::BlockIo
     end
 
     private
+
+    def transactions(address:, type:)
+      logger.info "---- Request transactions info on #{address} ----"
+      transactions = block_io_client.get_transactions(type: type.to_s, addresses: address)
+      logger.info "---- Response: #{transactions} ----"
+      transactions
+    rescue Exception => error
+      logger.error error.to_s
+      raise Error, error.to_s
+    end
 
     def block_io_client
       @block_io_client ||= BlockIo::Client.new(api_key: api_key, pin: pin, version: API_VERSION)

@@ -68,7 +68,7 @@ class PaymentServices::BlockIo
     end
 
     def build_transaction(payout)
-      wallet_transactions = client.transactions(address: wallet.account)['data']['txs']
+      wallet_transactions = client.outcome_transactions(address: wallet.account)['data']['txs']
       raw_transaction = find_transaction(txid: payout.transaction_id, transactions: wallet_transactions)
 
       Transaction.build_from(raw_transaction: raw_transaction)

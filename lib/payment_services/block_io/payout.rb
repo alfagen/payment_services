@@ -2,7 +2,6 @@
 
 class PaymentServices::BlockIo
   class Payout < ApplicationRecord
-    CONFIRMATIONS_FOR_COMPLETE = 1
     include Workflow
     self.table_name = 'block_io_payouts'
 
@@ -35,17 +34,10 @@ class PaymentServices::BlockIo
 
     def update_payout_details!(transaction:)
       update!(
-        transaction_created_at: transaction.transaction_created_at,
-        fee: transaction.total_spend - amount.to_f,
-        confirmations: transaction.confirmations
+        transaction_created_at: transaction.created_at,
+        fee: transaction.total_spend - amount.to_f
       )
-      confirm! if confirmed?
-    end
-
-    private
-
-    def confirmed?
-      confirmations >= CONFIRMATIONS_FOR_COMPLETE
+      confirm! if transaction.successful?
     end
   end
 end
