@@ -20,7 +20,7 @@ class PaymentServices::BlockIo
     end
 
     def update_invoice_state!
-      transaction = transactions_for(invoice)
+      transaction = transaction_for(invoice)
       return if transaction.nil?
 
       invoice.update_invoice_details(transaction: transaction)
