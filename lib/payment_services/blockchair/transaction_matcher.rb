@@ -40,39 +40,36 @@ class PaymentServices::Blockchair
       build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), source: raw_transaction) if raw_transaction
     end
 
-    def method_missing
-      raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
-      build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['time']), source: raw_transaction) if raw_transaction
+    def method_missing(method_name)
+      if method_name.start_with?('match_') && method_name.end_with?('_transaction')
+        raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
+        build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['time']), source: raw_transaction) if raw_transaction
+      else
+        super
+      end
     end
 
     def match_cardano_transaction?(transaction)
       transaction_created_at = timestamp_in_utc(transaction['ctbTimeIssued'])
       invoice_created_at = invoice.created_at.utc
-      return false if invoice_created_at >= transaction_created_at
 
-      transaction['ctbOutputs'].each do |output|
-        return true if match_by_output?(output)
-      end
-
-      false
+      invoice_created_at < transaction_created_at && transaction['ctbOutputs'].any?(&method(:match_by_output?))
     end
 
     def match_stellar_transaction?(transaction)
       amount = transaction['amount']
       transaction_created_at = datetime_string_in_utc(transaction['created_at'])
       invoice_created_at = invoice.created_at.utc
-      return false if invoice_created_at >= transaction_created_at
 
-      match_amount?(amount)
+      invoice_created_at < transaction_created_at && match_amount?(amount)
     end
 
     def match_default_transaction?(transaction)
       amount = transaction['value'].to_f / amount_divider
       transaction_created_at = datetime_string_in_utc(transaction['time'])
       invoice_created_at = invoice.created_at.utc
-      return false if invoice_created_at >= transaction_created_at
 
-      match_amount?(amount)
+      invoice_created_at < transaction_created_at && match_amount?(amount)
     end
 
     def match_by_output?(output)

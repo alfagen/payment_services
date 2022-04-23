@@ -12,7 +12,7 @@ class PaymentServices::Blockchair
       new(
         id: raw_transaction[:transaction_hash],
         created_at: raw_transaction[:created_at],
-        source: raw_transaction
+        source: raw_transaction.deep_symbolize_keys
       )
     end
 
@@ -21,13 +21,13 @@ class PaymentServices::Blockchair
     end
 
     def successful?
-      transaction_added_to_block? || source['transaction_successful']
+      transaction_added_to_block? || source[:transaction_successful]
     end
 
     private
 
     def transaction_added_to_block?
-      source.key?('block_id') ? source['block_id'] > 0 : false
+      source.key?('block_id') && source['block_id'].positive?
     end
   end
 end
