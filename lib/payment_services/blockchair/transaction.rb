@@ -12,7 +12,7 @@ class PaymentServices::Blockchair
       new(
         id: raw_transaction[:transaction_hash],
         created_at: raw_transaction[:created_at],
-        source: raw_transaction.deep_symbolize_keys
+        source: raw_transaction[:source].deep_symbolize_keys
       )
     end
 
