@@ -11,7 +11,7 @@ class PaymentServices::BlockIo
     API_VERSION = 2
     DEFAULT_FEE_PRIORITY = 'low'
 
-    def initialize(api_key:, pin:)
+    def initialize(api_key:, pin: '')
       @api_key = api_key
       @pin = pin
     end

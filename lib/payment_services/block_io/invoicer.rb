@@ -34,7 +34,7 @@ class PaymentServices::BlockIo
 
     def transaction_for(invoice)
       transactions = collect_transactions_on(address: invoice.address)
-      raw_transaction = transactions.find { |transaction| match_transaction?(transaction) }
+      raw_transaction = transactions.find(&method(:match_transaction?))
       Transaction.build_from(raw_transaction: raw_transaction) if raw_transaction
     end
 
@@ -71,7 +71,7 @@ class PaymentServices::BlockIo
       @client ||= begin
         api_key = income_wallet.api_key.presence || income_wallet.parent&.api_key
 
-        Client.new(api_key: api_key, pin: '')
+        Client.new(api_key: api_key)
       end
     end
   end
