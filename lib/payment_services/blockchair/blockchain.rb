@@ -21,6 +21,10 @@ class PaymentServices::Blockchair
       @currency = currency
     end
 
+    def name
+      blockchain
+    end
+
     def transactions_endpoint(address)
       if cardano?
         "#{blockchain_base_api}/raw/address/#{address}"

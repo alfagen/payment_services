@@ -15,7 +15,7 @@ class PaymentServices::Blockchair
     end
 
     def perform
-      send("match_#{blockchain}_transaction")
+      send("match_#{blockchain.name}_transaction")
     end
 
     private

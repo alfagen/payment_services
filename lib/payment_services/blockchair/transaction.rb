@@ -6,7 +6,7 @@ class PaymentServices::Blockchair
 
     attribute :id, String
     attribute :created_at, DateTime
-    attribute :source, String
+    attribute :source, Hash
 
     def self.build_from(raw_transaction:)
       new(
@@ -17,17 +17,21 @@ class PaymentServices::Blockchair
     end
 
     def to_s
-      attributes.to_s
+      source.to_s
     end
 
     def successful?
-      transaction_added_to_block? || source[:transaction_successful]
+      transaction_added_to_block? || source[:transaction_successful] || success_cardano_condition?
     end
 
     private
 
     def transaction_added_to_block?
       source.key?(:block_id) && source[:block_id].positive?
+    end
+
+    def success_cardano_condition?
+      source.key?(:ctbFees)
     end
   end
 end
