@@ -51,9 +51,12 @@ class PaymentServices::Blockchair
     end
 
     def blockchair_transactions_by_address(address)
-      client.transactions(address: address)['data'][address]
-    rescue JSON::ParserError => err
-      raise TransactionsHistoryRequestFailed, err.to_s
+      begin
+        transactions = client.transactions(address: address)
+      rescue JSON::ParserError => err
+        raise TransactionsHistoryRequestFailed, err.to_s
+      end
+      transactions['data'][address]
     end
 
     def transactions_data_for_address(address)
