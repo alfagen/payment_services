@@ -8,6 +8,7 @@ require_relative 'transaction_matcher'
 class PaymentServices::Blockchair
   class Invoicer < ::PaymentServices::Base::Invoicer
     TRANSANSACTIONS_AMOUNT_TO_CHECK = 3
+    TransactionsHistoryRequestFailed = Class.new StandardError
 
     delegate :income_wallet, to: :order
     delegate :currency, to: :income_wallet
@@ -51,6 +52,8 @@ class PaymentServices::Blockchair
 
     def blockchair_transactions_by_address(address)
       client.transactions(address: address)['data'][address]
+    rescue JSON::ParserError => err
+      raise TransactionsHistoryRequestFailed, err.to_s
     end
 
     def transactions_data_for_address(address)

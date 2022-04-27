@@ -105,7 +105,8 @@ class PaymentServices::CryptoApisV2
     end
 
     def parse_received_amount(transaction)
-      transaction['recipients'].find { |recipient| recipient['address'].include?(invoice.address) }['amount']
+      recipient = transaction['recipients'].find { |recipient| recipient['address'].include?(invoice.address) }
+      recipient ? recipient['amount'] : 0
     end
 
     def parse_received_tokens(transaction)
