@@ -45,16 +45,20 @@ class PaymentServices::Blockchair
         blockchair_transactions_by_address(invoice.address)['address']['caTxList']
       elsif blockchain.stellar?
         blockchair_transactions_by_address(invoice.address)['payments']
+      elsif blockchain.ripple?
+        blockchair_transactions_by_address(invoice.address)['transactions']['transactions']
+      elsif blockchain.eos?
+        blockchair_transactions_by_address(invoice.address)['actions']
       else
         transactions_outputs(transactions_data_for_address(invoice.address))
       end
     end
 
     def blockchair_transactions_by_address(address)
-      transactions = client.transactions(address: address)
+      transactions = client.transactions(address: address)['data']
       raise TransactionsHistoryRequestFailed, 'Check the payment address' unless transactions
  
-      transactions['data'][address]
+      transactions[address]
     end
 
     def transactions_data_for_address(address)

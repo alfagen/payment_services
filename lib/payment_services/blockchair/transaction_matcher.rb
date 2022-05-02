@@ -22,6 +22,8 @@ class PaymentServices::Blockchair
 
     attr_reader :invoice, :transactions
 
+    delegate :created_at, to: :invoice, prefix: true
+
     def blockchain
       @blockchain ||= Blockchain.new(currency: invoice.order.income_wallet.currency.to_s.downcase)
     end
@@ -40,6 +42,16 @@ class PaymentServices::Blockchair
       build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), source: raw_transaction) if raw_transaction
     end
 
+    def match_ripple_transaction
+      raw_transaction = transactions.find { |transaction| match_ripple_transaction?(transaction) }
+      build_transaction(id: raw_transaction['action_trace']['trx_id'], created_at: timestamp_in_utc(raw_transaction['date']), source: raw_transaction) if raw_transaction
+    end
+
+    def match_eos_transaction
+      raw_transaction = transactions.find { |transaction| match_eos_transaction?(transaction) }
+      build_transaction(id: raw_transaction['hash'], created_at: datetime_string_in_utc(raw_transaction['block_time']), source: raw_transaction) if raw_transaction
+    end
+
     def method_missing(method_name)
       if method_name.start_with?('match_') && method_name.end_with?('_transaction')
         raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
@@ -51,25 +63,49 @@ class PaymentServices::Blockchair
 
     def match_cardano_transaction?(transaction)
       transaction_created_at = timestamp_in_utc(transaction['ctbTimeIssued'])
-      invoice_created_at = invoice.created_at.utc
 
-      invoice_created_at < transaction_created_at && transaction['ctbOutputs'].any?(&method(:match_by_output?))
+      invoice_created_at.utc < transaction_created_at && transaction['ctbOutputs'].any?(&method(:match_by_output?))
     end
 
     def match_stellar_transaction?(transaction)
       amount = transaction['amount']
       transaction_created_at = datetime_string_in_utc(transaction['created_at'])
-      invoice_created_at = invoice.created_at.utc
 
-      invoice_created_at < transaction_created_at && match_amount?(amount)
+      invoice_created_at.utc < transaction_created_at && match_amount?(amount)
     end
 
     def match_default_transaction?(transaction)
       amount = transaction['value'].to_f / amount_divider
       transaction_created_at = datetime_string_in_utc(transaction['time'])
-      invoice_created_at = invoice.created_at.utc
 
-      invoice_created_at < transaction_created_at && match_amount?(amount)
+      invoice_created_at.utc < transaction_created_at && match_amount?(amount)
+    end
+
+    def match_ripple_transaction?(transaction)
+      transaction_info = transaction['tx']
+      amount = transaction_info['TakerGets']
+      transaction_created_at = timestamp_in_utc(transaction_info['date'])
+
+      invoice_created_at.utc < transaction_created_at && match_ripple_transaction_type?(transaction_info['TransactionType']) && match_ripple_amount?(amount)
+    end
+
+    def match_eos_transaction?(transaction)
+      transaction_created_at = datetime_string_in_utc(raw_transaction['block_time'])
+      amount_data = transaction['action_trace']['act']['data']
+      invoice_created_at.utc < transaction_created_at && match_eos_amount?(amount_data)
+    end
+
+    def match_eos_amount?(amount_data)
+      amount, currency = amount_data['quantity'].split
+      match_amount?(amount) && currency == 'EOS'
+    end
+
+    def match_ripple_amount?(amount)
+      match_amount?(amount['value']) && amount['currency'] == 'XRP'
+    end
+
+    def match_ripple_transaction_type?(type)
+      type == 'Payment'
     end
 
     def match_by_output?(output)

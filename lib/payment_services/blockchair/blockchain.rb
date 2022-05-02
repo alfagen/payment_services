@@ -12,10 +12,12 @@ class PaymentServices::Blockchair
       zec:  'zcash',
       eth:  'ethereum',
       ada:  'cardano',
-      xlm:  'stellar'
+      xlm:  'stellar',
+      xrp:  'ripple',
+      eos:  'eos'
     }.freeze
 
-    delegate :ethereum?, :cardano?, :stellar?, to: :blockchain
+    delegate :ethereum?, :cardano?, :stellar?, :ripple?, :eos?, to: :blockchain
 
     def initialize(currency:)
       @currency = currency
@@ -30,6 +32,10 @@ class PaymentServices::Blockchair
         "#{blockchain_base_api}/raw/address/#{address}"
       elsif stellar?
         "#{blockchain_base_api}/raw/account/#{address}?payments=true&account=false"
+      elsif ripple?
+        "#{blockchain_base_api}/raw/account/#{address}?transactions=true"
+      elsif eos?
+        "#{blockchain_base_api}/raw/account/#{address}?actions=true"
       else
         "#{blockchain_base_api}/dashboards/address/#{address}"
       end
