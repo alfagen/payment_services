@@ -9,6 +9,7 @@ class PaymentServices::Blockchair
     ETH_AMOUNT_DIVIDER = 1e+18
     CARDANO_AMOUNT_DIVIDER = 1e+6
     XRP_AMOUNT_DIVIDER = 1e+6
+    ERC20_AMOUNT_DIVIDER = 1e+6
     RIPPLE_AFTER_UNIX_EPOCH = 946684800
 
     def initialize(invoice:, transactions:)
@@ -124,12 +125,14 @@ class PaymentServices::Blockchair
     end
 
     def amount_divider
-      if blockchain.ethereum? || blockchain.erc_20?
+      if blockchain.ethereum?
         ETH_AMOUNT_DIVIDER
       elsif blockchain.cardano?
         CARDANO_AMOUNT_DIVIDER
       elsif blockchain.ripple?
         XRP_AMOUNT_DIVIDER
+      elsif blockchain.erc_20?
+        ERC20_AMOUNT_DIVIDER
       else
         AMOUNT_DIVIDER
       end
