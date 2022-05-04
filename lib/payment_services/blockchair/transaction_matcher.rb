@@ -92,7 +92,7 @@ class PaymentServices::Blockchair
     end
 
     def match_tag?(tag)
-      invoice_memo.present? ? invoice_memo == tag : true
+      invoice_memo.present? ? invoice_memo == tag.to_s : true
     end
 
     def match_eos_transaction?(transaction)
