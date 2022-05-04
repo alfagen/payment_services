@@ -38,6 +38,11 @@ class PaymentServices::Blockchair
       TransactionMatcher.new(invoice: invoice, transactions: collect_transactions).perform
     end
 
+    {"data"=>
+      {"0x8aa0ed7850a5b5ac8d8ba74d7cda58693077b0e9"=>
+        {"address"=>{"balance"=>"103815810", "balance_approximate"=>103.81580999999915, "received"=>"7700646961", "received_approximate"=>7700.646961, "spent"=>"7596831151", "spent_approximate"=>7596.831151000001, "receiving_transaction_count"=>28, "spending_transaction_count"=>17, "transaction_count"=>45, "first_seen_receiving"=>"2022-03-12 15:09:49", "last_seen_receiving"=>"2022-05-01 19:28:06", "first_seen_spending"=>"2022-03-12 15:11:42", "last_seen_spending"=>"2022-05-04 10:39:40"}, 
+        "transactions"=>[{
+
     def collect_transactions
       if blockchain.ethereum?
         blockchair_transactions_by_address(invoice.address)['calls']
@@ -50,7 +55,7 @@ class PaymentServices::Blockchair
       elsif blockchain.eos?
         blockchair_transactions_by_address(invoice.address)['actions']
       elsif blockchain.erc_20?
-        blockchair_transactions_by_address(invoice.address)['transactions']
+        blockchair_transactions_by_address(invoice.address.downcase)['transactions']
       else
         transactions_outputs(transactions_data_for_address(invoice.address))
       end
