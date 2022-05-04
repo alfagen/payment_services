@@ -24,7 +24,7 @@ class PaymentServices::Blockchair
 
     attr_reader :invoice, :transactions
 
-    delegate :created_at, to: :invoice, prefix: true
+    delegate :created_at, :memo, to: :invoice, prefix: true
 
     def blockchain
       @blockchain ||= Blockchain.new(currency: invoice.order.income_wallet.currency.to_s.downcase)
@@ -88,7 +88,11 @@ class PaymentServices::Blockchair
       amount = transaction_info['Amount'].to_f / amount_divider
       transaction_created_at = timestamp_in_utc(transaction_info['date'] + RIPPLE_AFTER_UNIX_EPOCH)
 
-      invoice_created_at.utc < transaction_created_at && match_amount?(amount)
+      invoice_created_at.utc < transaction_created_at && match_amount?(amount) && match_tag?(transaction_info['DestinationTag'])
+    end
+
+    def match_tag?(tag)
+      invoice_memo.present? ? invoice_memo == tag : true
     end
 
     def match_eos_transaction?(transaction)
