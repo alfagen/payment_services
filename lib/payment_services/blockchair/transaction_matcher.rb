@@ -51,7 +51,7 @@ class PaymentServices::Blockchair
 
     def match_eos_transaction
       raw_transaction = transactions.find { |transaction| match_eos_transaction?(transaction) }
-      build_transaction(id: raw_transaction['hash'], created_at: datetime_string_in_utc(raw_transaction['block_time']), blockchain: blockchain, source: raw_transaction) if raw_transaction
+      build_transaction(id: raw_transaction['trx_id'], created_at: datetime_string_in_utc(raw_transaction['block_time']), blockchain: blockchain, source: raw_transaction) if raw_transaction
     end
 
     def method_missing(method_name)
@@ -103,7 +103,7 @@ class PaymentServices::Blockchair
 
     def match_eos_amount?(amount_data)
       amount, currency = amount_data['quantity'].split
-      match_amount?(amount) && currency == 'EOS'
+      match_amount?(amount) && currency == 'EOS' && match_tag?(amount_data['memo'])
     end
 
     def match_by_output?(output)
