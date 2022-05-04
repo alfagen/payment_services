@@ -27,7 +27,7 @@ class PaymentServices::Blockchair
       source[:transaction_successful] ||
       success_cardano_condition? ||
       success_ripple_condition? ||
-      success_eos_condition? ||
+      success_eos_condition?
     end
 
     private
