@@ -6,6 +6,7 @@ class PaymentServices::Blockchair
 
     attribute :id, String
     attribute :created_at, DateTime
+    attribute :blockchain, String
     attribute :source, Hash
 
     RIPPLE_SUCCESS_STATUS = 'tesSUCCESS'
@@ -14,6 +15,7 @@ class PaymentServices::Blockchair
       new(
         id: raw_transaction[:transaction_hash],
         created_at: raw_transaction[:created_at],
+        blockchain: raw_transaction[:blockchain].name,
         source: raw_transaction[:source].deep_symbolize_keys
       )
     end
@@ -23,16 +25,20 @@ class PaymentServices::Blockchair
     end
 
     def successful?
-      transaction_added_to_block? ||
-      source[:transaction_successful] ||
-      success_cardano_condition? ||
-      success_ripple_condition? ||
-      success_eos_condition?
+      send("success_#{blockchain}_condition")
     end
 
     private
 
-    def transaction_added_to_block?
+    def method_missing(method_name)
+      if method_name.start_with?('success_') && method_name.end_with?('_condition')
+        success_default_condition?
+      else
+        super
+      end
+    end
+
+    def success_default_condition?
       source.key?(:block_id) && source[:block_id].positive?
     end
 
@@ -42,6 +48,10 @@ class PaymentServices::Blockchair
 
     def success_ripple_condition?
       source.dig(:meta, :TransactionResult) && source[:meta][:TransactionResult] == RIPPLE_SUCCESS_STATUS
+    end
+
+    def success_stellar_condition?
+      source[:transaction_successful]
     end
 
     def success_eos_condition?

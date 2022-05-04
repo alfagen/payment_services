@@ -30,34 +30,34 @@ class PaymentServices::Blockchair
       @blockchain ||= Blockchain.new(currency: invoice.order.income_wallet.currency.to_s.downcase)
     end
 
-    def build_transaction(id:, created_at:, source:)
-      Transaction.build_from(raw_transaction: { transaction_hash: id, created_at: created_at, source: source })
+    def build_transaction(id:, created_at:, blockchain:, source:)
+      Transaction.build_from(raw_transaction: { transaction_hash: id, created_at: created_at, blockchain: blockchain, source: source })
     end
 
     def match_cardano_transaction
       raw_transaction = transactions.find { |transaction| match_cardano_transaction?(transaction) }
-      build_transaction(id: raw_transaction['ctbId'], created_at: timestamp_in_utc(raw_transaction['ctbTimeIssued']), source: raw_transaction) if raw_transaction
+      build_transaction(id: raw_transaction['ctbId'], created_at: timestamp_in_utc(raw_transaction['ctbTimeIssued']), blockchain: blockchain, source: raw_transaction) if raw_transaction
     end
 
     def match_stellar_transaction
       raw_transaction = transactions.find { |transaction| match_stellar_transaction?(transaction) }
-      build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), source: raw_transaction) if raw_transaction
+      build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), blockchain: blockchain, source: raw_transaction) if raw_transaction
     end
 
     def match_ripple_transaction
       raw_transaction = transactions.find { |transaction| match_ripple_transaction?(transaction) }
-      build_transaction(id: raw_transaction['tx']['hash'], created_at: timestamp_in_utc(raw_transaction['tx']['date'] + RIPPLE_AFTER_UNIX_EPOCH), source: raw_transaction) if raw_transaction
+      build_transaction(id: raw_transaction['tx']['hash'], created_at: timestamp_in_utc(raw_transaction['tx']['date'] + RIPPLE_AFTER_UNIX_EPOCH), blockchain: blockchain, source: raw_transaction) if raw_transaction
     end
 
     def match_eos_transaction
       raw_transaction = transactions.find { |transaction| match_eos_transaction?(transaction) }
-      build_transaction(id: raw_transaction['hash'], created_at: datetime_string_in_utc(raw_transaction['block_time']), source: raw_transaction) if raw_transaction
+      build_transaction(id: raw_transaction['hash'], created_at: datetime_string_in_utc(raw_transaction['block_time']), blockchain: blockchain, source: raw_transaction) if raw_transaction
     end
 
     def method_missing(method_name)
       if method_name.start_with?('match_') && method_name.end_with?('_transaction')
         raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
-        build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['time']), source: raw_transaction) if raw_transaction
+        build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['time']), blockchain: blockchain, source: raw_transaction) if raw_transaction
       else
         super
       end
