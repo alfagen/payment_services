@@ -8,6 +8,7 @@ class PaymentServices::Blockchair
     AMOUNT_DIVIDER = 1e+8
     ETH_AMOUNT_DIVIDER = 1e+18
     CARDANO_AMOUNT_DIVIDER = 1e+6
+    XRP_AMOUNT_DIVIDER = 1e+6
 
     def initialize(invoice:, transactions:)
       @invoice = invoice
@@ -83,10 +84,10 @@ class PaymentServices::Blockchair
 
     def match_ripple_transaction?(transaction)
       transaction_info = transaction['tx']
-      amount = transaction_info['TakerGets']
+      amount = transaction_info['Amount'].to_f / amount_divider
       transaction_created_at = timestamp_in_utc(transaction_info['date'])
 
-      invoice_created_at.utc < transaction_created_at && match_ripple_transaction_type?(transaction_info['TransactionType']) && match_ripple_amount?(amount)
+      invoice_created_at.utc < transaction_created_at && match_amount?(amount)
     end
 
     def match_eos_transaction?(transaction)
@@ -98,10 +99,6 @@ class PaymentServices::Blockchair
     def match_eos_amount?(amount_data)
       amount, currency = amount_data['quantity'].split
       match_amount?(amount) && currency == 'EOS'
-    end
-
-    def match_ripple_amount?(amount)
-      match_amount?(amount['value']) && amount['currency'] == 'XRP'
     end
 
     def match_ripple_transaction_type?(type)
@@ -130,6 +127,8 @@ class PaymentServices::Blockchair
         ETH_AMOUNT_DIVIDER
       elsif blockchain.cardano?
         CARDANO_AMOUNT_DIVIDER
+      elsif blockchain.ripple?
+        XRP_AMOUNT_DIVIDER
       else
         AMOUNT_DIVIDER
       end
