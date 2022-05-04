@@ -25,13 +25,13 @@ class PaymentServices::Blockchair
     end
 
     def successful?
-      send("success_#{blockchain}_condition")
+      send("success_#{blockchain}_condition?")
     end
 
     private
 
     def method_missing(method_name)
-      if method_name.start_with?('success_') && method_name.end_with?('_condition')
+      if method_name.start_with?('success_') && method_name.end_with?('_condition?')
         success_default_condition?
       else
         super
