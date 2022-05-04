@@ -124,7 +124,7 @@ class PaymentServices::Blockchair
     end
 
     def amount_divider
-      if blockchain.ethereum?
+      if blockchain.ethereum? || blockchain.erc_20?
         ETH_AMOUNT_DIVIDER
       elsif blockchain.cardano?
         CARDANO_AMOUNT_DIVIDER

@@ -14,10 +14,12 @@ class PaymentServices::Blockchair
       ada:  'cardano',
       xlm:  'stellar',
       xrp:  'ripple',
-      eos:  'eos'
+      eos:  'eos',
+      usdt: 'erc_20'
     }.freeze
+    USDT_ERC_CONTRACT_ADDRESS = '0xdac17f958d2ee523a2206206994597c13d831ec7'
 
-    delegate :ethereum?, :cardano?, :stellar?, :ripple?, :eos?, to: :blockchain
+    delegate :ethereum?, :cardano?, :stellar?, :ripple?, :eos?, :erc_20?, to: :blockchain
 
     def initialize(currency:)
       @currency = currency
@@ -36,6 +38,8 @@ class PaymentServices::Blockchair
         "#{raw_account_base_url(address)}?transactions=true"
       elsif eos?
         "#{raw_account_base_url(address)}?actions=true"
+      elsif erc_20?
+        "#{API_URL}/ethereum/erc-20/#{USDT_ERC_CONTRACT_ADDRESS}/dashboards/address/#{address}"
       else
         "#{blockchain_base_api}/dashboards/address/#{address}"
       end

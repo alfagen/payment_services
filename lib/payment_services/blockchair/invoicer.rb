@@ -49,6 +49,8 @@ class PaymentServices::Blockchair
         blockchair_transactions_by_address(invoice.address)['transactions']['transactions']
       elsif blockchain.eos?
         blockchair_transactions_by_address(invoice.address)['actions']
+      elsif blockchain.erc_20?
+        blockchair_transactions_by_address(invoice.address)['transactions']
       else
         transactions_outputs(transactions_data_for_address(invoice.address))
       end
