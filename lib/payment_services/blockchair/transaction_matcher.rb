@@ -96,7 +96,7 @@ class PaymentServices::Blockchair
     end
 
     def match_eos_transaction?(transaction)
-      transaction_created_at = datetime_string_in_utc(raw_transaction['block_time'])
+      transaction_created_at = datetime_string_in_utc(transaction['block_time'])
       amount_data = transaction['action_trace']['act']['data']
       invoice_created_at.utc < transaction_created_at && match_eos_amount?(amount_data)
     end
