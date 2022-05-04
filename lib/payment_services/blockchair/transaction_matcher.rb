@@ -45,7 +45,7 @@ class PaymentServices::Blockchair
     end
 
     def match_ripple_transaction
-      raw_transaction = transactions.find { |transaction| matcher.send :match_ripple_transaction?, transaction }
+      raw_transaction = transactions.find { |transaction| match_ripple_transaction?(transaction) }
       build_transaction(id: raw_transaction['tx']['hash'], created_at: timestamp_in_utc(raw_transaction['tx']['date'] + RIPPLE_AFTER_UNIX_EPOCH), source: raw_transaction) if raw_transaction
     end
 
