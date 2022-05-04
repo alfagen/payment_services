@@ -31,11 +31,11 @@ class PaymentServices::Blockchair
       if cardano?
         "#{blockchain_base_api}/raw/address/#{address}"
       elsif stellar?
-        "#{blockchain_base_api}/raw/account/#{address}?payments=true&account=false"
+        "#{raw_account_base_url(account)}?payments=true&account=false"
       elsif ripple?
-        "#{blockchain_base_api}/raw/account/#{address}?transactions=true"
+        "#{raw_account_base_url(account)}?transactions=true"
       elsif eos?
-        "#{blockchain_base_api}/raw/account/#{address}?actions=true"
+        "#{raw_account_base_url(account)}?actions=true"
       else
         "#{blockchain_base_api}/dashboards/address/#{address}"
       end
@@ -55,6 +55,10 @@ class PaymentServices::Blockchair
 
     def blockchain_base_api
       "#{API_URL}/#{blockchain}"
+    end
+
+    def raw_account_base_url(account)
+      "#{blockchain_base_api}/raw/account/#{address}"
     end
   end
 end
