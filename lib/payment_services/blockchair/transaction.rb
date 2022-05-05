@@ -25,17 +25,15 @@ class PaymentServices::Blockchair
     end
 
     def successful?
-      send("success_#{blockchain}_condition?")
+      public_send("success_#{blockchain}_condition?")
     end
 
     private
 
     def method_missing(method_name)
-      if method_name.start_with?('success_') && method_name.end_with?('_condition?')
-        success_default_condition?
-      else
-        super
-      end
+      super unless method_name.start_with?('success_') && method_name.end_with?('_condition?')
+
+      success_default_condition?
     end
 
     def success_default_condition?
@@ -47,7 +45,7 @@ class PaymentServices::Blockchair
     end
 
     def success_ripple_condition?
-      source.dig(:meta, :TransactionResult) && source[:meta][:TransactionResult] == RIPPLE_SUCCESS_STATUS
+      source.dig(:meta, :TransactionResult) == RIPPLE_SUCCESS_STATUS
     end
 
     def success_stellar_condition?

@@ -5,11 +5,6 @@ require_relative 'blockchain'
 
 class PaymentServices::Blockchair
   class TransactionMatcher
-    AMOUNT_DIVIDER = 1e+8
-    ETH_AMOUNT_DIVIDER = 1e+18
-    CARDANO_AMOUNT_DIVIDER = 1e+6
-    XRP_AMOUNT_DIVIDER = 1e+6
-    ERC20_AMOUNT_DIVIDER = 1e+6
     RIPPLE_AFTER_UNIX_EPOCH = 946684800
 
     def initialize(invoice:, transactions:)
@@ -18,7 +13,7 @@ class PaymentServices::Blockchair
     end
 
     def perform
-      send("match_#{blockchain.name}_transaction")
+      public_send("match_#{blockchain.name}_transaction")
     end
 
     private
@@ -26,6 +21,7 @@ class PaymentServices::Blockchair
     attr_reader :invoice, :transactions
 
     delegate :created_at, :memo, to: :invoice, prefix: true
+    delegate :amount_divider, to: :blockchain
 
     def blockchain
       @blockchain ||= Blockchain.new(currency: invoice.order.income_wallet.currency.to_s.downcase)
@@ -37,17 +33,32 @@ class PaymentServices::Blockchair
 
     def match_cardano_transaction
       raw_transaction = transactions.find { |transaction| match_cardano_transaction?(transaction) }
-      build_transaction(id: raw_transaction['ctbId'], created_at: timestamp_in_utc(raw_transaction['ctbTimeIssued']), blockchain: blockchain, source: raw_transaction) if raw_transaction
+      build_transaction(
+        id: raw_transaction['ctbId'],
+        created_at: timestamp_in_utc(raw_transaction['ctbTimeIssued']),
+        blockchain: blockchain, 
+        source: raw_transaction
+      ) if raw_transaction
     end
 
     def match_stellar_transaction
       raw_transaction = transactions.find { |transaction| match_stellar_transaction?(transaction) }
-      build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['created_at']), blockchain: blockchain, source: raw_transaction) if raw_transaction
+      build_transaction(
+        id: raw_transaction['transaction_hash'],
+        created_at: datetime_string_in_utc(raw_transaction['created_at']),
+        blockchain: blockchain,
+        source: raw_transaction
+      ) if raw_transaction
     end
 
     def match_ripple_transaction
       raw_transaction = transactions.find { |transaction| match_ripple_transaction?(transaction) }
-      build_transaction(id: raw_transaction['tx']['hash'], created_at: timestamp_in_utc(raw_transaction['tx']['date'] + RIPPLE_AFTER_UNIX_EPOCH), blockchain: blockchain, source: raw_transaction) if raw_transaction
+      build_transaction(
+        id: raw_transaction['tx']['hash'],
+        created_at: timestamp_in_utc(raw_transaction['tx']['date'] + RIPPLE_AFTER_UNIX_EPOCH), 
+        blockchain: blockchain, 
+        source: raw_transaction
+      ) if raw_transaction
     end
 
     def match_eos_transaction
@@ -56,12 +67,15 @@ class PaymentServices::Blockchair
     end
 
     def method_missing(method_name)
-      if method_name.start_with?('match_') && method_name.end_with?('_transaction')
-        raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
-        build_transaction(id: raw_transaction['transaction_hash'], created_at: datetime_string_in_utc(raw_transaction['time']), blockchain: blockchain, source: raw_transaction) if raw_transaction
-      else
-        super
-      end
+      super unless method_name.start_with?('match_') && method_name.end_with?('_transaction')
+
+      raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
+      build_transaction(
+        id: raw_transaction['transaction_hash'],
+        created_at: datetime_string_in_utc(raw_transaction['time']),
+        blockchain: blockchain,
+        source: raw_transaction
+      ) if raw_transaction
     end
 
     def match_cardano_transaction?(transaction)
@@ -122,20 +136,6 @@ class PaymentServices::Blockchair
 
     def timestamp_in_utc(timestamp)
       Time.at(timestamp).to_datetime.utc
-    end
-
-    def amount_divider
-      if blockchain.ethereum?
-        ETH_AMOUNT_DIVIDER
-      elsif blockchain.cardano?
-        CARDANO_AMOUNT_DIVIDER
-      elsif blockchain.ripple?
-        XRP_AMOUNT_DIVIDER
-      elsif blockchain.erc_20?
-        ERC20_AMOUNT_DIVIDER
-      else
-        AMOUNT_DIVIDER
-      end
     end
   end
 end

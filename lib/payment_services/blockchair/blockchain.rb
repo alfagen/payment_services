@@ -18,6 +18,13 @@ class PaymentServices::Blockchair
       usdt: 'erc_20'
     }.freeze
     USDT_ERC_CONTRACT_ADDRESS = '0xdac17f958d2ee523a2206206994597c13d831ec7'
+    BLOCKCHAIN_TO_AMOUNT_DIVIDER = {
+      'ethereum'  => 1e+18,
+      'cardano'   => 1e+6,
+      'ripple'    => 1e+6,
+      'erc_20'    => 1e+6,
+    }.freeze
+    DEFAULT_AMOUNT_DIVIDER = 1e+8
 
     delegate :ethereum?, :cardano?, :stellar?, :ripple?, :eos?, :erc_20?, to: :blockchain
 
@@ -47,6 +54,10 @@ class PaymentServices::Blockchair
 
     def transactions_data_endpoint(tx_ids)
       "#{blockchain_base_api}/dashboards/transactions/#{tx_ids.join(',')}"
+    end
+
+    def amount_divider
+      BLOCKCHAIN_TO_AMOUNT_DIVIDER[blockchain] || DEFAULT_AMOUNT_DIVIDER 
     end
 
     private
