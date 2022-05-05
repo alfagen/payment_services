@@ -25,7 +25,7 @@ class PaymentServices::Blockchair
     end
 
     def successful?
-      public_send("success_#{blockchain}_condition?")
+      send("success_#{blockchain}_condition?")
     end
 
     private
