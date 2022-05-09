@@ -25,34 +25,34 @@ class PaymentServices::Blockchair
     end
 
     def successful?
-      send("success_#{blockchain}_condition?")
+      send("#{blockchain}_transaction_succeed?")
     end
 
     private
 
     def method_missing(method_name)
-      super unless method_name.start_with?('success_') && method_name.end_with?('_condition?')
+      super unless method_name.end_with?('_transaction_succeed?')
 
-      success_default_condition?
+      generic_transaction_succeed?
     end
 
-    def success_default_condition?
+    def generic_transaction_succeed?
       source.key?(:block_id) && source[:block_id].positive?
     end
 
-    def success_cardano_condition?
+    def cardano_transaction_succeed?
       source.key?(:ctbFees)
     end
 
-    def success_ripple_condition?
+    def ripple_transaction_succeed?
       source.dig(:meta, :TransactionResult) == RIPPLE_SUCCESS_STATUS
     end
 
-    def success_stellar_condition?
+    def stellar_transaction_succeed?
       source[:transaction_successful]
     end
 
-    def success_eos_condition?
+    def eos_transaction_succeed?
       source.key?(:block_num) && source[:block_num].positive?
     end
   end

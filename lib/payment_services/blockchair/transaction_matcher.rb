@@ -33,32 +33,38 @@ class PaymentServices::Blockchair
 
     def match_cardano_transaction
       raw_transaction = transactions.find { |transaction| match_cardano_transaction?(transaction) }
+      return unless raw_transaction
+
       build_transaction(
         id: raw_transaction['ctbId'],
         created_at: timestamp_in_utc(raw_transaction['ctbTimeIssued']),
         blockchain: blockchain, 
         source: raw_transaction
-      ) if raw_transaction
+      )
     end
 
     def match_stellar_transaction
       raw_transaction = transactions.find { |transaction| match_stellar_transaction?(transaction) }
+      return unless raw_transaction
+
       build_transaction(
         id: raw_transaction['transaction_hash'],
         created_at: datetime_string_in_utc(raw_transaction['created_at']),
         blockchain: blockchain,
         source: raw_transaction
-      ) if raw_transaction
+      )
     end
 
     def match_ripple_transaction
       raw_transaction = transactions.find { |transaction| match_ripple_transaction?(transaction) }
+      return unless raw_transaction
+
       build_transaction(
         id: raw_transaction['tx']['hash'],
-        created_at: timestamp_in_utc(raw_transaction['tx']['date'] + RIPPLE_AFTER_UNIX_EPOCH), 
+        created_at: build_ripple_time(raw_transaction['tx']['date']),
         blockchain: blockchain, 
         source: raw_transaction
-      ) if raw_transaction
+      )
     end
 
     def match_eos_transaction
@@ -69,13 +75,15 @@ class PaymentServices::Blockchair
     def method_missing(method_name)
       super unless method_name.start_with?('match_') && method_name.end_with?('_transaction')
 
-      raw_transaction = transactions.find { |transaction| match_default_transaction?(transaction) }
+      raw_transaction = transactions.find { |transaction| match_generic_transaction?(transaction) }
+      return unless raw_transaction
+
       build_transaction(
         id: raw_transaction['transaction_hash'],
         created_at: datetime_string_in_utc(raw_transaction['time']),
         blockchain: blockchain,
         source: raw_transaction
-      ) if raw_transaction
+      )
     end
 
     def match_cardano_transaction?(transaction)
@@ -91,7 +99,7 @@ class PaymentServices::Blockchair
       invoice_created_at.utc < transaction_created_at && match_amount?(amount)
     end
 
-    def match_default_transaction?(transaction)
+    def match_generic_transaction?(transaction)
       amount = transaction['value'].to_f / amount_divider
       transaction_created_at = datetime_string_in_utc(transaction['time'])
 
@@ -101,7 +109,7 @@ class PaymentServices::Blockchair
     def match_ripple_transaction?(transaction)
       transaction_info = transaction['tx']
       amount = transaction_info['Amount'].to_f / amount_divider
-      transaction_created_at = timestamp_in_utc(transaction_info['date'] + RIPPLE_AFTER_UNIX_EPOCH)
+      transaction_created_at = build_ripple_time(transaction_info['date'])
 
       invoice_created_at.utc < transaction_created_at && match_amount?(amount) && match_tag?(transaction_info['DestinationTag'])
     end
@@ -136,6 +144,10 @@ class PaymentServices::Blockchair
 
     def timestamp_in_utc(timestamp)
       Time.at(timestamp).to_datetime.utc
+    end
+
+    def build_ripple_time(timestamp)
+      timestamp_in_utc(timestamp + RIPPLE_AFTER_UNIX_EPOCH)
     end
   end
 end
