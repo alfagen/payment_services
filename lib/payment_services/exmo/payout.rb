@@ -51,14 +51,3 @@ class PaymentServices::Exmo
     end
   end
 end
-
-def scan_number(number)
-  count_of_digits = number.to_s.length
-  if number.positive?
-    "Positive: #{count_of_digits} digits"
-  elsif number.negative?
-    "Negative: #{count_of_digits - 1} digits"
-  else 
-    'Zero'
-  end
-end
