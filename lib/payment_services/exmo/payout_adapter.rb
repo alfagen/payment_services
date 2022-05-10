@@ -2,6 +2,7 @@
 
 require_relative 'payout'
 require_relative 'client'
+require_relative 'transaction'
 
 class PaymentServices::Exmo
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
@@ -27,10 +28,11 @@ class PaymentServices::Exmo
       response = client.wallet_operations(currency: wallet.currency.to_s, type: 'withdrawal')
       raise WalletOperationsRequestFailed, "Can't get wallet operations" unless response['items']
 
-      transaction = find_transaction_of(payout: payout, transactions: response['items'])
-      return if transaction.nil?
+      raw_transaction = find_transaction_of(payout: payout, transactions: response['items'])
+      return if raw_transaction.nil?
 
-      payout.update_state_by_provider(transaction['status'])
+      transaction = Transaction.build_from(raw_transaction: raw_transaction)
+      payout.update_payout_details!(transaction: transaction)
       transaction
     end
 
