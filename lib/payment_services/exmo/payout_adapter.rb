@@ -32,7 +32,7 @@ class PaymentServices::Exmo
       return if raw_transaction.nil?
 
       transaction = Transaction.build_from(raw_transaction: raw_transaction)
-      transaction.id = client.transaction_id({ task_id: payout.task_id })
+      transaction.id = client.transaction_id(task_id: payout.task_id)
       payout.update_payout_details!(transaction: transaction)
       transaction
     end

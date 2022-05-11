@@ -33,8 +33,8 @@ class PaymentServices::Exmo
       )
     end
 
-    def transaction_id(params:)
-      body = URI.encode_www_form(params.merge(nonce: nonce))
+    def transaction_id(task_id:)
+      body = URI.encode_www_form({ task_id: task_id, nonce: nonce })
       safely_parse http_request(
         url: "#{API_URL}/withdraw_get_txid",
         method: :POST,
