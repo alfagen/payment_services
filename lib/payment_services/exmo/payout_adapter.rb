@@ -48,6 +48,7 @@ class PaymentServices::Exmo
       }
       payout_params[:invoice] = payout.order_fio if invoice_required?
       payout_params[:amount] = payout_params[:amount].to_i if currency_neo?
+      payout_params[:transport] = payout.token_network if currency_usdt?
       response = client.create_payout(params: payout_params)
       raise PayoutCreateRequestFailed, "Can't create payout: #{response['error']}" unless response['result']
 
@@ -72,6 +73,10 @@ class PaymentServices::Exmo
 
     def currency_neo?
       wallet.currency.to_s == 'NEO'
+    end
+
+    def currency_usdt?
+      wallet.currency.to_s == 'USDT'
     end
   end
 end
