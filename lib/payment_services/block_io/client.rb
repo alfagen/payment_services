@@ -29,11 +29,13 @@ class PaymentServices::BlockIo
     end
 
     def prepare_transaction(params:)
-      safely_parse http_request(
+      response = safely_parse(http_request(
         url: "#{API_URL}/prepare_transaction?#{params.to_query}",
         method: :GET,
         headers: build_headers
-      )
+      ))
+      raise Exception, response['data'] if response['status'] == 'fail'
+      response
     end
 
     def income_transactions(address)
