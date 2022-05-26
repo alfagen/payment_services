@@ -6,12 +6,13 @@ require_relative 'transaction'
 
 class PaymentServices::Exmo
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    INVOICED_CURRENCIES = %w[XRP XEM]
+    INVOICED_CURRENCIES = %w[xrp xem]
     Error = Class.new StandardError
     PayoutCreateRequestFailed = Class.new Error
     WalletOperationsRequestFailed = Class.new Error
 
     delegate :outcome_transaction_fee_amount, to: :payment_system
+    delegate :neo?, :usdt?, to: :currency, prefix: true
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
@@ -43,7 +44,7 @@ class PaymentServices::Exmo
       payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
       payout_params = {
         amount: amount.to_d + (outcome_transaction_fee_amount || 0),
-        currency: wallet.currency.to_s,
+        currency: currency.upcase,
         address: destination_account
       }
       payout_params[:invoice] = payout.order_fio if invoice_required?
@@ -68,15 +69,11 @@ class PaymentServices::Exmo
     end
 
     def invoice_required?
-      INVOICED_CURRENCIES.include?(wallet.currency.to_s)
+      INVOICED_CURRENCIES.include?(currency)
     end
 
-    def currency_neo?
-      wallet.currency.to_s == 'NEO'
-    end
-
-    def currency_usdt?
-      wallet.currency.to_s == 'USDT'
+    def currency
+      wallet.currency.to_s.downcase.inquiry
     end
   end
 end

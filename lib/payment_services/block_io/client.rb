@@ -18,23 +18,24 @@ class PaymentServices::BlockIo
 
     def make_payout(address:, amount:, nonce:, fee_priority:)
       logger.info "---- Request payout to: #{address}, on #{amount} ----"
-      transaction = prepare_transaction(params: { api_key: api_key, amounts: amount, to_addresses: address, priority: fee_priority })
+      transaction = prepare_transaction(amount: amount, address: address, fee_priority: fee_priority)
       signed_transaction = block_io_client.create_and_sign_transaction(transaction)
       submit_transaction_response = block_io_client.submit_transaction(transaction_data: signed_transaction)
       logger.info "---- Response: #{submit_transaction_response.to_s} ----"
       submit_transaction_response
-    rescue Exception => error # BlockIo uses Exceptions instead StandardError
+    rescue Exception, StandardError => error # BlockIo uses Exceptions instead StandardError
       logger.error error.to_s
       raise Error, error.to_s
     end
 
-    def prepare_transaction(params:)
+    def prepare_transaction(amount:, address:, fee_priority:)
+      params = { api_key: api_key, amounts: amount, to_addresses: address, priority: fee_priority }
       response = safely_parse(http_request(
         url: "#{API_URL}/prepare_transaction?#{params.to_query}",
         method: :GET,
         headers: build_headers
       ))
-      raise Exception, response['data'] if response['status'] == 'fail'
+      raise StandardError, response['data'] if response['status'] == 'fail'
       response
     end
 
