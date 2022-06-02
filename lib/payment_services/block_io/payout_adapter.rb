@@ -53,7 +53,7 @@ class PaymentServices::BlockIo
       payout = create_payout!(amount: amount, address: destination_account, order_payout_id: order_payout_id)
       response = client.make_payout(
         address: destination_account,
-        amount: amount.to_f,
+        amount: amount.format(decimal_mark: '.', symbol: nil, thousands_separator: ''),
         nonce: transaction_id,
         fee_priority: fee_priority
       )
