@@ -23,7 +23,7 @@ class PaymentServices::BlockIo
     end
 
     def successful?
-      confirmations >= CONFIRMATIONS_FOR_COMPLETE
+      currency.btc? || confirmations >= CONFIRMATIONS_FOR_COMPLETE
     end
 
     def created_at
@@ -32,6 +32,12 @@ class PaymentServices::BlockIo
 
     def total_spend
       source['total_amount_sent'].to_f
+    end
+
+    private
+
+    def currency
+      @currency ||= source['currency'].inquiry
     end
   end
 end

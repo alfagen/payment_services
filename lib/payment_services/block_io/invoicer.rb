@@ -35,7 +35,7 @@ class PaymentServices::BlockIo
     def transaction_for(invoice)
       transactions = collect_transactions_on(address: invoice.address)
       raw_transaction = transactions.find(&method(:match_transaction?))
-      Transaction.build_from(raw_transaction: raw_transaction) if raw_transaction
+      Transaction.build_from(raw_transaction: raw_transaction.merge('currency' => invoice.amount_currency.downcase)) if raw_transaction
     end
 
     def collect_transactions_on(address:)
