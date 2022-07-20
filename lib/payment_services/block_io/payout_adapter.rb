@@ -75,7 +75,7 @@ class PaymentServices::BlockIo
       wallet_transactions = client.outcome_transactions(address: wallet.account)['data']['txs']
       raw_transaction = find_transaction(txid: payout.transaction_id, transactions: wallet_transactions)
 
-      Transaction.build_from(raw_transaction: raw_transaction)
+      Transaction.build_from(raw_transaction: raw_transaction.merge('currency' => payout.amount_currency.downcase))
     end
 
     def fee_priority
