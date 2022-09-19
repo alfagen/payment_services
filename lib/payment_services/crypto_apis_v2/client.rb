@@ -8,6 +8,7 @@ class PaymentServices::CryptoApisV2
 
     DEFAULT_FEE_PRIORITY  = 'standard'
     LOW_FEE_PRIORITY      = 'slow'
+    USDT_TRC_FEE_LIMIT    = 1000000000
 
     def initialize(api_key:, currency:)
       @api_key  = api_key
@@ -50,6 +51,8 @@ class PaymentServices::CryptoApisV2
     end
 
     def classic_to_x_address(classic_address, address_tag)
+      return classic_address unless address_tag.present?
+
       safely_parse(http_request(
         url: "https://rest.cryptoapis.io/v2/blockchain-tools/xrp/mainnet/encode-x-address/#{classic_address}/#{address_tag}",
         method: :GET,
@@ -106,7 +109,7 @@ class PaymentServices::CryptoApisV2
 
     def build_fungible_payout_body(payout, wallet_transfer)
       token_network = wallet_transfer.wallet.payment_system.token_network.downcase
-      build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network)
+      build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network, feeLimit: USDT_TRC_FEE_LIMIT).delete(:feePriority)
     end
 
     def account_fee_priority

@@ -15,7 +15,7 @@ class PaymentServices::CryptoApisV2
       'bnb'   => 'binance-smart-chain',
       'zec'   => 'zcash',
       'xrp'   => 'xrp',
-      'usdt'  => 'ethereum'
+      'usdt'  => 'tron'
     }
     ACCOUNT_MODEL_BLOCKCHAINS  = %w(ethereum ethereum-classic binance-smart-chain xrp)
     FUNGIBLE_TOKENS = %w(usdt)
@@ -49,7 +49,7 @@ class PaymentServices::CryptoApisV2
 
     def process_payout_endpoint(wallet:)
       if fungible_token?
-        "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/token-transaction-requests"
+        "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/feeless-token-transaction-requests"
       elsif account_model_blockchain?
         "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/transaction-requests"
       else
