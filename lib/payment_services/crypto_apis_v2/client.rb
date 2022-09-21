@@ -109,7 +109,7 @@ class PaymentServices::CryptoApisV2
 
     def build_fungible_payout_body(payout, wallet_transfer)
       token_network = wallet_transfer.wallet.payment_system.token_network.downcase
-      build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network, feeLimit: USDT_TRC_FEE_LIMIT).delete(:feePriority)
+      build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network, feeLimit: USDT_TRC_FEE_LIMIT)
     end
 
     def account_fee_priority
