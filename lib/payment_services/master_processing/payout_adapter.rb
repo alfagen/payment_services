@@ -61,8 +61,10 @@ class PaymentServices::MasterProcessing
 
     def endpoint
       {
-        'visamc' => 'withdraw_to_card_v2',
-        'qiwi'   => 'withdraw_to_qiwi_v2'
+        'visamc'  => 'withdraw_to_card_v2',
+        'cardh2h' => 'withdraw_to_card_v2',
+        'qiwi'    => 'withdraw_to_qiwi_v2',
+        'qiwih2h' => 'withdraw_to_qiwi_v2'
       }[wallet.payment_system.payway]
     end
   end
