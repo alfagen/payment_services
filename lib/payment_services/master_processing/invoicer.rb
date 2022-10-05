@@ -24,7 +24,7 @@ class PaymentServices::MasterProcessing
         email: order.email
       }
 
-      raw_response = client.create_invoice(params: params, payment_method: payment_method)
+      raw_response = client.create_invoice(params: params, payway: payway)
       response = Response.build_from(raw_response: raw_response)
 
       raise "Can't create invoice: #{response.error_message}" unless response.success?
@@ -84,10 +84,6 @@ class PaymentServices::MasterProcessing
       return QIWI_DUMMY_CARD_TAIL if payway.qiwi?
 
       order.income_account.last(4)
-    end
-
-    def payment_method
-      order.income_payment_system.direct_payment_url.inquiry
     end
   end
 end
