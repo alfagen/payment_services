@@ -2,6 +2,7 @@
 
 require_relative 'invoice'
 require_relative 'client'
+require_relative 'response'
 
 class PaymentServices::MasterProcessing
   class Invoicer < ::PaymentServices::Base::Invoicer
