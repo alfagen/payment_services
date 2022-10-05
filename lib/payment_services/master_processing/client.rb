@@ -13,7 +13,6 @@ class PaymentServices::MasterProcessing
     end
 
     def create_invoice(params:, payway:)
-      params.merge!(hsid: generate_hsid(params))
       safely_parse http_request(
         url: create_invoice_endpoint(payway),
         method: :POST,
