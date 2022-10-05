@@ -83,9 +83,13 @@ class PaymentServices::MasterProcessing
     end
 
     def the_last_four_card_number
-      return QIWI_DUMMY_CARD_TAIL if payway.qiwi? || payway.qiwih2h?
+      return QIWI_DUMMY_CARD_TAIL if payway_qiwi?
 
       order.income_account.last(4)
+    end
+
+    def payway_qiwi?
+      payway.qiwi? || payway.qiwih2h?
     end
   end
 end
