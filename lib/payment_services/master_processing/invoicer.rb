@@ -24,13 +24,14 @@ class PaymentServices::MasterProcessing
         email: order.email
       }
 
-      response = client.create_invoice(params: params)
+      raw_response = client.create_invoice(params: params, payment_method: payment_method)
+      response = Response.build_from(raw_response: raw_response)
 
-      raise "Can't create invoice: #{response['cause']}" unless response['success']
+      raise "Can't create invoice: #{response.error_message}" unless response.success?
 
       invoice.update!(
-        deposit_id: response['billID'],
-        pay_invoice_url: response['paymentLinks'].first
+        deposit_id: response.deposit_id,
+        pay_invoice_url: response.pay_invoice_url
       )
     end
 
@@ -83,6 +84,10 @@ class PaymentServices::MasterProcessing
       return QIWI_DUMMY_CARD_TAIL if payway.qiwi?
 
       order.income_account.last(4)
+    end
+
+    def payment_method
+      order.income_payment_system.direct_payment_url.inquiry
     end
   end
 end
