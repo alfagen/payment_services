@@ -15,7 +15,7 @@ class PaymentServices::MasterProcessing
     def create_invoice(params:, payway:)
       params.merge!(hsid: generate_hsid(params))
       safely_parse http_request(
-        url: "#{API_URL}/#{invoice_endpoint(payway)}",
+        url: create_invoice_endpoint(payway),
         method: :POST,
         body: params.to_json,
         headers: build_headers(build_signature(params))
@@ -78,11 +78,11 @@ class PaymentServices::MasterProcessing
       OpenSSL::HMAC.hexdigest('SHA512', secret_key, request_body.to_json)
     end
 
-    def invoice_endpoint(payway)
+    def create_invoice_endpoint(payway)
       if payway.cardh2h? || payway.qiwih2h?
-        'generate_invoice_h2h'
+        "#{API_URL}/generate_invoice_h2h"
       else
-        'generate_p2p_v3'
+        "#{API_URL}/generate_p2p_v3"
       end
     end
   end
