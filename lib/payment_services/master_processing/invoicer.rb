@@ -7,8 +7,10 @@ class PaymentServices::MasterProcessing
   class Invoicer < ::PaymentServices::Base::Invoicer
     QIWI_DUMMY_CARD_TAIL = '9999'
     AVAILABLE_PAYSOURCE_OPTIONS = {
-      'visamc' => 'card',
-      'qiwi'   => 'qw'
+      'visamc'  => 'card',
+      'cardh2h' => 'card',
+      'qiwi'    => 'qw',
+      'qiwih2h' => 'qw'
     }
 
     def create_invoice(money)
@@ -81,7 +83,7 @@ class PaymentServices::MasterProcessing
     end
 
     def the_last_four_card_number
-      return QIWI_DUMMY_CARD_TAIL if payway.qiwi?
+      return QIWI_DUMMY_CARD_TAIL if payway.qiwi? || payway.qiwih2h?
 
       order.income_account.last(4)
     end
