@@ -10,14 +10,14 @@ class PaymentServices::CryptoApisV2
     LOW_FEE_PRIORITY      = 'slow'
     USDT_TRC_FEE_LIMIT    = 1000000000
 
-    def initialize(api_key:, currency:)
+    def initialize(api_key:, currency:, token_network:)
       @api_key  = api_key
-      @blockchain = Blockchain.new(currency: currency)
+      @blockchain = Blockchain.new(currency: currency, token_network: token_network)
     end
 
-    def address_transactions(address)
+    def address_transactions(invoice)
       safely_parse http_request(
-        url: blockchain.address_transactions_endpoint(address),
+        url: blockchain.address_transactions_endpoint(merchant_id: invoice.merchant_id, address: invoice.address),
         method: :GET,
         headers: build_headers
       )
@@ -108,8 +108,10 @@ class PaymentServices::CryptoApisV2
     end
 
     def build_fungible_payout_body(payout, wallet_transfer)
-      token_network = wallet_transfer.wallet.payment_system.token_network.downcase
-      build_account_payout_body(payout, wallet_transfer).merge(tokenIdentifier: token_network, feeLimit: USDT_TRC_FEE_LIMIT)
+      token_address = wallet_transfer.wallet.payment_system.token_address.downcase
+      build_account_payout_body(payout, wallet_transfer)
+        .merge(tokenIdentifier: token_address, feeLimit: USDT_TRC_FEE_LIMIT)
+        .delete(:feePriority)
     end
 
     def account_fee_priority

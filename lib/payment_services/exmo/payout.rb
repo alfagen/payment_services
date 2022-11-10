@@ -15,7 +15,7 @@ class PaymentServices::Exmo
 
     delegate :order, to: :order_payout
     delegate :outcome_payment_system, to: :order
-    delegate :token_network, to: :outcome_payment_system
+    delegate :token_address, to: :outcome_payment_system
 
     workflow_column :state
     workflow do

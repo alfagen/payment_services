@@ -52,9 +52,9 @@ class PaymentServices::Binance
     end
 
     def match_network?(transaction)
-      return true unless invoice.token_network
+      return true unless invoice.token_address
 
-      transaction['network'] == invoice.token_network
+      transaction['network'] == invoice.token_address
     end
 
     def match_time_interval?(transaction)

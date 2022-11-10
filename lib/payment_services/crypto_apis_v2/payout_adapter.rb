@@ -33,7 +33,7 @@ class PaymentServices::CryptoApisV2
         response = client.transaction_details(payout.txid)
         raise response['error']['message'] if response['error']
 
-        payout.update_payout_details!(transaction: Transaction.build_from(raw_transaction: response['data']['item']))
+        payout.update_payout_details!(transaction: build_transaction(source: response['data']['item']))
       end
 
       response
@@ -56,12 +56,16 @@ class PaymentServices::CryptoApisV2
         api_key = wallet.outcome_api_key.presence || wallet.parent&.outcome_api_key
         currency = wallet.currency.to_s.downcase
 
-        Client.new(api_key: api_key, currency: currency)
+        Client.new(api_key: api_key, currency: currency, token_network: wallet.token_network)
       end
     end
 
     def create_payout!(amount:, address:, fee:, order_payout_id:)
       Payout.create!(amount: amount, address: address, fee: fee, order_payout_id: order_payout_id)
+    end
+
+    def build_transaction(source:)
+      Transaction.build_from(raw_transaction: { transaction_hash: source['transactionHash'], created_at: source['transactionTimestamp'], currency: wallet.currency.to_s.downcase, source: source })
     end
   end
 end

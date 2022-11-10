@@ -41,8 +41,8 @@ class PaymentServices::Binance
       @order ||= Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
 
-    def token_network
-      order.income_payment_system.token_network.presence
+    def token_address
+      order.income_payment_system.token_address.presence
     end
 
     private

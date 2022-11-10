@@ -14,22 +14,28 @@ class PaymentServices::CryptoApisV2
       'etc'   => 'ethereum-classic',
       'bnb'   => 'binance-smart-chain',
       'zec'   => 'zcash',
-      'xrp'   => 'xrp',
-      'usdt'  => 'tron'
-    }
+      'xrp'   => 'xrp'
+    }.freeze
+    TOKEN_NETWORK_TO_BLOCKCHAIN = {
+      'trc20' => 'tron',
+      'bep20' => 'binance-smart-chain',
+      'erc20' => 'ethereum'
+    }.freeze
+
     ACCOUNT_MODEL_BLOCKCHAINS  = %w(ethereum ethereum-classic binance-smart-chain xrp)
     FUNGIBLE_TOKENS = %w(usdt)
     delegate :xrp?, :bitcoin?, to: :blockchain
 
-    def initialize(currency:)
+    def initialize(currency:, token_network:)
       @currency = currency
+      @token_network = token_network
     end
 
-    def address_transactions_endpoint(address)
+    def address_transactions_endpoint(merchant_id:, address:)
       if blockchain.xrp?
         "#{blockchain_data_prefix}/xrp-specific/#{NETWORK}/addresses/#{address}/transactions"
-      elsif fungible_token?
-        "#{blockchain_data_prefix}/#{blockchain}/#{NETWORK}/addresses/#{address}/tokens-transfers"
+      elsif fungible_token? || currency.inquiry.bnb?
+        "#{proccess_payout_base_url(merchant_id)}/transactions"
       else
         "#{blockchain_data_prefix}/#{blockchain}/#{NETWORK}/addresses/#{address}/transactions"
       end
@@ -67,10 +73,14 @@ class PaymentServices::CryptoApisV2
 
     private
 
-    attr_reader :currency
+    attr_reader :currency, :token_network
 
     def blockchain
-      @blockchain ||= CURRENCY_TO_BLOCKCHAIN[currency].inquiry
+      @blockchain ||= build_blockchain.inquiry
+    end
+
+    def build_blockchain
+      currency.inquiry.usdt? ? TOKEN_NETWORK_TO_CURRENCY[token_network] : CURRENCY_TO_BLOCKCHAIN[currency]
     end
 
     def proccess_payout_base_url(merchant_id)
