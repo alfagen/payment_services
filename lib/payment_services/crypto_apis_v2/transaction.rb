@@ -25,31 +25,31 @@ class PaymentServices::CryptoApisV2
     end
 
     def confirmed?
-      send("#{blockchain}_transaction_succeed?")
+      send("#{blockchain}_transaction_confirmed?")
     end
 
     private
 
     def method_missing(method_name)
-      super unless method_name.end_with?('_transaction_succeed?')
+      super unless method_name.end_with?('_transaction_confirmed?')
 
-      generic_transaction_succeed?
+      generic_transaction_confirmed?
     end
 
-    def generic_transaction_succeed?
+    def generic_transaction_confirmed?
       source['isConfirmed']
     end
 
-    def xrp_transaction_succeed?
+    def xrp_transaction_confirmed?
       source['status'] == SUCCESS_PAYOUT_STATUS
     end
 
-    def bnb_transaction_succeed?
-      source['status'] == 'confirmed'
+    def bnb_transaction_confirmed?
+      source['status'].inquiry.confirmed?
     end
 
-    def usdt_transaction_succeed?
-      source['status'] == 'confirmed'
+    def usdt_transaction_confirmed?
+      source['status'].inquiry.confirmed?
     end
   end
 end

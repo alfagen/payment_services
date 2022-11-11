@@ -39,7 +39,7 @@ class PaymentServices::CryptoApisV2
       Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
     end
 
-    def update_invoice_details(transaction:)
+    def update_invoice_details!(transaction:)
       has_transaction! if pending?
       update!(
         transaction_created_at: transaction.created_at,

@@ -2,7 +2,7 @@
 
 require_relative 'invoice'
 require_relative 'client'
-require_relative 'transaction_matcher'
+require_relative 'transaction_repository'
 
 class PaymentServices::CryptoApisV2
   class Invoicer < ::PaymentServices::Base::Invoicer
@@ -14,7 +14,7 @@ class PaymentServices::CryptoApisV2
       transaction = transaction_for(invoice)
       return if transaction.nil?
 
-      invoice.update_invoice_details(transaction: transaction)
+      invoice.update_invoice_details!(transaction: transaction)
     end
 
     def invoice
@@ -28,7 +28,7 @@ class PaymentServices::CryptoApisV2
     private
 
     def transaction_for(invoice)
-      TransactionMatcher.new(invoice: invoice, transactions: collect_transactions).perform
+      TransactionRepository.new(collect_transactions).find_for(invoice)
     end
 
     def collect_transactions

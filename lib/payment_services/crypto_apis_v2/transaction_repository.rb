@@ -4,16 +4,16 @@ require_relative 'transaction'
 require_relative 'blockchain'
 
 class PaymentServices::CryptoApisV2
-  class TransactionMatcher
+  class TransactionRepository
     TRANSACTION_TIME_THRESHOLD = 30.minutes
     BASIC_TIME_COUNTDOWN = 1.minute
 
-    def initialize(invoice:, transactions:)
-      @invoice = invoice
+    def initialize(transactions)
       @transactions = transactions
     end
 
-    def perform
+    def find_for(invoice)
+      @invoice = invoice
       send("match_#{blockchain}_transaction")
     end
 
