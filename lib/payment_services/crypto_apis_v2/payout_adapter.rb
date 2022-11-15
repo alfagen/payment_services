@@ -65,7 +65,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def build_transaction(source:)
-      Transaction.build_from(raw_transaction: { transaction_hash: source['transactionHash'], created_at: source['transactionTimestamp'], currency: wallet.currency.to_s.downcase, source: source })
+      Transaction.build_from(transaction_hash: source['transactionHash'], created_at: source['transactionTimestamp'], currency: wallet.currency.to_s.downcase, source: source)
     end
   end
 end

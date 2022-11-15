@@ -2,7 +2,7 @@
 
 class PaymentServices::CryptoApisV2
   class Transaction
-    SUCCESS_PAYOUT_STATUS = 'tesSUCCESS'
+    SUCCESS_XRP_STATUS = 'tesSUCCESS'
 
     include Virtus.model
 
@@ -11,12 +11,12 @@ class PaymentServices::CryptoApisV2
     attribute :currency, String
     attribute :source, Hash
 
-    def self.build_from(raw_transaction:)
+    def self.build_from(transaction_hash:, created_at:, currency:, source:)
       new(
-        id: raw_transaction[:transaction_hash],
-        created_at: raw_transaction[:created_at],
-        currency: raw_transaction[:currency],
-        source: raw_transaction[:source]
+        id: transaction_hash,
+        created_at: created_at,
+        currency: currency,
+        source: source
       )
     end
 
@@ -41,15 +41,19 @@ class PaymentServices::CryptoApisV2
     end
 
     def xrp_transaction_confirmed?
-      source['status'] == SUCCESS_PAYOUT_STATUS
+      status == SUCCESS_XRP_STATUS
     end
 
     def bnb_transaction_confirmed?
-      source['status'].inquiry.confirmed?
+      status.confirmed?
     end
 
     def usdt_transaction_confirmed?
-      source['status'].inquiry.confirmed?
+      status.confirmed?
+    end
+
+    def status
+      source['status'].inquiry
     end
   end
 end

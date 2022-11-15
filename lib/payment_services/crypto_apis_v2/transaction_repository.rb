@@ -14,7 +14,7 @@ class PaymentServices::CryptoApisV2
 
     def find_for(invoice)
       @invoice = invoice
-      send("match_#{blockchain}_transaction")
+      send("find_#{blockchain}_transaction")
     end
 
     private
@@ -30,13 +30,13 @@ class PaymentServices::CryptoApisV2
     end
 
     def build_transaction(id:, created_at:, currency:, source:)
-      Transaction.build_from(raw_transaction: { transaction_hash: id, created_at: created_at, currency: currency, source: source })
+      Transaction.build_from(transaction_hash: id, created_at: created_at, currency: currency, source: source)
     end
 
     def method_missing(method_name)
-      super unless method_name.start_with?('match_') && method_name.end_with?('_transaction')
+      super unless method_name.start_with?('find_') && method_name.end_with?('_transaction')
 
-      raw_transaction = transactions.find { |transaction| match_generic_transaction?(transaction) }
+      raw_transaction = transactions.find { |transaction| find_generic_transaction?(transaction) }
       return unless raw_transaction
 
       build_transaction(
@@ -47,7 +47,7 @@ class PaymentServices::CryptoApisV2
       )
     end
 
-    def match_generic_transaction?(transaction)
+    def find_generic_transaction?(transaction)
       amount = parse_received_amount(transaction)
       transaction_created_at = timestamp_in_utc(transaction['transactionTimestamp'])
       invoice_created_at = invoice.created_at.utc
@@ -56,8 +56,8 @@ class PaymentServices::CryptoApisV2
       invoice_created_at < transaction_created_at && match_by_amount_and_time?(amount, time_diff)
     end
 
-    def match_usdt_transaction
-      raw_transaction = transactions.find { |transaction| match_token?(transaction) }
+    def find_usdt_transaction
+      raw_transaction = transactions.find { |transaction| find_token?(transaction) }
       return unless raw_transaction
 
       build_transaction(
@@ -68,8 +68,8 @@ class PaymentServices::CryptoApisV2
       )
     end
 
-    def match_bnb_transaction
-      raw_transaction = transactions.find { |transaction| match_token?(transaction) }
+    def find_bnb_transaction
+      raw_transaction = transactions.find { |transaction| find_token?(transaction) }
       return unless raw_transaction
 
       build_transaction(
@@ -92,7 +92,7 @@ class PaymentServices::CryptoApisV2
       time_diff.round.minutes < TRANSACTION_TIME_THRESHOLD
     end
 
-    def match_token?(transaction)
+    def find_token?(transaction)
       amount = parse_tokens_amount(transaction)
       transaction_created_at = timestamp_in_utc(transaction['timestamp'])
       invoice_created_at = invoice.created_at.utc
