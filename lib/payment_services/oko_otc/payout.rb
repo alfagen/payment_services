@@ -2,8 +2,8 @@
 
 class PaymentServices::OkoOtc
   class Payout < ApplicationRecord
-    SUCCESS_PROVIDER_STATE  = 'выплачена'
-    FAILED_PROVIDER_STATE   = 'отмененная'
+    SUCCESS_PROVIDER_STATE  = 'Выплачена'
+    FAILED_PROVIDER_STATE   = 'В обработке'
 
     include Workflow
 

@@ -29,9 +29,9 @@ class PaymentServices::OkoOtc
       }
       response = client.payout_status(params: params)
 
-      raise WithdrawHistoryRequestFailed, "Can't get withdraw history: Error Code: #{response['errCode']}" unless response['status']
+      raise WithdrawHistoryRequestFailed, "Can't get withdraw history: Error Code: #{response['errCode']}" unless response['totalLen']
 
-      payout.update_state_by_provider(response['statusName'])
+      payout.update_state_by_provider(provider_state(response))
       response
     end
 
@@ -66,6 +66,10 @@ class PaymentServices::OkoOtc
     def card_expiration(order)
       month, year = order.payment_card_exp_date.split('/')
       year.length == 2 ? "#{month}/20#{year}" : "#{month}/#{year}"
+    end
+
+    def provider_state(response)
+      response['data'].first.dig('orderStats', 'statusName')
     end
   end
 end
