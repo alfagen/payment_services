@@ -27,8 +27,6 @@ class PaymentServices::OkoOtc
       )
     end
 
-    {"sum":52,"currencyFrom":"EUR","wallet":"5373440005581497","bank":"EUR","cardExpiration":null,"orderUID":"1672316430160-2"}
-
     private
 
     attr_reader :api_key, :secret_key
