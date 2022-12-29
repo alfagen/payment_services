@@ -40,7 +40,9 @@ class PaymentServices::OkoOtc
         currencyFrom: amount.currency.to_s,
         wallet: destination_account,
         bank: amount.currency.to_s,
-        cardExpiration: order.payment_card_exp_date,
+        cardholder: order.outcome_fio,
+        dateOfBirth: order.outcome_operator,
+        cardExpiration: card_expiration(order),
         orderUID: "#{order.public_id}-#{order_payout_id}"
       }
       response = client.process_payout(params: params)
@@ -53,6 +55,11 @@ class PaymentServices::OkoOtc
       @client ||= begin
         Client.new(api_key: wallet.outcome_api_key, secret_key: wallet.outcome_api_secret)
       end
+    end
+
+    def card_expiration(order)
+      month, year = order.payment_card_exp_date.split('/')
+      year.length == 2 ? "#{month}/20#{year}" : "#{month}/#{year}"
     end
   end
 end
