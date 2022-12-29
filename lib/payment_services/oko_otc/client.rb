@@ -27,13 +27,18 @@ class PaymentServices::OkoOtc
       )
     end
 
+    {"sum":52,"currencyFrom":"EUR","wallet":"5373440005581497","bank":"EUR","cardExpiration":null,"orderUID":"1672316430160-2"}
+
     private
 
     attr_reader :api_key, :secret_key
 
     def build_signature(request_body)
       sign_string = "#{request_body[:sum]};#{request_body[:wallet]};#{request_body[:orderUID]}"
-      OpenSSL::HMAC.hexdigest('SHA512', secret_key, sign_string)
+      logger.info sign_string
+      digest = OpenSSL::HMAC.hexdigest('SHA512', secret_key, sign_string)
+      logger.info digest
+      digest
     end
 
     def build_headers(signature)
