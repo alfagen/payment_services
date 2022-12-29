@@ -32,7 +32,7 @@ class PaymentServices::OkoOtc
     attr_reader :api_key, :secret_key
 
     def build_signature(request_body)
-      sign_string = "#{request_body[:sum]};#{request_body[:wallet]};#{request_body[:orderUID]}"
+      sign_string = "#{request_body[:sum]};#{request_body[:wallet]};#{request_body[:orderUID]};"
       logger.info sign_string
       digest = OpenSSL::HMAC.hexdigest('SHA512', secret_key, sign_string)
       logger.info digest

@@ -23,7 +23,7 @@ class PaymentServices::OkoOtc
 
       response = client.payout_status(params: { orderID: payout.withdrawal_id, orderType: 'withdraw' })
 
-      raise WithdrawHistoryRequestFailed, "Can't get withdraw history: #{response['message']}" unless response['status']
+      raise WithdrawHistoryRequestFailed, "Can't get withdraw history: #{response['errCode']}" unless response['status']
 
       payout.update_state_by_provider(response['statusName'])
       response
@@ -44,7 +44,7 @@ class PaymentServices::OkoOtc
         orderUID: "#{order.public_id}"
       }
       response = client.process_payout(params: params)
-      raise PayoutCreateRequestFailed, "Can't create payout: #{response['message']}" unless response['status']
+      raise PayoutCreateRequestFailed, "Can't create payout: #{response['errCode']}" unless response['status']
 
       payout.pay!(withdrawal_id: response['orderID'])
     end
