@@ -41,7 +41,7 @@ class PaymentServices::OkoOtc
         wallet: destination_account,
         bank: amount.currency.to_s,
         cardExpiration: order.payment_card_exp_date,
-        orderUID: order.public_id
+        orderUID: "#{order.public_id}"
       }
       response = client.process_payout(params: params)
       raise PayoutCreateRequestFailed, "Can't create payout: #{response['message']}" unless response['status']
