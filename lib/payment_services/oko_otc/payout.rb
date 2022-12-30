@@ -34,17 +34,17 @@ class PaymentServices::OkoOtc
     def update_state_by_provider(state)
       update!(provider_state: state)
 
-      confirm!  if success_state?
-      fail!     if failed_state?
+      confirm!  if provider_succeed?
+      fail!     if provider_failed?
     end
 
     private
 
-    def success_state?
+    def provider_succeed?
       provider_state == SUCCESS_PROVIDER_STATE
     end
 
-    def failed_state?
+    def provider_failed?
       provider_state == FAILED_PROVIDER_STATE
     end
   end

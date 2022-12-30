@@ -5,10 +5,6 @@ require_relative 'client'
 
 class PaymentServices::OkoOtc
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    Error = Class.new StandardError
-    PayoutCreateRequestFailed = Class.new Error
-    WithdrawHistoryRequestFailed = Class.new Error
-
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -21,15 +17,9 @@ class PaymentServices::OkoOtc
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      params = {
-        limit: 1,
-        offset: 0,
-        orderID: payout.withdrawal_id,
-        orderType: 'withdraw'
-      }
-      response = client.payout_status(params: params)
+      response = client.payout_status(withdrawal_id: payout.withdrawal_id)
 
-      raise WithdrawHistoryRequestFailed, "Can't get withdraw history: Error Code: #{response['errCode']}" unless response['totalLen']
+      raise "Can't get withdraw history. Error Code: #{response['errCode']}" unless response['totalLen']
 
       payout.update_state_by_provider(provider_state(response))
       response
@@ -52,7 +42,7 @@ class PaymentServices::OkoOtc
         orderUID: "#{order.public_id}-#{order_payout_id}"
       }
       response = client.process_payout(params: params)
-      raise PayoutCreateRequestFailed, "Can't create payout: Error Code: #{response['errCode']}" unless response['status']
+      raise "Can't create payout. Error Code: #{response['errCode']}" unless response['status']
 
       payout.pay!(withdrawal_id: response['orderID'])
     end
@@ -65,7 +55,7 @@ class PaymentServices::OkoOtc
 
     def card_expiration(order)
       month, year = order.payment_card_exp_date.split('/')
-      year.length == 2 ? "#{month}/20#{year}" : "#{month}/#{year}"
+      year.length == 2 ? "#{month}/20#{year}" : order.payment_card_exp_date
     end
 
     def provider_state(response)
