@@ -2,7 +2,7 @@
 
 class PaymentServices::Paylama
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://sandbox.paylama.io/api/api/payment'
+    API_URL = 'https://admin.paylama.io/api/api/payment'
 
     def initialize(api_key:, secret_key:)
       @api_key    = api_key
