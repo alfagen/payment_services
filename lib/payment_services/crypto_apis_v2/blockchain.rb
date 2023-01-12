@@ -80,7 +80,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def build_blockchain
-      currency.inquiry.usdt? ? TOKEN_NETWORK_TO_CURRENCY[token_network] : CURRENCY_TO_BLOCKCHAIN[currency]
+      currency.inquiry.usdt? ? TOKEN_NETWORK_TO_BLOCKCHAIN[token_network] : CURRENCY_TO_BLOCKCHAIN[currency]
     end
 
     def proccess_payout_base_url(merchant_id)
