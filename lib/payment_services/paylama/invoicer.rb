@@ -38,7 +38,6 @@ class PaymentServices::Paylama
         clientIP: order.remote_ip || '',
         currencyID: currency,
         callbackURL: order.income_payment_system.callback_url,
-        payment_service: payment_service,
         redirect: {
           successURL: order.success_redirect,
           failURL: order.failed_redirect
