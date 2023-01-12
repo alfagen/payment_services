@@ -47,7 +47,7 @@ class PaymentServices::CryptoApisV2
         api_key = wallet.api_key.presence || wallet.parent&.api_key
         currency = wallet.currency.to_s.downcase
 
-        Client.new(api_key: api_key, currency: currency, token_network: wallet.token_network)
+        Client.new(api_key: api_key, currency: currency, token_network: wallet.payment_system.token_network)
       end
     end
   end
