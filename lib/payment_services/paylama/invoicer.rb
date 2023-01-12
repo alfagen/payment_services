@@ -34,7 +34,7 @@ class PaymentServices::Paylama
       {
         amount: invoice.amount.to_i,
         expireAt: order.income_payment_timeout,
-        comment: order.public_id,
+        comment: "#{order.public_id}",
         clientIP: order.remote_ip || '',
         currencyID: currency,
         callbackURL: order.income_payment_system.callback_url,
