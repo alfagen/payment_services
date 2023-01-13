@@ -14,7 +14,7 @@ class PaymentServices::CryptoApisV2
 
     def find_for(invoice)
       @invoice = invoice
-      send("find_#{invoice.amount_currency}_transaction")
+      send("find_#{invoice.amount_currency.downcase}_transaction")
     end
 
     private

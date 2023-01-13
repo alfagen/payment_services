@@ -28,7 +28,7 @@ class PaymentServices::CryptoApisV2
     private
 
     def transaction_for(invoice)
-      TransactionRepository.new(collect_transactions).find_for(invoice)
+      PaymentServices::CryptoApisV2::TransactionRepository.new(transactions).find_for(invoice)
     end
 
     def collect_transactions
