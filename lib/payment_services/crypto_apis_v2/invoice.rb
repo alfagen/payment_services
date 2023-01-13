@@ -43,7 +43,7 @@ class PaymentServices::CryptoApisV2
       has_transaction! if pending?
       update!(
         transaction_created_at: transaction.created_at,
-        transaction_id: transaction.transaction_id,
+        transaction_id: transaction.id,
         confirmed: transaction.confirmed?
       )
       pay!(payload: transaction) if confirmed?

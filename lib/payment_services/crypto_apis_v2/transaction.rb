@@ -37,7 +37,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def generic_transaction_confirmed?
-      source['isConfirmed']
+      source['minedInBlockHeight'] > 0
     end
 
     def xrp_transaction_confirmed?
