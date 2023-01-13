@@ -25,7 +25,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def confirmed?
-      send("#{blockchain}_transaction_confirmed?")
+      send("#{currency}_transaction_confirmed?")
     end
 
     private
