@@ -49,7 +49,7 @@ class PaymentServices::CryptoApisV2
 
     def find_generic_transaction?(transaction)
       amount = parse_received_amount(transaction)
-      transaction_created_at = timestamp_in_utc(transaction['transactionTimestamp'])
+      transaction_created_at = timestamp_in_utc(transaction['timestamp'])
       invoice_created_at = invoice.created_at.utc
 
       time_diff = (transaction_created_at - invoice_created_at) / BASIC_TIME_COUNTDOWN
