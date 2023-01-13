@@ -108,7 +108,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def build_fungible_payout_body(payout, wallet_transfer)
-      token_address = wallet_transfer.wallet.payment_system.token_address.upcase
+      token_address = wallet_transfer.wallet.payment_system.token_address.downcase
       body = build_account_payout_body(payout, wallet_transfer)
         .merge(tokenIdentifier: token_address, feeLimit: USDT_TRC_FEE_LIMIT)
       body.delete(:feePriority)
