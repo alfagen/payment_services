@@ -102,7 +102,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def match_by_contract_address?(transaction)
-      transaction['fungibleTokens']['type'].tr('-','') == wallet.payment_system.token_network.upcase
+      transaction['fungibleTokens'].first['type'].tr('-','') == wallet.payment_system.token_network.upcase
     end
 
     def parse_received_amount(transaction)
@@ -111,7 +111,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def parse_tokens_amount(transaction)
-      tokens = transaction['fungibleTokens']
+      tokens = transaction['fungibleTokens'].first
       tokens['recipient'] == invoice.address ? tokens['amount'] : 0
     end
 
