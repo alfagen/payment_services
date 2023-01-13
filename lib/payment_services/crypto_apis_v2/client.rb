@@ -8,7 +8,7 @@ class PaymentServices::CryptoApisV2
 
     DEFAULT_FEE_PRIORITY  = 'standard'
     LOW_FEE_PRIORITY      = 'slow'
-    USDT_TRC_FEE_LIMIT    = 1000000000
+    USDT_TRC_FEE_LIMIT    = '1000000000'
 
     def initialize(api_key:, currency:, token_network:)
       @api_key  = api_key
