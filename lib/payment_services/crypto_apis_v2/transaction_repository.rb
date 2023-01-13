@@ -62,7 +62,7 @@ class PaymentServices::CryptoApisV2
 
       build_transaction(
         id: raw_transaction['transactionId'],
-        created_at: timestamp_in_utc(transaction['timestamp']),
+        created_at: timestamp_in_utc(raw_transaction['timestamp']),
         currency: currency,
         source: raw_transaction
       )
@@ -74,7 +74,7 @@ class PaymentServices::CryptoApisV2
 
       build_transaction(
         id: raw_transaction['transactionId'],
-        created_at: timestamp_in_utc(transaction['timestamp']),
+        created_at: timestamp_in_utc(raw_transaction['timestamp']),
         currency: currency,
         source: raw_transaction
       )
