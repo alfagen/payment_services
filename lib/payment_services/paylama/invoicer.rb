@@ -33,6 +33,10 @@ class PaymentServices::Paylama
       invoice.update_state_by_provider(response['status'])
     end
 
+    def invoice
+      @invoice ||= Invoice.find_by!(order_public_id: order.public_id)
+    end
+
     private
 
     def invoice_params
@@ -52,10 +56,6 @@ class PaymentServices::Paylama
 
     def income_wallet
       @income_wallet ||= order.income_wallet
-    end
-
-    def invoice
-      @invoice ||= Invoice.find_by!(order_public_id: order.public_id)
     end
 
     def client
