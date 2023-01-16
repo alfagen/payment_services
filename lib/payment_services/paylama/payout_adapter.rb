@@ -27,7 +27,6 @@ class PaymentServices::Paylama
       return if payout.pending?
 
       response = client.payout_status(withdrawal_id: payout.withdrawal_id)
-
       raise "Can't get withdraw history: #{response['cause']}" unless response['success']
 
       payout.update_state_by_provider(response['status'])
@@ -48,7 +47,6 @@ class PaymentServices::Paylama
 
     def payout_params
       order = OrderPayout.find(payout.order_payout_id).order
-
       {
         amount: payout.amount.to_i,
         expireAt: PAYOUT_TIME_ALIVE.to_i,
