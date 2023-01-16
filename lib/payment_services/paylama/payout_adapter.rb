@@ -50,7 +50,7 @@ class PaymentServices::Paylama
       {
         amount: payout.amount.to_i,
         expireAt: PAYOUT_TIME_ALIVE.to_i,
-        comment: "#{order.public_id}-#{order_payout_id}",
+        comment: "#{order.public_id}-#{payout.order_payout_id}",
         clientIP: order.remote_ip || '',
         paySourcesFilter: pay_source,
         currencyID: CurrencyRepository.build_from(kassa_currency: wallet.currency).provider_currency,
