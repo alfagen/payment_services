@@ -46,7 +46,6 @@ class PaymentServices::Paylama
         comment: "#{order.public_id}",
         clientIP: order.remote_ip || '',
         currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).provider_currency,
-        callbackURL: order.income_payment_system.callback_url,
         redirect: {
           successURL: order.success_redirect,
           failURL: order.failed_redirect
