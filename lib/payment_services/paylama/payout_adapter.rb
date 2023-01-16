@@ -27,7 +27,7 @@ class PaymentServices::Paylama
       return if payout.pending?
 
       response = client.payment_status(payment_id: payout.withdrawal_id, type: 'withdraw')
-      raise "Can't get payment information: #{response['message']}" unless response['success']
+      raise "Can't get payment information: #{response['cause']}" unless response['ID']
 
       payout.update_state_by_provider(response['status'])
       response

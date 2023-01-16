@@ -28,7 +28,7 @@ class PaymentServices::Paylama
 
     def update_invoice_state!
       response = client.payment_status(payment_id: invoice.deposit_id, type: 'invoice')
-      raise "Can't get payment information: #{response['message']}" unless response['success']
+      raise "Can't get payment information: #{response['cause']}" unless response['ID']
 
       invoice.update_state_by_provider(response['status'])
     end
