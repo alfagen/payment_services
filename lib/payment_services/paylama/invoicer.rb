@@ -2,16 +2,10 @@
 
 require_relative 'invoice'
 require_relative 'client'
+require_relative 'currency_repository'
 
 class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
-    CURRENCY_TO_PROVIDER_CURRENCY = {
-      'RUB' => 1,
-      'USD' => 2,
-      'KZT' => 3,
-      'EUR' => 4
-    }.freeze
-
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
       response = client.generate_invoice(params: invoice_params)
@@ -36,7 +30,7 @@ class PaymentServices::Paylama
         expireAt: order.income_payment_timeout,
         comment: "#{order.public_id}",
         clientIP: order.remote_ip || '',
-        currencyID: currency,
+        currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).provider_currency,
         callbackURL: order.income_payment_system.callback_url,
         redirect: {
           successURL: order.success_redirect,
@@ -47,10 +41,6 @@ class PaymentServices::Paylama
 
     def income_wallet
       @income_wallet ||= order.income_wallet
-    end
-
-    def currency
-      CURRENCY_TO_PROVIDER_CURRENCY[income_wallet.currency.to_s]
     end
 
     def invoice

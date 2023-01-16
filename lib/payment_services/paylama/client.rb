@@ -18,6 +18,29 @@ class PaymentServices::Paylama
       )
     end
 
+    def process_payout(params:)
+      safely_parse http_request(
+        url: "#{API_URL}/generate_withdraw",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
+    def payout_status(withdrawal_id:)
+      params = {
+        externalID: withdrawal_id,
+        orderType: 'withdraw'
+      }
+
+      safely_parse http_request(
+        url: "#{API_URL}/get_order_details",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key
