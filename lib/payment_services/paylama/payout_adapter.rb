@@ -26,8 +26,8 @@ class PaymentServices::Paylama
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      response = client.payout_status(withdrawal_id: payout.withdrawal_id)
-      raise "Can't get withdraw history: #{response['cause']}" unless response['success']
+      response = client.payment_status(payment_id: payout.withdrawal_id, type: 'withdraw')
+      raise "Can't get payment information: #{response['message']}" unless response['success']
 
       payout.update_state_by_provider(response['status'])
       response
@@ -40,7 +40,7 @@ class PaymentServices::Paylama
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
       response = client.process_payout(params: payout_params)
-      raise "Can't create payout: #{response['cause']}" unless response['success']
+      raise "Can't create payout: #{response['message']}" unless response['success']
 
       payout.pay!(withdrawal_id: response['billID'])
     end

@@ -22,6 +22,17 @@ class PaymentServices::Paylama
       URI.parse(invoice.reload.pay_url)
     end
 
+    def async_invoice_state_updater?
+      true
+    end
+
+    def update_invoice_state!
+      response = client.payment_status(payment_id: invoice.deposit_id, type: 'invoice')
+      raise "Can't get payment information: #{response['message']}" unless response['success']
+
+      invoice.update_state_by_provider(response['status'])
+    end
+
     private
 
     def invoice_params

@@ -2,6 +2,9 @@
 
 class PaymentServices::Paylama
   class Invoice < ApplicationRecord
+    SUCCESS_PROVIDER_STATE  = 'Succeed'
+    FAILED_PROVIDER_STATE   = 'Failed'
+
     include Workflow
 
     self.table_name = 'paylama_invoices'
@@ -27,8 +30,25 @@ class PaymentServices::Paylama
       state :cancelled
     end
 
-    def pay(payload:)
-      update(payload: payload)
+    def update_state_by_provider(state)
+      update!(provider_state: state)
+
+      pay!    if provider_succeed?
+      cancel! if provider_failed?
+    end
+
+    def order
+      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
+    end
+
+    private
+
+    def provider_succeed?
+      provider_state == SUCCESS_PROVIDER_STATE
+    end
+
+    def provider_failed?
+      provider_state == FAILED_PROVIDER_STATE
     end
   end
 end

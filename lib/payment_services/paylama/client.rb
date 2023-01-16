@@ -27,10 +27,10 @@ class PaymentServices::Paylama
       )
     end
 
-    def payout_status(withdrawal_id:)
+    def payment_status(payment_id:, type:)
       params = {
-        externalID: withdrawal_id,
-        orderType: 'withdraw'
+        externalID: payment_id,
+        orderType: type
       }
 
       safely_parse http_request(
