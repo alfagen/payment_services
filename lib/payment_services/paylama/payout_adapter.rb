@@ -40,7 +40,7 @@ class PaymentServices::Paylama
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
       response = client.process_payout(params: payout_params)
-      raise "Can't create payout: #{response['message']}" unless response['success']
+      raise "Can't create payout: #{response['cause']}" unless response['success']
 
       payout.pay!(withdrawal_id: response['billID'])
     end
