@@ -36,6 +36,7 @@ class PaymentServices::Paylama
     private
 
     attr_reader :payout
+    delegate :outcome_api_key, : outcome_api_secret, to: :wallet
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
@@ -63,9 +64,7 @@ class PaymentServices::Paylama
     end
 
     def client
-      @client ||= begin
-        Client.new(api_key: wallet.outcome_api_key, secret_key: wallet.outcome_api_secret)
-      end
+      @client ||= Client.new(api_key: outcome_api_key, secret_key: outcome_api_secret)
     end
   end
 end

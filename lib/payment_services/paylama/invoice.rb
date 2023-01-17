@@ -33,7 +33,7 @@ class PaymentServices::Paylama
     def update_state_by_provider(state)
       update!(provider_state: state)
 
-      pay!    if provider_succeed?
+      pay! if provider_succeed?
       cancel! if provider_failed?
     end
 

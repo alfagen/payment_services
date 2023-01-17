@@ -43,7 +43,7 @@ class PaymentServices::Paylama
       {
         amount: invoice.amount.to_i,
         expireAt: order.income_payment_timeout,
-        comment: "#{order.public_id}",
+        comment: order.public_id.to_s,
         clientIP: order.remote_ip || '',
         currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).provider_currency,
         redirect: {
@@ -58,9 +58,7 @@ class PaymentServices::Paylama
     end
 
     def client
-      @client ||= begin
-        Client.new(api_key: income_wallet.api_key, secret_key: income_wallet.api_secret)
-      end
+      @client ||= Client.new(api_key: income_wallet.api_key, secret_key: income_wallet.api_secret)
     end
   end
 end
