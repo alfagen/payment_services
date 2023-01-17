@@ -2,7 +2,7 @@
 
 class PaymentServices::Paylama
   class CurrencyRepository
-    { RUB: 1, USD: 2, KZT: 3, EUR: 4 }.stringify_keys.freeze
+    CURRENCY_TO_PROVIDER_CURRENCY = { RUB: 1, USD: 2, KZT: 3, EUR: 4 }.stringify_keys.freeze
 
     include Virtus.model
 
