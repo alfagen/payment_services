@@ -5,7 +5,7 @@ class PaymentServices::Paylama
     API_URL = 'https://admin.paylama.io/api/api/payment'
 
     def initialize(api_key:, secret_key:)
-      @api_key    = api_key
+      @api_key = api_key
       @secret_key = secret_key
     end
 
