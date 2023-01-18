@@ -126,7 +126,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def parse_bnb_tokens_amount(transaction)
-      recipient = recipients.find { |recipient| recipient['address'] == invoice.address }
+      recipient = transaction['recipients'].find { |recipient| recipient['address'] == invoice.address }
       recipient ? recipient['amount'] : 0
     end
 
