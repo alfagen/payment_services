@@ -69,7 +69,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def find_bnb_transaction
-      raw_transaction = transactions.find { |transaction| find_token?(transaction) }
+      raw_transaction = transactions.find { |transaction| find_bnb_token?(transaction) }
       return unless raw_transaction
 
       build_transaction(
@@ -101,6 +101,15 @@ class PaymentServices::CryptoApisV2
       invoice_created_at < transaction_created_at && match_by_amount_and_time?(amount, time_diff) && match_by_contract_address?(transaction)
     end
 
+    def find_bnb_token?(transaction)
+      amount = parse_bnb_tokens_amount(transaction)
+      transaction_created_at = timestamp_in_utc(transaction['timestamp'])
+      invoice_created_at = invoice.created_at.utc
+
+      time_diff = (transaction_created_at - invoice_created_at) / BASIC_TIME_COUNTDOWN
+      invoice_created_at < transaction_created_at && match_by_amount_and_time?(amount, time_diff)
+    end
+
     def match_by_contract_address?(transaction)
       transaction['fungibleTokens'].first['type'].tr('-','') == wallet.payment_system.token_network.upcase
     end
@@ -114,6 +123,11 @@ class PaymentServices::CryptoApisV2
       tokens = transaction['fungibleTokens'].first
       return 0 unless tokens.is_a? Hash
       tokens['recipient'] == invoice.address ? tokens['amount'] : 0
+    end
+
+    def parse_bnb_tokens_amount(transaction)
+      recipient = recipients.find { |recipient| recipient['address'] == invoice.address }
+      recipient ? recipient['amount'] : 0
     end
 
     def timestamp_in_utc(timestamp)
