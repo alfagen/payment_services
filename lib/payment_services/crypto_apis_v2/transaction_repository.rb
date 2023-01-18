@@ -112,6 +112,7 @@ class PaymentServices::CryptoApisV2
 
     def parse_tokens_amount(transaction)
       tokens = transaction['fungibleTokens'].first
+      return 0 unless tokens.is_a? Hash
       tokens['recipient'] == invoice.address ? tokens['amount'] : 0
     end
 
