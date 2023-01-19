@@ -8,5 +8,9 @@ module PaymentServices
     autoload :Invoicer, 'payment_services/block_io/invoicer'
     register :payout_adapter, PayoutAdapter
     register :invoicer, Invoicer
+
+    def self.payout_contains_fee?
+      true
+    end
   end
 end

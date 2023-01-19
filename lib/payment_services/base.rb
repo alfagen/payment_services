@@ -26,6 +26,10 @@ module PaymentServices
       def registry
         @registry ||= Registry.new
       end
+
+      def payout_contains_fee?
+        false
+      end
     end
   end
 end
