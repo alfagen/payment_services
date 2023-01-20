@@ -29,7 +29,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def fee
-      source.dig('fee', 'amount')
+      source.dig('fee', 'amount') || 0
     end
 
     private
