@@ -49,11 +49,11 @@ class PaymentServices::CryptoApisV2
     end
 
     def bnb_transaction_confirmed?
-      status.confirmed?
+      source['isConfirmed']
     end
 
     def usdt_transaction_confirmed?
-      status.confirmed?
+      source['isConfirmed']
     end
 
     def status
