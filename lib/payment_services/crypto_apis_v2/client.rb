@@ -75,7 +75,7 @@ class PaymentServices::CryptoApisV2
     def build_payout_request_body(payout:, wallet_transfer:)
       transaction_body = 
         if blockchain.fungible_token?
-          build_fungible_payout_body(payout, wallet_transfer)
+          build_fungible_payout_body(payout, wallet_transfer, blockchain)
         elsif blockchain.account_model_blockchain?
           build_account_payout_body(payout, wallet_transfer)
         else
@@ -107,11 +107,12 @@ class PaymentServices::CryptoApisV2
       }
     end
 
-    def build_fungible_payout_body(payout, wallet_transfer)
+    def build_fungible_payout_body(payout, wallet_transfer, blockchain)
       token_address = wallet_transfer.wallet.payment_system.token_address.downcase
+
       body = build_account_payout_body(payout, wallet_transfer)
-        .merge(tokenIdentifier: token_address, feeLimit: USDT_TRC_FEE_LIMIT)
-      body.delete(:feePriority)
+        .merge(tokenIdentifier: token_address)
+      blockchain.account_model_blockchain? ? body[:feePriority] = DEFAULT_FEE_PRIORITY : body[:feeLimit] = USDT_TRC_FEE_LIMIT
       body
     end
 
