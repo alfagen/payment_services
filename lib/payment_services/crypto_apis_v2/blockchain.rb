@@ -56,7 +56,7 @@ class PaymentServices::CryptoApisV2
     def process_payout_endpoint(wallet:)
       if blockchain.tron?
         "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/feeless-token-transaction-requests"
-      elsif account_model_blockchain?
+      elsif account_model_blockchain? && currency.inquiry.usdt?
         "#{proccess_payout_base_url(wallet.merchant_id)}/addresses/#{wallet.account}/token-transaction-requests"
       else
         "#{proccess_payout_base_url(wallet.merchant_id)}/transaction-requests"

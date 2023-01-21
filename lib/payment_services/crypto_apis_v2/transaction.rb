@@ -44,12 +44,16 @@ class PaymentServices::CryptoApisV2
       source['minedInBlockHeight'] > 0
     end
 
+    def btc_transaction_confirmed?
+      source['isConfirmed']
+    end
+
     def xrp_transaction_confirmed?
       status == SUCCESS_XRP_STATUS
     end
 
     def bnb_transaction_confirmed?
-      status.confirmed?
+      source['isConfirmed']
     end
 
     def usdt_transaction_confirmed?
