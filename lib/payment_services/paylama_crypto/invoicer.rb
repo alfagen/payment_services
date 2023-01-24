@@ -24,7 +24,7 @@ class PaymentServices::PaylamaCrypto
 
     def update_invoice_state!
       created_at_from = order.public_id
-      created_at_to = created_at_from + order.income_payment_timeout.in_milliseconds
+      created_at_to = created_at_from + order.income_payment_timeout.to_i
       response = client.transactions(created_at_from: created_at_from, created_at_to: created_at_to, type: 'invoice')
       raise "Can't get transactions: #{response['cause']}" unless response['data']
 
