@@ -35,6 +35,7 @@ module PaymentServices
   autoload :Blockchair, 'payment_services/blockchair'
   autoload :OkoOtc, 'payment_services/oko_otc'
   autoload :Paylama, 'payment_services/paylama'
+  autoload :PaylamaCrypto, 'payment_services/paylama_crypto'
 
   UnauthorizedPayout = Class.new StandardError
 
