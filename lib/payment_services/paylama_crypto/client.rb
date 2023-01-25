@@ -24,7 +24,8 @@ class PaymentServices::PaylamaCrypto
         createdAtFrom: created_at_from,
         createdAtTo: created_at_to,
         orderType: type,
-        limit: 10
+        limit: 10,
+        offset: 0
       }
       safely_parse http_request(
         url: "https://admin.paylama.io/api/api/payment/fetch_orders",
