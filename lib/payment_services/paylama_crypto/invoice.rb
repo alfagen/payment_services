@@ -39,7 +39,7 @@ class PaymentServices::PaylamaCrypto
 
     def update_state_by_provider(transaction)
       has_transaction! if pending?
-      update!(provider_state: transaction['status'])
+      update!(provider_state: transaction['status'], transaction_created_at: Time.at(transaction['createdAt']).to_datetime)
 
       pay!(payload: transaction) if provider_succeed?
       cancel! if provider_failed?
