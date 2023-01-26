@@ -13,11 +13,11 @@ class PaymentServices::PaylamaCrypto
       Invoice.create!(amount: money, order_public_id: order.public_id)
     end
 
-    def wallet_address(currency:)
+    def wallet_data(currency:)
       response = client.create_crypto_address(currency: currency)
-      raise "Can't create crypto address: #{response['cause']}" unless response['address']
+      raise "Can't create crypto address: #{response['cause']}" unless response['id']
 
-      response['address']
+      response
     end
 
     def async_invoice_state_updater?
