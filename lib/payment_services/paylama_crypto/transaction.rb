@@ -13,13 +13,13 @@ class PaymentServices::PaylamaCrypto
     attribute :created_at, DateTime
     attribute :source, Hash
 
-    def self.build_from(currency:, status:, fee:, created_at:, source:)
+    def self.build_from(raw_transaction)
       new(
-        currency: currency,
-        status: status,
-        fee: fee,
-        created_at: created_at,
-        source: source
+        currency: raw_transaction['currency'].downcase,
+        status: raw_transaction['status'],
+        fee: raw_transaction['fee'],
+        created_at: DateTime.strptime(raw_transaction['createdAt'].to_s,'%s').utc,
+        source: raw_transaction
       )
     end
 

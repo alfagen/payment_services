@@ -27,7 +27,7 @@ class PaymentServices::PaylamaCrypto
       raw_transaction = client.payment_status(payment_id: order.income_wallet.name, type: 'invoice')
       raise "Can't get payment information: #{response['cause']}" unless raw_transaction['ID']
 
-      transaction = build_transaction_from(raw_transaction)
+      transaction = Transaction.build_from(raw_transaction)
       invoice.update_state_by_transaction(transaction)
     end
 
@@ -38,16 +38,6 @@ class PaymentServices::PaylamaCrypto
     private
 
     delegate :api_key, :api_secret, to: :api_wallet
-
-    def build_transaction_from(raw_transaction)
-      Transaction.build_from(
-        currency: currency.downcase,
-        status: raw_transaction['status'],
-        created_at: DateTime.strptime(raw_transaction['createdAt'].to_s,'%s').utc,
-        fee: raw_transaction['fee'],
-        source: raw_transaction
-      )
-    end
 
     def api_wallet
       @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)

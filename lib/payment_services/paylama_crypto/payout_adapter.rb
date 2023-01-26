@@ -23,7 +23,7 @@ class PaymentServices::PaylamaCrypto
       raw_transaction = client.payment_status(payment_id: payout.withdrawal_id, type: 'withdraw')
       raise "Can't get payment information: #{response['cause']}" unless raw_transaction['ID']
 
-      transaction = build_transaction_from(raw_transaction)
+      transaction = Transaction.build_from(raw_transaction)
       payout.update_state_by_transaction(transaction)
       raw_transaction
     end
@@ -47,16 +47,6 @@ class PaymentServices::PaylamaCrypto
         currency: currency,
         address: payout.destination_account
       }
-    end
-
-    def build_transaction_from(raw_transaction)
-      Transaction.build_from(
-        currency: currency.downcase,
-        status: raw_transaction['status'],
-        created_at: DateTime.strptime(raw_transaction['createdAt'].to_s,'%s').utc,
-        fee: raw_transaction['fee'],
-        source: raw_transaction
-      )
     end
 
     def currency
