@@ -23,7 +23,7 @@ class PaymentServices::Paylama
     end
 
     def refresh_status!(payout_id)
-      payout = Payout.find(payout_id)
+      @payout = Payout.find(payout_id)
       return if payout.pending?
 
       response = client.payment_status(payment_id: payout.withdrawal_id, type: 'withdraw')

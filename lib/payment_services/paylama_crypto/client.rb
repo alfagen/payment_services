@@ -37,7 +37,7 @@ class PaymentServices::PaylamaCrypto
 
     def process_payout(params:)
       safely_parse http_request(
-        url: "#{API_URL}/generate_withdraw",
+        url: "#{API_URL}/payout",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params))

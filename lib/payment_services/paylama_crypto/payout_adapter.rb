@@ -5,13 +5,7 @@ require_relative 'client'
 
 class PaymentServices::PaylamaCrypto
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    PAYOUT_TIME_ALIVE = 1800.seconds
-    PAYSOURCE_OPTIONS = {
-      'visamc'  => 'card',
-      'cardh2h' => 'card',
-      'qiwi'    => 'qw',
-      'qiwih2h' => 'qw'
-    }
+    WALLET_NAME_GROUP = 'PAYLAMA_CRYPTO_API_KEYS'
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
@@ -42,28 +36,23 @@ class PaymentServices::PaylamaCrypto
       response = client.process_payout(params: payout_params)
       raise "Can't create payout: #{response['cause']}" unless response['success']
 
-      payout.pay!(withdrawal_id: response['billID'])
+      payout.pay!(withdrawal_id: response['id'])
     end
 
     def payout_params
-      order = OrderPayout.find(payout.order_payout_id).order
       {
-        amount: payout.amount.to_i,
-        expireAt: PAYOUT_TIME_ALIVE.to_i,
-        comment: "#{order.public_id}-#{payout.order_payout_id}",
-        clientIP: order.remote_ip || '',
-        paySourcesFilter: pay_source,
-        currencyID: CurrencyRepository.build_from(kassa_currency: wallet.currency).provider_currency,
-        recipient: payout.destination_account
+        amount: payout.amount.to_d,
+        currency: payout.amount.currency.to_s,
+        address: payout.destination_account
       }
     end
 
-    def pay_source
-      PAYSOURCE_OPTIONS[wallet.payment_system.payway]
+    def api_wallet
+      @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)
     end
 
     def client
-      @client ||= Client.new(api_key: outcome_api_key, secret_key: outcome_api_secret)
+      @client ||= Client.new(api_key: api_wallet.outcome_api_key, secret_key: api_wallet.outcome_api_secret)
     end
   end
 end
