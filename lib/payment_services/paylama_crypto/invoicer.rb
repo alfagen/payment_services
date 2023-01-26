@@ -24,7 +24,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def update_invoice_state!
-      raw_transaction = client.payment_status(payment_id: wallet.name, type: 'invoice')
+      raw_transaction = client.payment_status(payment_id: order.income_wallet.name, type: 'invoice')
       raise "Can't get payment information: #{response['cause']}" unless raw_transaction['ID']
 
       transaction = build_transaction_from(raw_transaction)
