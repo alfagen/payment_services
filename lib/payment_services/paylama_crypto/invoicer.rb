@@ -6,6 +6,7 @@ require_relative 'transaction_repository'
 
 class PaymentServices::PaylamaCrypto
   class Invoicer < ::PaymentServices::Base::Invoicer
+    TRANSACTION_TIME_DELAY = 1.second
     WALLET_NAME_GROUP = 'PAYLAMA_CRYPTO_API_KEYS'
 
     def create_invoice(money)
@@ -39,7 +40,7 @@ class PaymentServices::PaylamaCrypto
     delegate :api_key, :api_secret, to: :api_wallet
 
     def collect_transactions
-      created_at_from = order_public_id_in_seconds
+      created_at_from = order_public_id_in_seconds - TRANSACTION_TIME_DELAY.to_i
       created_at_to = created_at_from + order.income_payment_timeout.to_i
       response = client.transactions(created_at_from: created_at_from, created_at_to: created_at_to, type: 'invoice')
       raise "Can't get transactions: #{response['cause']}" unless response['data']
