@@ -2,18 +2,17 @@
 
 require_relative 'invoice'
 require_relative 'client'
-require_relative 'transaction_repository'
+require_relative 'transaction'
 
 class PaymentServices::PaylamaCrypto
   class Invoicer < ::PaymentServices::Base::Invoicer
-    TRANSACTION_TIME_DELAY = 1.second
     WALLET_NAME_GROUP = 'PAYLAMA_CRYPTO_API_KEYS'
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
     end
 
-    def wallet_data(currency:)
+    def wallet_information(currency:)
       response = client.create_crypto_address(currency: currency)
       raise "Can't create crypto address: #{response['cause']}" unless response['id']
 
@@ -25,9 +24,10 @@ class PaymentServices::PaylamaCrypto
     end
 
     def update_invoice_state!
-      transaction = find_transaction(transactions: collect_transactions)
-      return if transaction.nil?
+      raw_transaction = client.payment_status(payment_id: wallet.name, type: 'invoice')
+      raise "Can't get payment information: #{response['cause']}" unless raw_transaction['ID']
 
+      transaction = build_transaction_from(raw_transaction)
       invoice.update_state_by_transaction(transaction)
     end
 
@@ -39,21 +39,14 @@ class PaymentServices::PaylamaCrypto
 
     delegate :api_key, :api_secret, to: :api_wallet
 
-    def collect_transactions
-      created_at_from = order_public_id_in_seconds - TRANSACTION_TIME_DELAY.to_i
-      created_at_to = created_at_from + order.income_payment_timeout.to_i
-      response = client.transactions(created_at_from: created_at_from, created_at_to: created_at_to, type: 'invoice')
-      raise "Can't get transactions: #{response['cause']}" unless response['data']
-
-      response['data']
-    end
-
-    def find_transaction(transactions:)
-      TransactionRepository.new(transactions).find_for(invoice)
-    end
-
-    def order_public_id_in_seconds
-      order.public_id / 1000
+    def build_transaction_from(raw_transaction)
+      Transaction.build_from(
+        currency: currency.downcase,
+        status: raw_transaction['status'],
+        created_at: DateTime.strptime(raw_transaction['createdAt'].to_s,'%s').utc,
+        fee: raw_transaction['fee'],
+        source: raw_transaction
+      )
     end
 
     def api_wallet
