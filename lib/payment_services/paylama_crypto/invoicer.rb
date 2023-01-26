@@ -2,6 +2,7 @@
 
 require_relative 'invoice'
 require_relative 'client'
+require_relative 'transaction_repository'
 
 class PaymentServices::PaylamaCrypto
   class Invoicer < ::PaymentServices::Base::Invoicer
@@ -23,15 +24,10 @@ class PaymentServices::PaylamaCrypto
     end
 
     def update_invoice_state!
-      created_at_from = order.public_id / 1000 - 1
-      created_at_to = created_at_from + order.income_payment_timeout.to_i
-      response = client.transactions(created_at_from: created_at_from, created_at_to: created_at_to, type: 'invoice')
-      raise "Can't get transactions: #{response['cause']}" unless response['data']
-
-      transaction = find_transaction(transactions: response['data'])
+      transaction = find_transaction(transactions: collect_transactions)
       return if transaction.nil?
 
-      invoice.update_state_by_provider(transaction)
+      invoice.update_state_by_transaction(transaction)
     end
 
     def invoice
@@ -40,13 +36,23 @@ class PaymentServices::PaylamaCrypto
 
     private
 
-    def find_transaction(transactions:)
-      transactions.find { |transaction| matches_amount?(transaction) }
+    delegate :api_key, :api_secret, to: :api_wallet
+
+    def collect_transactions
+      created_at_from = order_public_id_in_seconds
+      created_at_to = created_at_from + order.income_payment_timeout.to_i
+      response = client.transactions(created_at_from: created_at_from, created_at_to: created_at_to, type: 'invoice')
+      raise "Can't get transactions: #{response['cause']}" unless response['data']
+
+      response['data']
     end
 
-    def matches_amount?(transaction)
-      paid_amount = Money.from_amount(transaction['amount'].to_d, transaction['currency'])
-      paid_amount == invoice.amount
+    def find_transaction(transactions:)
+      TransactionRepository.new(transactions).find_for(invoice)
+    end
+
+    def order_public_id_in_seconds
+      order.public_id / 1000
     end
 
     def api_wallet
@@ -54,7 +60,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def client
-      @client ||= Client.new(api_key: api_wallet.api_key, secret_key: api_wallet.api_secret)
+      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
   end
 end

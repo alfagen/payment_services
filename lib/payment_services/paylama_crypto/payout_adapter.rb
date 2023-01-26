@@ -2,6 +2,7 @@
 
 require_relative 'payout'
 require_relative 'client'
+require_relative 'transaction'
 
 class PaymentServices::PaylamaCrypto
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
@@ -19,17 +20,18 @@ class PaymentServices::PaylamaCrypto
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      response = client.payment_status(payment_id: payout.withdrawal_id, type: 'withdraw')
-      raise "Can't get payment information: #{response['cause']}" unless response['ID']
+      raw_transaction = client.payment_status(payment_id: payout.withdrawal_id, type: 'withdraw')
+      raise "Can't get payment information: #{response['cause']}" unless raw_transaction['ID']
 
-      payout.update_state_by_provider(response['status'])
-      response
+      transaction = build_transaction_from(raw_transaction)
+      payout.update_state_by_transaction(transaction)
+      raw_transaction
     end
 
     private
 
     attr_reader :payout
-    delegate :outcome_api_key, :outcome_api_secret, to: :wallet
+    delegate :outcome_api_key, :outcome_api_secret, to: :api_wallet
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
@@ -42,9 +44,23 @@ class PaymentServices::PaylamaCrypto
     def payout_params
       {
         amount: payout.amount.to_d,
-        currency: payout.amount.currency.to_s,
+        currency: currency,
         address: payout.destination_account
       }
+    end
+
+    def build_transaction_from(raw_transaction)
+      Transaction.build_from(
+        currency: currency.downcase,
+        status: raw_transaction['status'],
+        created_at: DateTime.strptime(raw_transaction['createdAt'].to_s,'%s').utc,
+        fee: raw_transaction['fee'],
+        source: raw_transaction
+      )
+    end
+
+    def currency
+      @currency ||= payout.amount.currency.to_s
     end
 
     def api_wallet
@@ -52,7 +68,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def client
-      @client ||= Client.new(api_key: api_wallet.outcome_api_key, secret_key: api_wallet.outcome_api_secret)
+      @client ||= Client.new(api_key: outcome_api_key, secret_key: outcome_api_secret)
     end
   end
 end

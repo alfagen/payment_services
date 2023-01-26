@@ -1,20 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::PaylamaCrypto
-  class Invoice < ApplicationRecord
-    SUCCESS_PROVIDER_STATE  = 'Succeed'
-    FAILED_PROVIDER_STATE   = 'Failed'
-
-    include Workflow
-
-    self.table_name = 'paylama_invoices'
-
-    scope :ordered, -> { order(id: :desc) }
-
-    monetize :amount_cents, as: :amount
-
-    validates :amount_cents, :order_public_id, :state, presence: true
-
+  class Invoice < ::PaymentServices::Paylama::Invoice
     workflow_column :state
     workflow do
       state :pending do
@@ -30,37 +17,28 @@ class PaymentServices::PaylamaCrypto
 
       state :paid do
         on_entry do
-          # ?
-          order.auto_confirm!(income_amount: amount, hash: payload)
+          order.auto_confirm!(income_amount: amount)
         end
       end
       state :cancelled
     end
 
-    def update_state_by_provider(transaction)
+    def update_state_by_transaction(transaction)
       has_transaction! if pending?
-      update!(provider_state: transaction['status'], transaction_created_at: Time.at(transaction['createdAt']).to_datetime)
+      update!(
+        provider_state: transaction.status, 
+        transaction_created_at: transaction.created_at,
+        fee: transaction.fee
+      )
 
-      pay!(payload: transaction) if provider_succeed?
-      cancel! if provider_failed?
-    end
-
-    def order
-      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
+      pay!(payload: transaction) if transaction.succeed?
+      cancel! if transaction.failed?
     end
 
     private
 
     def pay(payload:)
       update(payload: payload)
-    end
-
-    def provider_succeed?
-      provider_state == SUCCESS_PROVIDER_STATE
-    end
-
-    def provider_failed?
-      provider_state == FAILED_PROVIDER_STATE
     end
   end
 end

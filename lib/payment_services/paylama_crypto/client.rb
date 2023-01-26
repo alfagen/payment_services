@@ -1,18 +1,24 @@
 # frozen_string_literal: true
 
 class PaymentServices::PaylamaCrypto
-  class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://admin.paylama.io/api/crypto'
-
-    def initialize(api_key:, secret_key:)
-      @api_key = api_key
-      @secret_key = secret_key
-    end
+  class Client < ::PaymentServices::Paylama::Client
+    TRANSACTIONS_LIST_LIMIT = 10
+    TRANSACTIONS_LIST_OFFSET = 0
+    CRYPTO_API_URL = 'https://admin.paylama.io/api/crypto'
 
     def create_crypto_address(currency:)
       params = { currency: currency }
       safely_parse http_request(
-        url: "#{API_URL}/payment",
+        url: "#{CRYPTO_API_URL}/payment",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
+    def process_payout(params:)
+      safely_parse http_request(
+        url: "#{CRYPTO_API_URL}/payout",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params))
@@ -24,54 +30,15 @@ class PaymentServices::PaylamaCrypto
         createdAtFrom: created_at_from,
         createdAtTo: created_at_to,
         orderType: type,
-        limit: 10,
-        offset: 0
+        limit: TRANSACTIONS_LIST_LIMIT,
+        offset: TRANSACTIONS_LIST_OFFSET
       }
       safely_parse http_request(
-        url: "https://admin.paylama.io/api/api/payment/fetch_orders",
+        url: "#{API_URL}/fetch_orders",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params))
       )
-    end
-
-    def process_payout(params:)
-      safely_parse http_request(
-        url: "#{API_URL}/payout",
-        method: :POST,
-        body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
-      )
-    end
-
-    def payment_status(payment_id:, type:)
-      params = {
-        externalID: payment_id,
-        orderType: type
-      }
-
-      safely_parse http_request(
-        url: "#{API_URL}/get_order_details",
-        method: :POST,
-        body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
-      )
-    end
-
-    private
-
-    attr_reader :api_key, :secret_key
-
-    def build_signature(params)
-      OpenSSL::HMAC.hexdigest('SHA512', secret_key, params.to_json)
-    end
-
-    def build_headers(signature:)
-      {
-        'Content-Type'  => 'application/json',
-        'API-Key'       => api_key,
-        'Signature'     => signature
-      }
     end
   end
 end

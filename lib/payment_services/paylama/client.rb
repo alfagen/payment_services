@@ -41,7 +41,7 @@ class PaymentServices::Paylama
       )
     end
 
-    private
+    protected
 
     attr_reader :api_key, :secret_key
 
