@@ -6,8 +6,6 @@ require_relative 'transaction'
 
 class PaymentServices::PaylamaCrypto
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    WALLET_NAME_GROUP = 'PAYLAMA_CRYPTO_API_KEYS'
-
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -17,7 +15,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def refresh_status!(payout_id)
-      @payout = Payout.find(payout_id)
+      payout = Payout.find(payout_id)
       return if payout.pending?
 
       raw_transaction = client.payment_status(payment_id: payout.withdrawal_id, type: 'withdraw')
@@ -54,7 +52,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def api_wallet
-      @api_wallet ||= Wallet.find_by(name_group: WALLET_NAME_GROUP)
+      @api_wallet ||= Wallet.find_by(name_group: Invoicer::WALLET_NAME_GROUP)
     end
 
     def client

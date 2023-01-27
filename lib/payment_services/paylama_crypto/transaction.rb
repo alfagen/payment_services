@@ -40,10 +40,10 @@ class PaymentServices::PaylamaCrypto
     def method_missing(method_name)
       super unless method_name.end_with?('_transaction_succeed?')
 
-      generic_transaction_succeed?
+      default_transaction_succeed?
     end
 
-    def generic_transaction_succeed?
+    def default_transaction_succeed?
       status == SUCCESS_GENERIC_TRANSACTION_STATE
     end
   end

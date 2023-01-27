@@ -9,7 +9,7 @@ class PaymentServices::PaylamaCrypto
     WALLET_NAME_GROUP = 'PAYLAMA_CRYPTO_API_KEYS'
 
     def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
+      Invoice.create(amount: money, order_public_id: order.public_id)
     end
 
     def wallet_information(currency:)
