@@ -19,7 +19,7 @@ class PaymentServices::PaylamaCrypto
       return if payout.pending?
 
       raw_transaction = client.payment_status(payment_id: payout.withdrawal_id, type: 'withdraw')
-      raise "Can't get payment information: #{response['cause']}" unless raw_transaction['ID']
+      raise "Can't get payment information: #{raw_transaction['cause']}" unless raw_transaction['ID']
 
       transaction = Transaction.build_from(raw_transaction)
       payout.update_state_by_transaction(transaction)
