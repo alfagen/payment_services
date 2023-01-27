@@ -41,7 +41,7 @@ class PaymentServices::PaylamaCrypto
 
     def payout_params
       {
-        amount: payout.amount.to_d,
+        amount: payout.amount.to_f,
         currency: currency,
         address: payout.destination_account
       }
