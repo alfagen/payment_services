@@ -26,7 +26,7 @@ class PaymentServices::Paylama
     def provider_crypto_currency
       currency = kassa_currency.to_s.inquiry
       return BNB_BEP20_PROVIDER_CURRENCY if currency.BNB? && token_network == BNB_BEP20_TOKEN_NETWORK
-      return TOKEN_NETWORK_TO_PROVIDER_CRYPTO_CURRENCY[token_network] if token_network.present?
+      return TOKEN_NETWORK_TO_PROVIDER_CURRENCY[token_network] if token_network.present?
 
       CURRENCY_TO_PROVIDER_CURRENCY[currency] || currency
     end
