@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'payout'
-require_relative '../paylama/client'
-require_relative '../paylama/currency_repository'
 require_relative 'transaction'
 
 class PaymentServices::PaylamaCrypto
