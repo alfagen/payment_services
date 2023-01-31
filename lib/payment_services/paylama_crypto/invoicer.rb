@@ -41,12 +41,8 @@ class PaymentServices::PaylamaCrypto
 
     delegate :api_key, :api_secret, to: :api_wallet
 
-    def income_payment_system
-      @income_payment_system ||= order.income_payment_system
-    end
-
     def api_wallet
-      @api_wallet ||= income_payment_system.wallets.find_by(name_group: WALLET_NAME_GROUP)
+      @api_wallet ||= Wallet.find_by!(name_group: WALLET_NAME_GROUP)
     end
 
     def client

@@ -59,7 +59,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def api_wallet
-      @api_wallet ||= outcome_payment_system.wallets.find_by(name_group: Invoicer::WALLET_NAME_GROUP)
+      @api_wallet ||= outcome_payment_system.wallets.find_by!(name_group: Invoicer::WALLET_NAME_GROUP)
     end
 
     def client
