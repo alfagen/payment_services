@@ -40,7 +40,7 @@ class PaymentServices::Paylama
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
-      response = client.process_payout(params: payout_params)
+      response = client.process_fiat_payout(params: payout_params)
       raise "Can't create payout: #{response['cause']}" unless response['success']
 
       payout.pay!(withdrawal_id: response['billID'])
@@ -54,7 +54,7 @@ class PaymentServices::Paylama
         comment: "#{order.public_id}-#{payout.order_payout_id}",
         clientIP: order.remote_ip || '',
         paySourcesFilter: pay_source,
-        currencyID: CurrencyRepository.build_from(kassa_currency: wallet.currency).provider_currency,
+        currencyID: CurrencyRepository.build_from(kassa_currency: wallet.currency).provider_fiat_currency,
         recipient: payout.destination_account
       }
     end

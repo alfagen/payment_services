@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'payout'
-require_relative 'client'
+require_relative '../paylama/client'
+require_relative '../paylama/currency_repository'
 require_relative 'transaction'
 
 class PaymentServices::PaylamaCrypto
@@ -30,10 +31,12 @@ class PaymentServices::PaylamaCrypto
 
     attr_reader :payout
     delegate :outcome_api_key, :outcome_api_secret, to: :api_wallet
+    delegate :token_network, to: :payment_system
+    delegate :payment_system, to: :api_wallet
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
-      response = client.process_payout(params: payout_params)
+      response = client.process_crypto_payout(params: payout_params)
       raise "Can't create payout: #{response['cause']}" unless response['ID']
 
       payout.pay!(withdrawal_id: response['ID'])
@@ -48,7 +51,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def currency
-      @currency ||= payout.amount.currency.to_s
+      ::Paylama::CurrencyRepository.build_from(kassa_currency: api_wallet.currency, token_network: token_network).provider_crypto_currency
     end
 
     def api_wallet
@@ -56,7 +59,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def client
-      @client ||= Client.new(api_key: outcome_api_key, secret_key: outcome_api_secret)
+      @client ||= ::Paylama::Client.new(api_key: outcome_api_key, secret_key: outcome_api_secret)
     end
   end
 end

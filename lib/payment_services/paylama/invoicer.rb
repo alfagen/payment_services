@@ -8,7 +8,7 @@ class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
-      response = client.generate_invoice(params: invoice_params)
+      response = client.generate_fiat_invoice(params: invoice_params)
 
       raise "Can't create invoice: #{response['cause']}" unless response['success']
 
@@ -45,7 +45,7 @@ class PaymentServices::Paylama
         expireAt: order.income_payment_timeout,
         comment: order.public_id.to_s,
         clientIP: order.remote_ip || '',
-        currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).provider_currency,
+        currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).provider_fiat_currency,
         redirect: {
           successURL: order.success_redirect,
           failURL: order.failed_redirect

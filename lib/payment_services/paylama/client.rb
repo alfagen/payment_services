@@ -3,13 +3,14 @@
 class PaymentServices::Paylama
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://admin.paylama.io/api/api/payment'
+    CRYPTO_API_URL = 'https://admin.paylama.io/api/crypto'
 
     def initialize(api_key:, secret_key:)
       @api_key = api_key
       @secret_key = secret_key
     end
 
-    def generate_invoice(params:)
+    def generate_fiat_invoice(params:)
       safely_parse http_request(
         url: "#{API_URL}/generate_invoice_h2h",
         method: :POST,
@@ -18,9 +19,28 @@ class PaymentServices::Paylama
       )
     end
 
-    def process_payout(params:)
+    def process_fiat_payout(params:)
       safely_parse http_request(
         url: "#{API_URL}/generate_withdraw",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
+    def create_crypto_address(currency:)
+      params = { currency: currency }
+      safely_parse http_request(
+        url: "#{CRYPTO_API_URL}/payment",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
+    def process_crypto_payout(params:)
+      safely_parse http_request(
+        url: "#{CRYPTO_API_URL}/payout",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params))
@@ -41,7 +61,7 @@ class PaymentServices::Paylama
       )
     end
 
-    protected
+    private
 
     attr_reader :api_key, :secret_key
 
