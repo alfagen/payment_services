@@ -54,8 +54,12 @@ class PaymentServices::PaylamaCrypto
       @currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: api_wallet.currency, token_network: token_network).provider_crypto_currency
     end
 
+    def outcome_payment_system
+      @outcome_payment_system ||= wallet.payment_system
+    end
+
     def api_wallet
-      @api_wallet ||= Wallet.find_by(name_group: Invoicer::WALLET_NAME_GROUP)
+      @api_wallet ||= outcome_payment_system.wallets.find_by(name_group: Invoicer::WALLET_NAME_GROUP)
     end
 
     def client
