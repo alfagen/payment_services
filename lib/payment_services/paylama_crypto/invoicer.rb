@@ -14,7 +14,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def wallet_information(currency:, token_network:)
-      provider_crypto_currency = ::Paylama::CurrencyRepository.build_from(kassa_currency: currency, token_network: token_network).provider_crypto_currency
+      provider_crypto_currency = PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: currency, token_network: token_network).provider_crypto_currency
       response = client.create_crypto_address(currency: provider_crypto_currency)
       raise "Can't create crypto address: #{response['cause']}" unless response['id']
 
@@ -46,7 +46,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def client
-      @client ||= ::Paylama::Client.new(api_key: api_key, secret_key: api_secret)
+      @client ||= PaymentServices::Paylama::Client.new(api_key: api_key, secret_key: api_secret)
     end
   end
 end
