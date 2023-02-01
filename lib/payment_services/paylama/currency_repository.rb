@@ -19,7 +19,7 @@ class PaymentServices::Paylama
       )
     end
 
-    def provider_fiat_currency
+    def fiat_currency_id
       CURRENCY_TO_PROVIDER_CURRENCY[kassa_currency]
     end
 

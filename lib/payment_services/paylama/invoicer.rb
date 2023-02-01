@@ -45,7 +45,7 @@ class PaymentServices::Paylama
         expireAt: order.income_payment_timeout,
         comment: order.public_id.to_s,
         clientIP: order.remote_ip || '',
-        currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).provider_fiat_currency,
+        currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).fiat_currency_id,
         redirect: {
           successURL: order.success_redirect,
           failURL: order.failed_redirect

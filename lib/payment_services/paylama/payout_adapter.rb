@@ -54,7 +54,7 @@ class PaymentServices::Paylama
         comment: "#{order.public_id}-#{payout.order_payout_id}",
         clientIP: order.remote_ip || '',
         paySourcesFilter: pay_source,
-        currencyID: CurrencyRepository.build_from(kassa_currency: wallet.currency).provider_fiat_currency,
+        currencyID: CurrencyRepository.build_from(kassa_currency: wallet.currency).fiat_currency_id,
         recipient: payout.destination_account
       }
     end

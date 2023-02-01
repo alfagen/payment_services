@@ -2,7 +2,7 @@
 
 class PaymentServices::PaylamaCrypto
   class Transaction
-    SUCCESS_GENERIC_TRANSACTION_STATE = 'Succeed'
+    SUCCESS_TRANSACTION_STATE = 'Succeed'
     FAILED_TRANSACTION_STATE = 'Failed'
 
     include Virtus.model
@@ -44,7 +44,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def default_transaction_succeed?
-      status == SUCCESS_GENERIC_TRANSACTION_STATE
+      status == SUCCESS_TRANSACTION_STATE
     end
   end
 end

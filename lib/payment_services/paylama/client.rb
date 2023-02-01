@@ -2,7 +2,7 @@
 
 class PaymentServices::Paylama
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://admin.paylama.io/api/api/payment'
+    FIAT_API_URL = 'https://admin.paylama.io/api/api/payment'
     CRYPTO_API_URL = 'https://admin.paylama.io/api/crypto'
 
     def initialize(api_key:, secret_key:)
@@ -12,7 +12,7 @@ class PaymentServices::Paylama
 
     def generate_fiat_invoice(params:)
       safely_parse http_request(
-        url: "#{API_URL}/generate_invoice_h2h",
+        url: "#{FIAT_API_URL}/generate_invoice_h2h",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params))
@@ -21,7 +21,7 @@ class PaymentServices::Paylama
 
     def process_fiat_payout(params:)
       safely_parse http_request(
-        url: "#{API_URL}/generate_withdraw",
+        url: "#{FIAT_API_URL}/generate_withdraw",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params))
@@ -54,7 +54,7 @@ class PaymentServices::Paylama
       }
 
       safely_parse http_request(
-        url: "#{API_URL}/get_order_details",
+        url: "#{FIAT_API_URL}/get_order_details",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params))
