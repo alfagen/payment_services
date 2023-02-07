@@ -7,6 +7,7 @@ class PaymentServices::PaylamaCrypto
 
     include Virtus.model
 
+    attribute :amount, Float
     attribute :currency, String
     attribute :status, String
     attribute :fee, Float
@@ -15,6 +16,7 @@ class PaymentServices::PaylamaCrypto
 
     def self.build_from(raw_transaction)
       new(
+        amount: raw_transaction['amount'].to_f,
         currency: raw_transaction['currency'].downcase,
         status: raw_transaction['status'],
         fee: raw_transaction['fee'],
@@ -25,6 +27,10 @@ class PaymentServices::PaylamaCrypto
 
     def to_s
       source.to_s
+    end
+
+    def valid_amount?(amount_money)
+      Money.from_amount(amount, currency) == amount_money
     end
 
     def succeed?
