@@ -24,7 +24,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def update_state_by_transaction(transaction)
-      raise "#{amount.to_f} is needed. But #{transaction.amount} has come." if transaction.valid_amount?(amount)
+      raise "#{amount.to_f} is needed. But #{transaction.amount} has come." unless transaction.valid_amount?(amount)
       has_transaction! if pending?
       update!(
         provider_state: transaction.status, 
