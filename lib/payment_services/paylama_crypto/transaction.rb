@@ -17,7 +17,7 @@ class PaymentServices::PaylamaCrypto
     def self.build_from(raw_transaction)
       new(
         amount: raw_transaction['amount'].to_f,
-        currency: raw_transaction['currency'].downcase,
+        currency: raw_transaction['currency'],
         status: raw_transaction['status'],
         fee: raw_transaction['fee'],
         created_at: DateTime.strptime(raw_transaction['createdAt'].to_s,'%s').utc,
@@ -29,8 +29,8 @@ class PaymentServices::PaylamaCrypto
       source.to_s
     end
 
-    def valid_amount?(payout_amount)
-      amount == 0 || amount == payout_amount.to_f
+    def valid_amount?(payout_amount, payout_currency)
+      (amount == 0 || amount == payout_amount) && currency == payout_currency
     end
 
     def succeed?
