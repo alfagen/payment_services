@@ -43,11 +43,7 @@ class PaymentServices::CryptoApisV2
     end
 
     def client
-      @client ||= begin
-        currency = wallet.currency.to_s.downcase
-
-        Client.new(api_key: api_key, currency: currency, token_network: wallet.payment_system.token_network)
-      end
+      @client ||= Client.new(api_key: api_key, api_secret: api_secret, currency: wallet.currency.to_s.downcase, token_network: wallet.payment_system.token_network)
     end
   end
 end

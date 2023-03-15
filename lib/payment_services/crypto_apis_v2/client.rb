@@ -10,8 +10,9 @@ class PaymentServices::CryptoApisV2
     LOW_FEE_PRIORITY      = 'slow'
     USDT_TRC_FEE_LIMIT    = '1000000000'
 
-    def initialize(api_key:, currency:, token_network:)
+    def initialize(api_key:, api_secret:, currency:, token_network:)
       @api_key  = api_key
+      @api_secret = api_secret
       @blockchain = Blockchain.new(currency: currency, token_network: token_network)
     end
 
@@ -62,7 +63,7 @@ class PaymentServices::CryptoApisV2
 
     private
 
-    attr_reader :api_key, :blockchain
+    attr_reader :api_key, :api_secret, :blockchain
 
     def build_headers
       {
@@ -89,7 +90,7 @@ class PaymentServices::CryptoApisV2
       body = {
         amount: wallet_transfer.amount.to_f.to_s,
         feePriority: account_fee_priority,
-        callbackSecretKey: wallet_transfer.wallet.outcome_api_secret,
+        callbackSecretKey: api_secret,
         recipientAddress: payout.address
       }
       body[:recipientAddress] = classic_to_x_address(body[:recipientAddress], payout.order_fio) if blockchain.xrp?
@@ -98,7 +99,7 @@ class PaymentServices::CryptoApisV2
 
     def build_utxo_payout_body(payout, wallet_transfer)
       {
-        callbackSecretKey: wallet_transfer.wallet.outcome_api_secret,
+        callbackSecretKey: api_secret,
         feePriority: utxo_fee_priority,
         recipients: [{
           address: payout.address,

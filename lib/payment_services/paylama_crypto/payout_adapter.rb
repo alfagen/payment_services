@@ -28,8 +28,6 @@ class PaymentServices::PaylamaCrypto
     private
 
     attr_reader :payout
-    delegate :token_network, to: :payment_system
-    delegate :payment_system, to: :api_wallet
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
@@ -48,15 +46,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def currency
-      @currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: api_wallet.currency, token_network: token_network).provider_crypto_currency
-    end
-
-    def outcome_payment_system
-      @outcome_payment_system ||= wallet.payment_system
-    end
-
-    def api_wallet
-      @api_wallet ||= outcome_payment_system.wallets.find_by!(name_group: Invoicer::WALLET_NAME_GROUP)
+      @currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: api_wallet.currency, token_network: wallet.payment_system.token_network).provider_crypto_currency
     end
 
     def client
