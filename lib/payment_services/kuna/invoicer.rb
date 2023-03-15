@@ -72,11 +72,7 @@ class PaymentServices::Kuna
     end
 
     def client
-      @client ||= begin
-        wallet = order.income_wallet
-
-        Client.new(api_key: wallet.api_key, secret_key: wallet.api_secret)
-      end
+      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
   end
 end

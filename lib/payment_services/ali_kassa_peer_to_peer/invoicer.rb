@@ -45,7 +45,7 @@ class PaymentServices::AliKassaPeerToPeer
 
     def calculate_signature(params)
       sign_string = params.sort_by { |k, _v| k }.map(&:last).join(':')
-      sign_string += ":#{order.income_wallet.api_key}"
+      sign_string += ":#{api_key}"
       Digest::MD5.base64digest(sign_string)
     end
   end

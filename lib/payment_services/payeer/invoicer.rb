@@ -27,7 +27,7 @@ class PaymentServices::Payeer
         payment_data[:amount],
         payment_data[:currency],
         payment_data[:description],
-        order.income_wallet.api_key
+        api_key
       ]
       signature = Digest::SHA256.hexdigest(sign_array.join(':')).upcase
 

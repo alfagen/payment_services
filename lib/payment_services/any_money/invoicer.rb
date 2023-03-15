@@ -40,7 +40,7 @@ class PaymentServices::AnyMoney
 
     def build_signature(params)
       sign_string = params.sort_by { |k, _v| k }.map(&:last).join.downcase
-      OpenSSL::HMAC.hexdigest('SHA512', order.income_wallet.api_key, sign_string)
+      OpenSSL::HMAC.hexdigest('SHA512', api_key, sign_string)
     end
 
     private

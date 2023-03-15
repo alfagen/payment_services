@@ -87,7 +87,7 @@ class PaymentServices::BlockIo
     end
 
     def client
-      @client ||= Client.new(api_key: wallet.outcome_api_key, pin: wallet.outcome_api_secret)
+      @client ||= Client.new(api_key: api_key, pin: api_secret)
     end
   end
 end

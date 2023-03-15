@@ -64,7 +64,7 @@ class PaymentServices::Paylama
     end
 
     def client
-      @client ||= Client.new(api_key: outcome_api_key, secret_key: outcome_api_secret)
+      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
   end
 end

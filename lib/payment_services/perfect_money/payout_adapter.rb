@@ -37,7 +37,7 @@ class PaymentServices::PerfectMoney
 
     def client
       @client ||= begin
-        Client.new(account_id: wallet.merchant_id, pass_phrase: wallet.outcome_api_key, account: wallet.account)
+        Client.new(account_id: wallet.merchant_id, pass_phrase: api_key, account: wallet.account)
       end
     end
   end

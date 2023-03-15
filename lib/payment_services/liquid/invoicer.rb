@@ -13,7 +13,7 @@ class PaymentServices::Liquid
     end
 
     def wallet_address(currency:)
-      wallet = Client.new(currency: currency, token_id: api_wallet.merchant_id.to_i, api_key: api_wallet.api_key).wallet
+      wallet = Client.new(currency: currency, token_id: api_wallet.merchant_id.to_i, api_key: api_key).wallet
 
       wallet['address']
     end
@@ -61,7 +61,7 @@ class PaymentServices::Liquid
 
     def client
       @client ||= begin
-        Client.new(currency: order.income_wallet.currency.to_s, token_id: api_wallet.merchant_id.to_i, api_key: api_wallet.api_key)
+        Client.new(currency: order.income_wallet.currency.to_s, token_id: api_wallet.merchant_id.to_i, api_key: api_key)
       end
     end
   end

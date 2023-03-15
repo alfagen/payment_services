@@ -39,6 +39,23 @@ module PaymentServices
       false
     end
 
+    protected
+
+    def api_keys
+      @api_keys ||= begin
+        class_name = class.name.delete_suffix('::Invoicer')
+        PaymentServiceApiKey.find_by(payment_service_name: class_name) || raise "Ключи для #{class_name} не заведены"
+      end
+    end
+
+    def api_key
+      api_keys.income_api_key
+    end
+
+    def api_secret
+      api_keys.income_api_secret
+    end
+
     private
 
     delegate :id, to: :order, prefix: true

@@ -28,7 +28,6 @@ class PaymentServices::PaylamaCrypto
     private
 
     attr_reader :payout
-    delegate :outcome_api_key, :outcome_api_secret, to: :api_wallet
     delegate :token_network, to: :payment_system
     delegate :payment_system, to: :api_wallet
 
@@ -61,7 +60,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def client
-      @client ||= PaymentServices::Paylama::Client.new(api_key: outcome_api_key, secret_key: outcome_api_secret)
+      @client ||= PaymentServices::Paylama::Client.new(api_key: api_key, secret_key: api_secret)
     end
   end
 end

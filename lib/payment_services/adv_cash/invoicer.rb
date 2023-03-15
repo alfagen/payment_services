@@ -31,7 +31,7 @@ class PaymentServices::AdvCash
         form_data[:shop_name],
         form_data[:amount],
         form_data[:currency],
-        order.income_wallet.api_key,
+        api_key,
         form_data[:order_id]
       ]
       signature = Digest::SHA256.hexdigest(sign_array.join(':'))

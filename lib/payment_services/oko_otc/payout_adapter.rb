@@ -49,7 +49,7 @@ class PaymentServices::OkoOtc
 
     def client
       @client ||= begin
-        Client.new(api_key: wallet.outcome_api_key, secret_key: wallet.outcome_api_secret)
+        Client.new(api_key: api_key, secret_key: api_secret)
       end
     end
 

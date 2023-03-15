@@ -5,8 +5,6 @@ require_relative 'transaction'
 
 class PaymentServices::PaylamaCrypto
   class Invoicer < ::PaymentServices::Base::Invoicer
-    WALLET_NAME_GROUP = 'PAYLAMA_CRYPTO_API_KEYS'
-
     def create_invoice(money)
       Invoice.create(amount: money, order_public_id: order.public_id)
     end
@@ -36,12 +34,6 @@ class PaymentServices::PaylamaCrypto
     end
 
     private
-
-    delegate :api_key, :api_secret, to: :api_wallet
-
-    def api_wallet
-      @api_wallet ||= Wallet.find_by!(name_group: WALLET_NAME_GROUP)
-    end
 
     def client
       @client ||= PaymentServices::Paylama::Client.new(api_key: api_key, secret_key: api_secret)

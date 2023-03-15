@@ -83,11 +83,7 @@ class PaymentServices::Blockchair
     end
 
     def client
-      @client ||= begin
-        api_key = income_wallet.api_key.presence || income_wallet.parent&.api_key
-
-        Client.new(api_key: api_key, currency: currency.to_s.downcase)
-      end
+      @client ||= Client.new(api_key: api_key, currency: currency.to_s.downcase)
     end
   end
 end

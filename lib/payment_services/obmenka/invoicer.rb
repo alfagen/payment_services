@@ -63,7 +63,7 @@ class PaymentServices::Obmenka
     def client
       @client ||= begin
         wallet = order.income_wallet
-        Client.new(merchant_id: wallet.merchant_id, secret_key: wallet.api_secret)
+        Client.new(merchant_id: wallet.merchant_id, secret_key: api_secret)
       end
     end
   end
