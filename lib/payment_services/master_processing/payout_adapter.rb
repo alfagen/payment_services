@@ -54,9 +54,7 @@ class PaymentServices::MasterProcessing
     end
 
     def client
-      @client ||= begin
-        Client.new(api_key: api_key, secret_key: api_secret)
-      end
+      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
 
     def endpoint

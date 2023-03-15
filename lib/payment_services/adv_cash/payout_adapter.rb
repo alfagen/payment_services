@@ -55,9 +55,7 @@ class PaymentServices::AdvCash
     end
 
     def client
-      @client ||= begin
-        Client.new(api_name: wallet.merchant_id, authentication_token: api_key, account_email: wallet.adv_cash_merchant_email)
-      end
+      @client ||= Client.new(api_name: wallet.merchant_id, authentication_token: api_key, account_email: wallet.adv_cash_merchant_email)
     end
   end
 end

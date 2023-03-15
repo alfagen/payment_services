@@ -58,9 +58,7 @@ class PaymentServices::AnyMoney
     end
 
     def client
-      @client ||= begin
-        Client.new(merchant_id: wallet.merchant_id, api_key: api_key)
-      end
+      @client ||= Client.new(merchant_id: wallet.merchant_id, api_key: api_key)
     end
   end
 end

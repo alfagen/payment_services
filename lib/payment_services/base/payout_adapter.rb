@@ -26,12 +26,12 @@ class PaymentServices::Base
       )
     end
 
-    protected
+    private
 
     def api_keys
       @api_keys ||= begin
-        class_name = class.name.delete_suffix('::PayoutAdapter')
-        PaymentServiceApiKey.find_by(payment_service_name: class_name) || raise "Ключи для #{class_name} не заведены"
+        class_name = self.class.name.delete_suffix('::PayoutAdapter')
+        PaymentServiceApiKey.find_by(payment_service_name: class_name) || raise("Ключи для #{class_name} не заведены")
       end
     end
 
@@ -42,8 +42,6 @@ class PaymentServices::Base
     def api_secret
       api_keys.outcome_api_secret
     end
-
-    private
 
     def make_payout(*)
       raise 'not implemented'
