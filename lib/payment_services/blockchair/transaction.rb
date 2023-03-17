@@ -28,6 +28,10 @@ class PaymentServices::Blockchair
       send("#{blockchain}_transaction_succeed?")
     end
 
+    def sender
+      send("#{blockchain}_sender")
+    end
+
     private
 
     def method_missing(method_name)
@@ -54,6 +58,10 @@ class PaymentServices::Blockchair
 
     def eos_transaction_succeed?
       source.key?(:block_num) && source[:block_num].positive?
+    end
+
+    def erc_20_sender
+      source[:sender]
     end
   end
 end
