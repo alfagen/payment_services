@@ -19,17 +19,9 @@ class PaymentServices::OkoOtc
     end
 
     def payout_status(withdrawal_id:)
-      params = {
-        limit: 1,
-        offset: 0,
-        orderID: withdrawal_id,
-        orderType: 'withdraw'
-      }
-
       safely_parse http_request(
-        url: "#{API_URL}/fetch_orders_v2",
-        method: :POST,
-        body: params.to_json,
+        url: "#{API_URL}/fetch_order_by_uid/#{withdrawal_id}",
+        method: :GET,
         headers: build_headers(signature: '')
       )
     end
