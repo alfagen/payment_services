@@ -63,5 +63,9 @@ class PaymentServices::Blockchair
     def erc_20_sender
       source[:sender]
     end
+
+    def bitcoin_sender
+      source[:recipient]
+    end
   end
 end
