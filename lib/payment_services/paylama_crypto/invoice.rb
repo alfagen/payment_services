@@ -66,10 +66,10 @@ class PaymentServices::PaylamaCrypto
     end
 
     def exec_kyt_verification!
-      if order.income_kyt_check? && kyt_verification_success?
-        kyt_verification_succeed!
+      if order.income_kyt_check?
+        kyt_verification_success? ? kyt_verification_succeed! : kyt_verification_failed!
       else
-        kyt_verification_failed!
+        kyt_verification_succeed!
       end
     end
 
