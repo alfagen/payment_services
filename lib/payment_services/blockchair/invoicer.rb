@@ -32,11 +32,11 @@ class PaymentServices::Blockchair
       true
     end
 
-    private
-
     def transaction_for(invoice)
       TransactionMatcher.new(invoice: invoice, transactions: collect_transactions).perform
     end
+
+    private
 
     def collect_transactions
       if blockchain.ethereum?

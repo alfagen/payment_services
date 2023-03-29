@@ -74,7 +74,7 @@ class PaymentServices::PaylamaCrypto
     end
 
     def kyt_verification_success?
-      sender_address = PaymentServices::Blockchair::Invoicer.new.transaction_for(self).sender_address
+      sender_address = PaymentServices::Blockchair::Invoicer.new(order: order).transaction_for(self).sender_address
       KytValidator.new(order: order, direction: :income, address: sender_address).perform
     end
   end
