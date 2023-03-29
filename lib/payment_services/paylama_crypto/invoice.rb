@@ -11,16 +11,25 @@ class PaymentServices::PaylamaCrypto
         on_entry do
           order.make_reserve!
         end
-        event :pay, transitions_to: :paid
-        event :cancel, transitions_to: :cancelled
+        event :pay, transitions_to: :waiting_for_kyt_verification
       end
-
+      state :waiting_for_kyt_verification do
+        on_entry do
+          exec_kyt_verification!
+        end
+        event :kyt_verification_succeed, transitions_to: :paid
+        event :kyt_verification_failed, transitions_to: :cancelled
+      end
       state :paid do
         on_entry do
-          order.auto_confirm!(income_amount: amount, hash: order.income_wallet.name)
+          order.auto_confirm!(income_amount: amount)
         end
       end
-      state :cancelled
+      state :cancelled do
+        on_entry do
+          order.reject!(status: :rejected, reason: I18n.t('validations.kyt.failed'))
+        end
+      end
     end
 
     def update_state_by_transaction(transaction)
@@ -33,7 +42,6 @@ class PaymentServices::PaylamaCrypto
       )
 
       pay!(payload: transaction) if transaction.succeed?
-      cancel! if transaction.failed?
     end
 
     def order
@@ -55,6 +63,19 @@ class PaymentServices::PaylamaCrypto
 
     def amount_provider_currency
       @amount_provider_currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: amount_currency, token_network: token_network).provider_crypto_currency
+    end
+
+    def exec_kyt_verification!
+      if order.income_kyt_check? && kyt_verification_success?
+        kyt_verification_succeed!
+      else
+        kyt_verification_failed!
+      end
+    end
+
+    def kyt_verification_success?
+      sender_address = PaymentServices::Blockchair::Invoicer.new.transaction_for(self).sender_address
+      KytValidator.new(order: order, direction: :income, address: sender_address).perform
     end
   end
 end

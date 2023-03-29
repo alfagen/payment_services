@@ -19,16 +19,25 @@ class PaymentServices::Blockchair
         on_entry do
           order.make_reserve!
         end
-        event :pay, transitions_to: :paid
-        event :cancel, transitions_to: :cancelled
+        event :pay, transitions_to: :waiting_for_kyt_verification
       end
-
+      state :waiting_for_kyt_verification do
+        on_entry do
+          exec_kyt_verification!
+        end
+        event :kyt_verification_succeed, transitions_to: :paid
+        event :kyt_verification_failed, transitions_to: :cancelled
+      end
       state :paid do
         on_entry do
           order.auto_confirm!(income_amount: amount, hash: transaction_id)
         end
       end
-      state :cancelled
+      state :cancelled do
+        on_entry do
+          order.reject!(status: :rejected, reason: I18n.t('validations.kyt.failed'))
+        end
+      end
     end
 
     def pay(payload:)
@@ -48,6 +57,21 @@ class PaymentServices::Blockchair
       update!(transaction_created_at: transaction.created_at, transaction_id: transaction.id)
 
       pay!(payload: transaction) if transaction.successful?
+    end
+
+    private
+
+    def exec_kyt_verification!
+      if order.income_kyt_check? && kyt_verification_success?
+        kyt_verification_succeed!
+      else
+        kyt_verification_failed!
+      end
+    end
+
+    def kyt_verification_success?
+      sender_address = PaymentServices::Blockchair::Invoicer.new.transaction_for(self).sender_address
+      KytValidator.new(order: order, direction: :income, address: sender_address).perform
     end
   end
 end

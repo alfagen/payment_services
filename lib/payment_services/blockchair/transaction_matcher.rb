@@ -35,11 +35,13 @@ class PaymentServices::Blockchair
       raw_transaction = transactions.find { |transaction| match_cardano_transaction?(transaction) }
       return unless raw_transaction
 
+      inputs = transaction['ctbInputs']
+      output = transaction['ctbOutputs'].find { |output| output.match_by_output? }
       build_transaction(
         id: raw_transaction['ctbId'],
         created_at: timestamp_in_utc(raw_transaction['ctbTimeIssued']),
-        blockchain: blockchain, 
-        source: raw_transaction
+        blockchain: blockchain,
+        source: raw_transaction.merge(input: most_similar_cardano_input_by(output: output, inputs: inputs))
       )
     end
 
@@ -75,14 +77,14 @@ class PaymentServices::Blockchair
     def method_missing(method_name)
       super unless method_name.start_with?('match_') && method_name.end_with?('_transaction')
 
-      raw_transaction = transactions.find { |transaction| match_generic_transaction?(transaction) }
+      raw_transaction = transactions_data.find { |transaction| match_generic_transaction?(transaction) }
       return unless raw_transaction
 
       build_transaction(
         id: raw_transaction['transaction_hash'],
         created_at: datetime_string_in_utc(raw_transaction['time']),
         blockchain: blockchain,
-        source: raw_transaction
+        source: raw_transaction.merge(input: most_similar_input_by(output: raw_transaction))
       )
     end
 
@@ -148,6 +150,25 @@ class PaymentServices::Blockchair
 
     def build_ripple_time(timestamp)
       timestamp_in_utc(timestamp + RIPPLE_AFTER_UNIX_EPOCH)
+    end
+
+    def transactions_data(direction: 'outputs')
+      signals = []
+
+      transactions.each do |_transaction_id, transaction|
+        signals << transaction[direction]
+      end
+
+      signals.flatten
+    end
+
+    def most_similar_input_by(output:)
+      inputs = transactions_data(direction: 'inputs').select { |input| input['time'] == output['time'] }
+      inputs.min_by { |input| (input['value'] - output['value']).abs }
+    end
+
+    def most_similar_cardano_input_by(output:, inputs:)
+      inputs.min_by { |input| (input['ctaAmount']['getCoin'].to_f - output['ctaAmount']['getCoin'].to_f).abs }
     end
   end
 end

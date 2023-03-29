@@ -28,6 +28,10 @@ class PaymentServices::Blockchair
       send("#{blockchain}_transaction_succeed?")
     end
 
+    def sender_address
+      send("#{blockchain}_sender_address")
+    end
+
     private
 
     def method_missing(method_name)
@@ -54,6 +58,54 @@ class PaymentServices::Blockchair
 
     def eos_transaction_succeed?
       source.key?(:block_num) && source[:block_num].positive?
+    end
+
+    def bitcoin_sender_address
+      source.dig(:input, :recipient)
+    end
+
+    def bitcoin_cash_sender_address
+      source.dig(:input, :recipient)
+    end
+
+    def litecoin_sender_address
+      source.dig(:input, :recipient)
+    end
+
+    def dogecoin_sender_address
+      source.dig(:input, :recipient)
+    end
+
+    def dash_sender_address
+      source.dig(:input, :recipient)
+    end
+
+    def zcash_sender_address
+      source.dig(:input, :recipient)
+    end
+
+    def ethereum_sender_address
+      source[:sender]
+    end
+
+    def cardano_sender_address
+      source.dig(:input, :ctaAddress, :unCAddress)
+    end
+
+    def stellar_sender_address
+      source[:from]
+    end
+
+    def ripple_sender_address
+      source.dig(:TakerGets, :issuer)
+    end
+
+    def eos_sender_address
+      source[:from]
+    end
+
+    def erc_20_sender_address
+      source[:sender]
     end
   end
 end

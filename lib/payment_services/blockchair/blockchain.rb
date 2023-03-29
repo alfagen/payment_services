@@ -5,7 +5,7 @@ class PaymentServices::Blockchair
     API_URL = 'https://api.blockchair.com'
     CURRENCY_TO_BLOCKCHAIN = {
       btc:  'bitcoin',
-      bch:  'bitcoin-cash',
+      bch:  'bitcoin_cash',
       ltc:  'litecoin',
       doge: 'dogecoin',
       dsh:  'dash',

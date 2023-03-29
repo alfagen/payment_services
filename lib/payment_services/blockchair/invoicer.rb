@@ -52,7 +52,7 @@ class PaymentServices::Blockchair
       elsif blockchain.erc_20?
         blockchair_transactions_by_address(invoice.address.downcase)['transactions']
       else
-        transactions_outputs(transactions_data_for_address(invoice.address))
+        transactions_data_for_address(invoice.address)
       end
     end
 
@@ -66,16 +66,6 @@ class PaymentServices::Blockchair
     def transactions_data_for_address(address)
       transaction_ids_on_wallet = blockchair_transactions_by_address(address)['transactions']
       client.transactions_data(tx_ids: transaction_ids_on_wallet.first(TRANSANSACTIONS_AMOUNT_TO_CHECK))['data']
-    end
-
-    def transactions_outputs(transactions_data)
-      outputs = []
-
-      transactions_data.each do |_transaction_id, transaction|
-        outputs << transaction['outputs']
-      end
-
-      outputs.flatten
     end
 
     def blockchain

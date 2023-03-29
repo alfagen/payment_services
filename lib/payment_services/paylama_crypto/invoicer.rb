@@ -6,7 +6,7 @@ require_relative 'transaction'
 class PaymentServices::PaylamaCrypto
   class Invoicer < ::PaymentServices::Base::Invoicer
     def create_invoice(money)
-      Invoice.create(amount: money, order_public_id: order.public_id)
+      Invoice.create(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
 
     def wallet_information(currency:, token_network:)
