@@ -163,7 +163,7 @@ class PaymentServices::Blockchair
     end
 
     def most_similar_input_by(output:)
-      inputs = transactions_data(direction: 'inputs').select { |input| input['time'] == output['time'] }
+      inputs = transactions_data(direction: 'inputs').select { |input| input['spending_time'] == output['time'] }
       inputs.min_by { |input| (input['value'] - output['value']).abs }
     end
 
