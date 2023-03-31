@@ -6,8 +6,6 @@ class PaymentServices::PaylamaCrypto
 
     monetize :amount_cents, as: :amount
 
-    alias_attribute :transaction_id, :name
-
     def update_state_by_transaction(transaction)
       validate_transaction_amount(transaction: transaction)
       has_transaction! if pending?
@@ -21,12 +19,14 @@ class PaymentServices::PaylamaCrypto
       cancel! if transaction.failed?
     end
 
+    def transaction_id
+      order.income_wallet.name
+    end
+
     private
 
     delegate :income_payment_system, to: :order
     delegate :token_network, to: :income_payment_system
-    delegate :income_wallet, to: :order
-    delegate :name, to: :income_wallet
 
     def validate_transaction_amount(transaction:)
       raise "#{amount.to_f} #{amount_provider_currency} is needed. But #{transaction.amount} #{transaction.currency} has come." unless transaction.valid_amount?(amount.to_f, amount_provider_currency)
