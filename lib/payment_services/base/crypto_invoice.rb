@@ -24,9 +24,9 @@ class PaymentServices::Base
         on_entry do
           perform_kyt_verification! if order.income_kyt_check?
           if kyt_verified?
-            order.auto_confirm!(income_amount: amount, hash: transaction_id)
+            confirm_order!
           else
-            order.reject!(status: :rejected, reason: I18n.t('validations.kyt.failed'))
+            reject_order!
           end
         end
       end
@@ -50,6 +50,14 @@ class PaymentServices::Base
     def kyt_verification_success?
       sender_address = PaymentServices::Blockchair::InvoicerInvoicer.new(order: order).transaction_for(self).sender_address
       KytValidator.new(order: order, direction: :income, address: sender_address).perform
+    end
+
+    def confirm_order!
+      order.auto_confirm!(income_amount: amount, hash: transaction_id)
+    end
+
+    def reject_order!
+      order.reject!(status: :rejected, reason: I18n.t('validations.kyt.failed'))
     end
   end
 end
