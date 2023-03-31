@@ -6,7 +6,6 @@ class PaymentServices::Base
 
     scope :ordered, -> { order(id: :desc) }
 
-    monetize :amount_cents, as: :amount
     validates :amount_cents, :order_public_id, :state, :kyt_verified, presence: true
 
     workflow_column :state

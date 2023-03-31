@@ -4,6 +4,8 @@ class PaymentServices::PaylamaCrypto
   class Invoice < ::PaymentServices::Base::CryptoInvoice
     self.table_name = 'paylama_invoices'
 
+    monetize :amount_cents, as: :amount
+
     alias_attribute :transaction_id, :name
 
     def update_state_by_transaction(transaction)

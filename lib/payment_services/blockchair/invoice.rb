@@ -4,6 +4,8 @@ class PaymentServices::Blockchair
   class Invoice < ::PaymentServices::Base::CryptoInvoice
     self.table_name = 'blockchair_invoices'
 
+    monetize :amount_cents, as: :amount
+
     def memo
       @memo ||= order.income_wallet.memo
     end

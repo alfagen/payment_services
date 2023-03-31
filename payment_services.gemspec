@@ -40,7 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'virtus'
   spec.add_dependency 'workflow'
   spec.add_dependency 'block_io'
-  spec.add_dependency 'money-rails'
 
   spec.add_development_dependency 'bundler', '~> 1.16'
   spec.add_development_dependency 'rake', '~> 10.0'
