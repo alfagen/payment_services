@@ -14,6 +14,7 @@ module PaymentServices
   require 'payment_services/base/invoicer'
   require 'payment_services/base/payout_adapter'
   require 'payment_services/base/client'
+  require 'payment_services/base/fiat_invoice'
 
   autoload :QIWI, 'payment_services/qiwi'
   autoload :AdvCash, 'payment_services/adv_cash'
@@ -36,6 +37,7 @@ module PaymentServices
   autoload :OkoOtc, 'payment_services/oko_otc'
   autoload :Paylama, 'payment_services/paylama'
   autoload :PaylamaCrypto, 'payment_services/paylama_crypto'
+  autoload :ExPay, 'payment_services/ex_pay'
 
   UnauthorizedPayout = Class.new StandardError
 
