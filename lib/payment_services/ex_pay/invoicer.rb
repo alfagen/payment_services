@@ -42,7 +42,7 @@ class PaymentServices::ExPay
         amount: invoice.amount.to_i,
         call_back_url: callback_url,
         card_number: order.income_account,
-        client_transaction_id: order.public_id,
+        client_transaction_id: order.public_id.to_s,
         email: order.user.email,
         token: INVOICE_PROVIDER_TOKEN,
         sub_token: INVOICE_PROVIDER_SUBTOKEN,
