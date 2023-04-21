@@ -45,7 +45,7 @@ class PaymentServices::ExPay
         email: order.user.email,
         token: INVOICE_PROVIDER_TOKEN,
         transaction_description: I18n.t('payment_systems.default_product', order_id: order.public_id),
-        p2p_uniform: true
+        p2p_uniform: false
       }
     end
 
