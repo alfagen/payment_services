@@ -5,9 +5,7 @@ require_relative 'client'
 
 class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
-    CLIENT_EMAIL = 'live.kassa@gmail.com'
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
-    INVOICE_PROVIDER_SUBTOKEN = 'TCSRUB'
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -44,7 +42,7 @@ class PaymentServices::ExPay
         call_back_url: callback_url,
         card_number: order.income_account,
         client_transaction_id: order.public_id.to_s,
-        email: CLIENT_EMAIL,
+        email: order.user.email,
         token: INVOICE_PROVIDER_TOKEN,
         transaction_description: I18n.t('payment_systems.default_product', order_id: order.public_id),
         p2p_uniform: true
