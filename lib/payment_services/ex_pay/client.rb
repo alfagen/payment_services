@@ -15,7 +15,7 @@ class PaymentServices::ExPay
         url: "#{API_URL}/create/in",
         method: :POST,
         body: params.to_json,
-        headers: build_headers(signature: build_signature(params, timestamp), timestamp: Time.now.to_i.to_s)
+        headers: build_headers(signature: build_signature(params, timestamp), timestamp: timestamp)
       )
     end
 
