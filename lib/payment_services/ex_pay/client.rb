@@ -11,11 +11,13 @@ class PaymentServices::ExPay
 
     def create_invoice(params:)
       timestamp = Time.now.to_i.to_s
+      headers = build_headers(signature: build_signature(params, timestamp), timestamp: timestamp)
+      logger.info "Headers: #{headers}\n"
       safely_parse http_request(
         url: "#{API_URL}/create/in",
         method: :POST,
         body: params.to_json,
-        headers: build_headers(signature: build_signature(params, timestamp), timestamp: timestamp)
+        headers: headers
       )
     end
 
