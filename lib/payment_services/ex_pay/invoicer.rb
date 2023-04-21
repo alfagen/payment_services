@@ -5,6 +5,7 @@ require_relative 'client'
 
 class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
+    CLIENT_EMAIL = 'live.kassa@gmail.com'
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
     INVOICE_PROVIDER_SUBTOKEN = 'TCSRUB'
 
@@ -43,7 +44,7 @@ class PaymentServices::ExPay
         call_back_url: callback_url,
         card_number: order.income_account,
         client_transaction_id: order.public_id.to_s,
-        email: order.user.email,
+        email: CLIENT_EMAIL,
         token: INVOICE_PROVIDER_TOKEN,
         sub_token: INVOICE_PROVIDER_SUBTOKEN,
         transaction_description: I18n.t('payment_systems.default_product', order_id: order.public_id),
