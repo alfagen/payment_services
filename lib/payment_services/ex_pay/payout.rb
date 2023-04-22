@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::ExPay
-  class Payout < ApplicationRecord
+  class Payout < ::PaymentServices::Base::FiatPayout
     self.table_name = 'ex_pay_payouts'
 
     monetize :amount_cents, as: :amount
