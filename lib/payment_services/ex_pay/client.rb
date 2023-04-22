@@ -20,7 +20,7 @@ class PaymentServices::ExPay
 
     def transactions(params:)
       safely_parse http_request(
-        url: "#{API_URL}/create/in",
+        url: "#{API_URL}/fetch",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params, timestamp_string), timestamp: timestamp_string)
