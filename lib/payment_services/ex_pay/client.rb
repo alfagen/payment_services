@@ -18,14 +18,23 @@ class PaymentServices::ExPay
       )
     end
 
-    def transaction(tracker_id:)
-      params = { tracker_id: tracker_id }
+    def create_payout(params:)
       safely_parse http_request(
-        url: "#{API_URL}/get",
+        url: "#{API_URL}/create/out",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params, timestamp_string), timestamp: timestamp_string)
       )
+    end
+
+    def transaction(tracker_id:)
+      params = { tracker_id: tracker_id }
+      safely_parse(http_request(
+        url: "#{API_URL}/get",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params, timestamp_string), timestamp: timestamp_string)
+      ))['transaction']
     end
 
     private

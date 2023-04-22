@@ -28,7 +28,8 @@ class PaymentServices::ExPay
     end
 
     def update_invoice_state!
-      invoice.update_state_by_provider(transaction['status'])
+      transaction = client.transaction(tracker_id: invoice.deposit_id)
+      invoice.update_state_by_provider(transaction['status']) if transaction
     end
 
     def invoice
@@ -54,10 +55,7 @@ class PaymentServices::ExPay
     end
 
     def transaction
-      response = client.transaction(tracker_id: invoice.deposit_id)
-      raise 'Can\'t get transaction info' unless response['status'] == 'ok'
-
-      response['transaction']
+      @transaction ||= client.transaction(tracker_id: invoice.deposit_id)
     end
 
     def client
