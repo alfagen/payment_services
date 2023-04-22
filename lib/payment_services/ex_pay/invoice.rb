@@ -3,8 +3,8 @@
 class PaymentServices::ExPay
   class Invoice < ::PaymentServices::Base::FiatInvoice
     INITIAL_PROVIDER_STATE  = 'ACCEPTED'
-    SUCCESS_PROVIDER_STATE  = 'SUCCEED'
-    FAILED_PROVIDER_STATE   = 'FAILED'
+    SUCCESS_PROVIDER_STATE  = 'SUCCESS'
+    FAILED_PROVIDER_STATE   = 'ERROR'
 
     self.table_name = 'ex_pay_invoices'
 
