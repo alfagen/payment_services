@@ -29,7 +29,8 @@ class PaymentServices::ExPay
     end
 
     def update_invoice_state!
-      invoice.update_state_by_provider(transaction['status'])
+      transaction = provider_transaction
+      invoice.update_state_by_provider(transaction['status']) if transaction
     end
 
     def invoice
@@ -54,15 +55,15 @@ class PaymentServices::ExPay
       }
     end
 
-    def transaction
+    def provider_transaction
       response = client.transactions(params: { limit: TRANSACTIONS_AMOUNT_TO_CHECK, offset: 0, sort_order: 'desc' })
       raise 'Can\'t get transactions' unless response['status'] == 'ok'
 
-      response['transaction_list'].find { |t| match_amount_and_deposit_id?(t) }
+      response['transaction_list'].find { |transaction| match_amount_and_deposit_id?(transaction) }
     end
 
-    def match_amount_and_deposit_id?(t)
-      t['tracker_id'] == invoice.deposit_id && t['amount'] == invoice.amount.to_i
+    def match_amount_and_deposit_id?(transaction)
+      transaction['tracker_id'] == invoice.deposit_id && transaction['amount'] == invoice.amount.to_i
     end
 
     def client
