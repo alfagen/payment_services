@@ -37,11 +37,11 @@ class PaymentServices::Base
     private
 
     def provider_succeed?
-      provider_state == SUCCESS_PROVIDER_STATE
+      raise "Method `provider_succeed?` is not implemented for class #{self.class}"
     end
 
     def provider_failed?
-      provider_state == FAILED_PROVIDER_STATE
+      raise "Method `provider_failed?` is not implemented for class #{self.class}"
     end
   end
 end
