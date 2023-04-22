@@ -6,6 +6,7 @@ require_relative 'client'
 class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
+    TRANSACTIONS_AMOUNT_TO_CHECK = 50
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -54,10 +55,14 @@ class PaymentServices::ExPay
     end
 
     def transaction
-      response = client.transactions(params: { limit: 20, offset: 0, sort_order: 'desc' })
+      response = client.transactions(params: { limit: TRANSACTIONS_AMOUNT_TO_CHECK, offset: 0, sort_order: 'desc' })
       raise 'Can\'t get transactions' unless response['status'] == 'ok'
 
-      response['transaction_list'].find { |tx| tx['tracker_id'] == invoice.deposit_id }
+      response['transaction_list'].find { |t| match_amount_and_deposit_id?(t) }
+    end
+
+    def match_amount_and_deposit_id?(t)
+      t['tracker_id'] == invoice.deposit_id && t['amount'] == invoice.amount.to_i
     end
 
     def client
