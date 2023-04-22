@@ -57,7 +57,7 @@ class PaymentServices::ExPay
       response = client.transactions(params: { limit: 20, offset: 0, sort_order: 'desc' })
       raise 'Can\'t get transactions' unless response['status'] == 'ok'
 
-      response['transaction_list'].find { tx tx['tracker_id'] == invoice.deposit_id }
+      response['transaction_list'].find { |tx| tx['tracker_id'] == invoice.deposit_id }
     end
 
     def client
