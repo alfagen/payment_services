@@ -54,10 +54,6 @@ class PaymentServices::ExPay
       }
     end
 
-    def transaction
-      @transaction ||= client.transaction(tracker_id: invoice.deposit_id)
-    end
-
     def client
       @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
