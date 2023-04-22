@@ -10,14 +10,20 @@ class PaymentServices::ExPay
     end
 
     def create_invoice(params:)
-      timestamp = Time.now.to_i.to_s
-      headers = build_headers(signature: build_signature(params, timestamp), timestamp: timestamp)
-      logger.info "Headers: #{headers}\n"
       safely_parse http_request(
         url: "#{API_URL}/create/in",
         method: :POST,
         body: params.to_json,
-        headers: headers
+        headers: build_headers(signature: build_signature(params, timestamp_string), timestamp: timestamp_string)
+      )
+    end
+
+    def transactions(params:)
+      safely_parse http_request(
+        url: "#{API_URL}/create/in",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params, timestamp_string), timestamp: timestamp_string)
       )
     end
 
@@ -36,6 +42,10 @@ class PaymentServices::ExPay
 
     def build_signature(params, timestamp)
       OpenSSL::HMAC.hexdigest('SHA512', secret_key, timestamp + params.to_json)
+    end
+
+    def timestamp_string
+      @timestamp_string ||= Time.now.to_i.to_s
     end
   end
 end

@@ -24,7 +24,11 @@ class PaymentServices::ExPay
     end
 
     def async_invoice_state_updater?
-      false
+      true
+    end
+
+    def update_invoice_state!
+      invoice.update_state_by_provider(transaction['status'])
     end
 
     def invoice
@@ -47,6 +51,13 @@ class PaymentServices::ExPay
         transaction_description: order.public_id.to_s,
         p2p_uniform: true
       }
+    end
+
+    def transaction
+      response = client.transactions(params: { limit: 20, offset: 0, sort_order: 'desc' })
+      raise 'Can\'t get transactions' unless response['status'] == 'ok'
+
+      response['transaction_list'].find { tx tx['tracker_id'] == invoice.deposit_id }
     end
 
     def client
