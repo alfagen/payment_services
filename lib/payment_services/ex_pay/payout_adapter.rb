@@ -5,7 +5,7 @@ require_relative 'client'
 
 class PaymentServices::ExPay
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    PAYOUT_PROVIDER_TOKEN = 'CARDRUB'
+    PAYOUT_PROVIDER_TOKEN = 'CARDRUBP2P'
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
@@ -31,7 +31,7 @@ class PaymentServices::ExPay
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
       response = client.create_payout(params: payout_params)
-      raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
+      raise "Can't create payout: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
 
       payout.pay!(withdrawal_id: response['tracker_id'])
     end
