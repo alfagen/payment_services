@@ -2,6 +2,8 @@
 
 class PaymentServices::Base
   class FiatInvoice < ActiveRecord::Base
+    self.abstract_class = true
+
     include Workflow
 
     scope :ordered, -> { order(id: :desc) }

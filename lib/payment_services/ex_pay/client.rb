@@ -14,7 +14,7 @@ class PaymentServices::ExPay
         url: "#{API_URL}/create/in",
         method: :POST,
         body: params.to_json,
-        headers: build_headers(signature: build_signature(params, timestamp_string), timestamp: timestamp_string)
+        headers: build_headers(signature: build_signature(params))
       )
     end
 
@@ -23,7 +23,7 @@ class PaymentServices::ExPay
         url: "#{API_URL}/create/out",
         method: :POST,
         body: params.to_json,
-        headers: build_headers(signature: build_signature(params, timestamp_string), timestamp: timestamp_string)
+        headers: build_headers(signature: build_signature(params))
       )
     end
 
@@ -33,7 +33,7 @@ class PaymentServices::ExPay
         url: "#{API_URL}/get",
         method: :POST,
         body: params.to_json,
-        headers: build_headers(signature: build_signature(params, timestamp_string), timestamp: timestamp_string)
+        headers: build_headers(signature: build_signature(params))
       ))['transaction']
     end
 
@@ -41,17 +41,17 @@ class PaymentServices::ExPay
 
     attr_reader :api_key, :secret_key
 
-    def build_headers(signature:, timestamp:)
+    def build_headers(signature:)
       {
         'Content-Type'  => 'application/json',
         'ApiPublic'     => api_key,
-        'TimeStamp'     => timestamp,
+        'TimeStamp'     => timestamp_string,
         'Signature'     => signature
       }
     end
 
-    def build_signature(params, timestamp)
-      OpenSSL::HMAC.hexdigest('SHA512', secret_key, timestamp + params.to_json)
+    def build_signature(params)
+      OpenSSL::HMAC.hexdigest('SHA512', secret_key, timestamp_string + params.to_json)
     end
 
     def timestamp_string
