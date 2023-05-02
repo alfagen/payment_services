@@ -69,11 +69,15 @@ class PaymentServices::Blockchair
     end
 
     def blockchain_base_api
-      "#{API_URL}/#{blockchain}"
+      "#{API_URL}/#{blockchain_url}"
     end
 
     def raw_account_base_url(address)
       "#{blockchain_base_api}/raw/account/#{address}"
+    end
+    
+    def blockchain_url
+      blockchain.bitcoin_cash? ? 'bitcoin-cash' : blockchain
     end
   end
 end
