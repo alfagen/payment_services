@@ -50,7 +50,7 @@ class PaymentServices::ExPay
     def invoice_p2p_params(po)
       {
         amount: po.income_money.to_i,
-        call_back_url: callback_url,
+        call_back_url: po.income_payment_system.callback_url,
         card_number: po.income_account,
         client_transaction_id: po.public_id.to_s,
         email: po.user.email,
