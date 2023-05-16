@@ -11,7 +11,7 @@ class PaymentServices::ExPay
       response = client.create_invoice(params: invoice_p2p_params(po))
       raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
 
-      response['refer']
+      response
     end
 
     def create_invoice(money)
