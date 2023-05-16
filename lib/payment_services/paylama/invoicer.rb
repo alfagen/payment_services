@@ -6,7 +6,7 @@ require_relative 'currency_repository'
 
 class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
-    P2P_BANK_NAME = 'sberbank'
+    P2P_BANK_NAME = 'tinkoff'
 
     def wallet_information(po:)
       response = client.generate_p2p_invoice(params: invoice_p2p_params(po))
