@@ -52,10 +52,10 @@ class PaymentServices::ExPay
         amount: po.income_money.to_i,
         call_back_url: po.income_payment_system.callback_url,
         card_number: po.income_account,
-        client_transaction_id: po.id_in_unixtime.to_s,
+        client_transaction_id: public_id,
         email: po.user.email,
         token: INVOICE_PROVIDER_TOKEN,
-        transaction_description: po.id_in_unixtime.to_s,
+        transaction_description: public_id,
         p2p_uniform: true
       }
     end
@@ -71,6 +71,10 @@ class PaymentServices::ExPay
         transaction_description: order.public_id.to_s,
         p2p_uniform: true
       }
+    end
+
+    def public_id
+      (Time.zone.now.to_f * 1000).ceil.to_s
     end
 
     def client

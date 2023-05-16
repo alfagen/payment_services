@@ -51,7 +51,7 @@ class PaymentServices::Paylama
       {
         amount: invoice.amount.to_i,
         expireAt: order.income_payment_timeout,
-        comment: order.public_id.to_s,
+        comment: (Time.zone.now.to_f * 1000).ceil.to_s,
         clientIP: order.remote_ip || '',
         currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).fiat_currency_id,
         redirect: {
