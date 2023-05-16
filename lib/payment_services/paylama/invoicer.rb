@@ -65,7 +65,7 @@ class PaymentServices::Paylama
       {
         bankName: P2P_BANK_NAME,
         amount: po.income_money.to_i,
-        comment: po.public_id.to_s,
+        comment: po.id_in_unixtime.to_s,
         currencyID: CurrencyRepository.build_from(kassa_currency: po.income_payment_system.currency).fiat_currency_id
       }
     end

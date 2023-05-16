@@ -52,10 +52,10 @@ class PaymentServices::ExPay
         amount: po.income_money.to_i,
         call_back_url: po.income_payment_system.callback_url,
         card_number: po.income_account,
-        client_transaction_id: po.public_id.to_s,
+        client_transaction_id: po.id_in_unixtime.to_s,
         email: po.user.email,
         token: INVOICE_PROVIDER_TOKEN,
-        transaction_description: po.public_id.to_s,
+        transaction_description: po.id_in_unixtime.to_s,
         p2p_uniform: true
       }
     end
