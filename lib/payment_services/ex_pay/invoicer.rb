@@ -7,8 +7,8 @@ class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
 
-    def wallet_information
-      response = client.create_invoice(params: invoice_params)
+    def wallet_information(po:)
+      response = client.create_invoice(params: invoice_p2p_params(po))
       raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
 
       response['refer']
@@ -46,6 +46,19 @@ class PaymentServices::ExPay
 
     delegate :income_payment_system, to: :order
     delegate :callback_url, to: :income_payment_system
+
+    def invoice_p2p_params(po)
+      {
+        amount: po.income_money.to_i,
+        call_back_url: callback_url,
+        card_number: po.income_account,
+        client_transaction_id: po.public_id.to_s,
+        email: po.user.email,
+        token: INVOICE_PROVIDER_TOKEN,
+        transaction_description: po.public_id.to_s,
+        p2p_uniform: true
+      }
+    end
 
     def invoice_params
       {

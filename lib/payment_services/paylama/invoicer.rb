@@ -8,8 +8,8 @@ class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
     P2P_BANK_NAME = 'sberbank'
 
-    def wallet_information
-      response = client.generate_p2p_invoice(params: invoice_p2p_params)
+    def wallet_information(po:)
+      response = client.generate_p2p_invoice(params: invoice_p2p_params(po))
       raise "Can't create invoice: #{response['cause']}" unless response['success']
 
       response['cardNumber']
@@ -61,12 +61,12 @@ class PaymentServices::Paylama
       }
     end
 
-    def invoice_p2p_params
+    def invoice_p2p_params(po)
       {
         bankName: P2P_BANK_NAME,
-        amount: invoice.amount.to_i,
-        comment: order.public_id.to_s,
-        currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).fiat_currency_id
+        amount: po.income_money.to_i,
+        comment: po.public_id.to_s,
+        currencyID: CurrencyRepository.build_from(kassa_currency: po.income_payment_system.currency).fiat_currency_id
       }
     end
 
