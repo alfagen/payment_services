@@ -11,15 +11,18 @@ class PaymentServices::ExPay
       response = client.create_invoice(params: invoice_params)
       raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
 
-      invoice.update!(
-        deposit_id: response['tracker_id'],
-        pay_url: response['alter_refer']
-      )
       response['refer']
     end
 
     def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
+      Invoice.create!(amount: money, order_public_id: order.public_id)
+      response = client.create_invoice(params: invoice_params)
+      raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
+
+      invoice.update!(
+        deposit_id: response['tracker_id'],
+        pay_url: response['alter_refer']
+      )
     end
 
     def pay_invoice_url

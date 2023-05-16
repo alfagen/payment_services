@@ -28,6 +28,15 @@ class PaymentServices::Paylama
       )
     end
 
+    def generate_p2p_invoice(params:)
+      safely_parse http_request(
+        url: "#{FIAT_API_URL}/generate_invoice_card_transfer",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
     def create_crypto_address(currency:)
       params = { currency: currency }
       safely_parse http_request(
