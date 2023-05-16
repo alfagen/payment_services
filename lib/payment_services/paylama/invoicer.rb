@@ -12,7 +12,7 @@ class PaymentServices::Paylama
       response = client.generate_p2p_invoice(params: invoice_p2p_params(po))
       raise "Can't create invoice: #{response['cause']}" unless response['success']
 
-      response['cardNumber']
+      response
     end
 
     def create_invoice(money)
