@@ -8,11 +8,8 @@ class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
     P2P_BANK_NAME = 'tinkoff'
 
-    def wallet_information(po:)
-      response = client.generate_p2p_invoice(params: invoice_p2p_params(po))
-      raise "Can't create invoice: #{response['cause']}" unless response['success']
-
-      response
+    def income_wallet(po:)
+      client.generate_p2p_invoice(params: invoice_p2p_params(po))
     end
 
     def create_invoice(money)

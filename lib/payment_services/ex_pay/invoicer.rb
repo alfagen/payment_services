@@ -7,11 +7,8 @@ class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
 
-    def wallet_information(po:)
-      response = client.create_invoice(params: invoice_p2p_params(po))
-      raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
-
-      response
+    def income_wallet(po:)
+      client.create_invoice(params: invoice_p2p_params(po))
     end
 
     def create_invoice(money)
