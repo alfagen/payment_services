@@ -7,8 +7,8 @@ class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
 
-    def income_wallet(po:)
-      client.create_invoice(params: invoice_p2p_params(po))
+    def income_wallet(preliminary_order:)
+      client.create_invoice(params: invoice_p2p_params(preliminary_order))
     end
 
     def create_invoice(money)
@@ -44,15 +44,15 @@ class PaymentServices::ExPay
     delegate :income_payment_system, to: :order
     delegate :callback_url, to: :income_payment_system
 
-    def invoice_p2p_params(po)
+    def invoice_p2p_params(preliminary_order)
       {
-        amount: po.income_money.to_i,
-        call_back_url: po.income_payment_system.callback_url,
-        card_number: po.income_account,
-        client_transaction_id: public_id,
-        email: po.user.email,
+        amount: preliminary_order.income_money.to_i,
+        call_back_url: preliminary_order.income_payment_system.callback_url,
+        card_number: preliminary_order.income_account,
+        client_transaction_id: preliminary_order.public_id,
+        email: po.user_email,
         token: INVOICE_PROVIDER_TOKEN,
-        transaction_description: public_id,
+        transaction_description: preliminary_order.public_id,
         p2p_uniform: true
       }
     end
@@ -68,10 +68,6 @@ class PaymentServices::ExPay
         transaction_description: order.public_id.to_s,
         p2p_uniform: true
       }
-    end
-
-    def public_id
-      (Time.zone.now.to_f * 1000).ceil.to_s
     end
 
     def client

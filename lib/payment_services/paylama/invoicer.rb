@@ -6,10 +6,10 @@ require_relative 'currency_repository'
 
 class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
-    P2P_BANK_NAME = 'tinkoff'
+    P2P_BANK_NAME = 'any_bank'
 
-    def income_wallet(po:)
-      client.generate_p2p_invoice(params: invoice_p2p_params(po))
+    def income_wallet(preliminary_order:)
+      client.generate_p2p_invoice(params: invoice_p2p_params(preliminary_order))
     end
 
     def create_invoice(money)
@@ -48,9 +48,9 @@ class PaymentServices::Paylama
       {
         amount: invoice.amount.to_i,
         expireAt: order.income_payment_timeout,
-        comment: (Time.zone.now.to_f * 1000).ceil.to_s,
+        comment: order.public_id.to_s,
         clientIP: order.remote_ip || '',
-        currencyID: CurrencyRepository.build_from(kassa_currency: income_wallet.currency).fiat_currency_id,
+        currencyID: invoice_fiat_currency_id,
         redirect: {
           successURL: order.success_redirect,
           failURL: order.failed_redirect
@@ -58,13 +58,17 @@ class PaymentServices::Paylama
       }
     end
 
-    def invoice_p2p_params(po)
+    def invoice_p2p_params(preliminary_order)
       {
         bankName: P2P_BANK_NAME,
-        amount: po.income_money.to_i,
-        comment: po.id_in_unixtime.to_s,
-        currencyID: CurrencyRepository.build_from(kassa_currency: po.income_payment_system.currency).fiat_currency_id
+        amount: preliminary_order.income_money.to_i,
+        comment: preliminary_order.public_id.to_s,
+        currencyID: invoice_fiat_currency_id
       }
+    end
+
+    def invoice_fiat_currency_id
+      @invoice_fiat_currency_id ||= CurrencyRepository.build_from(kassa_currency: po.income_payment_system.currency).fiat_currency_id
     end
 
     def income_wallet
