@@ -4,8 +4,8 @@
 
 require_relative 'client'
 
-class PaymentServices::RBK
-  class InvoiceClient < PaymentServices::RBK::Client
+class PaymentServices::Rbk
+  class InvoiceClient < PaymentServices::Rbk::Client
     URL = "#{API_V2}/processing/invoices"
 
     def create_invoice(order_id:, amount:)

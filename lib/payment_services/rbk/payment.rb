@@ -4,7 +4,7 @@
 
 require_relative 'payment_client'
 
-class PaymentServices::RBK
+class PaymentServices::Rbk
   class Payment < ApplicationRecord
     include Workflow
     self.table_name = 'rbk_money_payments'
@@ -16,7 +16,7 @@ class PaymentServices::RBK
     validates :amount_in_cents, :rbk_id, :state, presence: true
 
     belongs_to :invoice,
-               class_name: 'PaymentServices::RBK::Invoice',
+               class_name: 'PaymentServices::Rbk::Invoice',
                foreign_key: :rbk_money_invoice_id
     delegate :access_token, to: :invoice
 

@@ -4,8 +4,8 @@
 
 require_relative 'client'
 
-class PaymentServices::RBK
-  class WalletClient < PaymentServices::RBK::Client
+class PaymentServices::Rbk
+  class WalletClient < PaymentServices::Rbk::Client
     URL = 'https://api.rbk.money/wallet/v0/wallets'
 
     def create_wallet(identity:)

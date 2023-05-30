@@ -6,13 +6,13 @@ require_relative 'customer_client'
 require_relative 'payment_card'
 require 'jwt'
 
-class PaymentServices::RBK
+class PaymentServices::Rbk
   class Customer < ApplicationRecord
     self.table_name = 'rbk_money_customers'
 
     belongs_to :user
     has_many :payment_cards,
-             class_name: 'PaymentServices::RBK::PaymentCard',
+             class_name: 'PaymentServices::Rbk::PaymentCard',
              foreign_key: :rbk_customer_id,
              dependent: :destroy
 
@@ -41,7 +41,7 @@ class PaymentServices::RBK
     def bind_payment_card_url
       refresh_token! unless access_token_valid?
 
-      uri = URI.parse(PaymentServices::RBK::CHECKOUT_URL)
+      uri = URI.parse(PaymentServices::Rbk::CHECKOUT_URL)
       query_hash = {
         customerID: rbk_id,
         customerAccessToken: access_token,

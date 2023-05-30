@@ -4,8 +4,8 @@
 
 require_relative 'client'
 
-class PaymentServices::RBK
-  class IdentityClient < PaymentServices::RBK::Client
+class PaymentServices::Rbk
+  class IdentityClient < PaymentServices::Rbk::Client
     URL = 'https://api.rbk.money/wallet/v0/identities'
 
     def create_sample_identity

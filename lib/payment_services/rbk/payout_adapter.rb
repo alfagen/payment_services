@@ -5,7 +5,7 @@
 require_relative 'client'
 # Сервис выплаты на карты с помощью РБК
 #
-class PaymentServices::RBK
+class PaymentServices::Rbk
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     # TODO: возможность передавть ID кошелька для списания
     # rubocop:disable Lint/UnusedMethodArgument

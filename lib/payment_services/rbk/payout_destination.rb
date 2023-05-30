@@ -4,12 +4,12 @@
 
 require_relative 'payout_destination_client'
 
-class PaymentServices::RBK
+class PaymentServices::Rbk
   class PayoutDestination < ApplicationRecord
     self.table_name = 'rbk_payout_destinations'
     Error = Class.new StandardError
 
-    belongs_to :rbk_identity, class_name: 'PaymentServices::RBK::Identity', foreign_key: :rbk_identity_id
+    belongs_to :rbk_identity, class_name: 'PaymentServices::Rbk::Identity', foreign_key: :rbk_identity_id
 
     def self.find_or_create_from_card_details(number:, name:, exp_date:, identity:)
       tokenized_card = tokenize_card!(number: number, name: name, exp_date: exp_date)
@@ -29,7 +29,7 @@ class PaymentServices::RBK
         payment_token: tokenized_card['token'],
         destination_public_id: public_id
       )
-      raise Error, "RBK failed to create destinaion: #{response}" unless response['id']
+      raise Error, "Rbk failed to create destinaion: #{response}" unless response['id']
 
       create!(
         rbk_identity: identity,
@@ -46,7 +46,7 @@ class PaymentServices::RBK
 
     def self.tokenize_card!(number:, name:, exp_date:)
       response = PayoutDestinationClient.new.tokenize_card(number: number, name: name, exp_date: exp_date)
-      raise Error, "RBK tokenization error: #{response}" unless response && response['token'].present?
+      raise Error, "Rbk tokenization error: #{response}" unless response && response['token'].present?
 
       response
     end

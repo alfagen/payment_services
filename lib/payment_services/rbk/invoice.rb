@@ -5,7 +5,7 @@
 require_relative 'payment'
 require_relative 'invoice_client'
 
-class PaymentServices::RBK
+class PaymentServices::Rbk
   class Invoice < ApplicationRecord
     include Workflow
     self.table_name = 'rbk_money_invoices'
@@ -13,7 +13,7 @@ class PaymentServices::RBK
     scope :ordered, -> { order(id: :desc) }
 
     has_many :payments,
-             class_name: 'PaymentServices::RBK::Payment',
+             class_name: 'PaymentServices::Rbk::Payment',
              foreign_key: :rbk_money_invoice_id,
              dependent: :destroy
 

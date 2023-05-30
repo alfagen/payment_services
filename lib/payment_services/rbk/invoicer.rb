@@ -6,7 +6,7 @@ require_relative 'invoice'
 require_relative 'invoice_client'
 require_relative 'customer'
 
-class PaymentServices::RBK
+class PaymentServices::Rbk
   class Invoicer < ::PaymentServices::Base::Invoicer
     def create_invoice(money)
       response = InvoiceClient.new.create_invoice(order_id: order.public_id, amount: money.cents)
@@ -20,7 +20,7 @@ class PaymentServices::RBK
     end
 
     def pay_invoice_url
-      uri = URI.parse(PaymentServices::RBK::CHECKOUT_URL)
+      uri = URI.parse(PaymentServices::Rbk::CHECKOUT_URL)
       query_hash = {
         invoiceID: invoice.rbk_invoice_id,
         invoiceAccessToken: invoice.access_token,
@@ -43,16 +43,16 @@ class PaymentServices::RBK
     end
 
     def make_refund!
-      invoice = PaymentServices::RBK::Invoice.find_by!(order_public_id: order.public_id)
+      invoice = PaymentServices::Rbk::Invoice.find_by!(order_public_id: order.public_id)
       invoice.make_refund!
     end
 
     def payments
-      PaymentServices::RBK::Payment.where(order_public_id: order.public_id)
+      PaymentServices::Rbk::Payment.where(order_public_id: order.public_id)
     end
 
     def invoice
-      @invoice ||= PaymentServices::RBK::Invoice.find_by!(order_public_id: order.public_id)
+      @invoice ||= PaymentServices::Rbk::Invoice.find_by!(order_public_id: order.public_id)
     end
 
     def able_to_refund?

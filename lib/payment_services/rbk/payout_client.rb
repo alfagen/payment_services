@@ -4,8 +4,8 @@
 
 require_relative 'client'
 
-class PaymentServices::RBK
-  class PayoutClient < PaymentServices::RBK::Client
+class PaymentServices::Rbk
+  class PayoutClient < PaymentServices::Rbk::Client
     URL = 'https://api.rbk.money/wallet/v0/withdrawals'
 
     def make_payout(payout_destination:, wallet:, amount_cents:)
@@ -17,7 +17,7 @@ class PaymentServices::RBK
           destination: payout_destination.rbk_id,
           body: {
             amount: amount_cents,
-            currency: 'RUB' # RBK выводит только рубли
+            currency: 'RUB' # Rbk выводит только рубли
           }
         }
       )

@@ -3,7 +3,7 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 module PaymentServices
-  class RBK < Base
+  class Rbk < Base
     CHECKOUT_URL = 'https://checkout.rbk.money/v1/checkout.html'
     autoload :PayoutAdapter, 'payment_services/rbk/payout_adapter'
     autoload :Invoicer, 'payment_services/rbk/invoicer'

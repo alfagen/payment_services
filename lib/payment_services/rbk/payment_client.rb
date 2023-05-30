@@ -4,8 +4,8 @@
 
 require_relative 'client'
 
-class PaymentServices::RBK
-  class PaymentClient < PaymentServices::RBK::Client
+class PaymentServices::Rbk
+  class PaymentClient < PaymentServices::Rbk::Client
     STATES = %w[pending processed captured cancelled refunded failed].freeze
     SUCCESS_STATES = %w[processed captured].freeze
     FAIL_STATES = %w[cancelled failed].freeze

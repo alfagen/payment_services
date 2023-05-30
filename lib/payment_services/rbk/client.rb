@@ -2,7 +2,7 @@
 
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
-class PaymentServices::RBK
+class PaymentServices::Rbk
   class Client
     include AutoLogger
     TIMEOUT = 10

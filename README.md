@@ -9,7 +9,7 @@ Status](https://travis-ci.org/finfex/payment_services.svg?branch=master)](https:
 * Payeer
 * PerfectMoney
 * QIWI
-* RBK
+* Rbk
 * AliKassa
 * YandexMoney
 * AnyMoney

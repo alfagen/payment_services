@@ -4,8 +4,8 @@
 
 require_relative 'client'
 
-class PaymentServices::RBK
-  class PayoutDestinationClient < PaymentServices::RBK::Client
+class PaymentServices::Rbk
+  class PayoutDestinationClient < PaymentServices::Rbk::Client
     TOKENIZE_URL = 'https://api.rbk.money/payres/v0/bank-cards'
     URL = 'https://api.rbk.money/wallet/v0/destinations'
 

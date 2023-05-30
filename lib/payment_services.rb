@@ -22,7 +22,7 @@ module PaymentServices
   autoload :AdvCash, 'payment_services/adv_cash'
   autoload :Payeer, 'payment_services/payeer'
   autoload :PerfectMoney, 'payment_services/perfect_money'
-  autoload :RBK, 'payment_services/rbk'
+  autoload :Rbk, 'payment_services/rbk'
   autoload :YandexMoney, 'payment_services/yandex_money'
   autoload :BlockIo, 'payment_services/block_io'
   autoload :CryptoApis, 'payment_services/crypto_apis'

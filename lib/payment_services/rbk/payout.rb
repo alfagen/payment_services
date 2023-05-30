@@ -4,17 +4,17 @@
 
 require_relative 'payout_client'
 
-class PaymentServices::RBK
+class PaymentServices::Rbk
   class Payout < ApplicationRecord
     self.table_name = 'rbk_payouts'
     Error = Class.new StandardError
 
     belongs_to :rbk_payout_destination,
-               class_name: 'PaymentServices::RBK::PayoutDestination',
+               class_name: 'PaymentServices::Rbk::PayoutDestination',
                foreign_key: :rbk_payout_destination_id
 
     belongs_to :rbk_wallet,
-               class_name: 'PaymentServices::RBK::Wallet',
+               class_name: 'PaymentServices::Rbk::Wallet',
                foreign_key: :rbk_wallet_id
 
     def self.create_from!(destinaion:, wallet:, amount_cents:)
@@ -23,7 +23,7 @@ class PaymentServices::RBK
         wallet: wallet,
         amount_cents: amount_cents
       )
-      raise Error, "RBK payout error: #{response}" unless response['status']
+      raise Error, "Rbk payout error: #{response}" unless response['status']
 
       create!(
         rbk_id: response['id'],
