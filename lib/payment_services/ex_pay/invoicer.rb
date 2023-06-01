@@ -8,7 +8,8 @@ class PaymentServices::ExPay
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
 
     def income_wallet(preliminary_order:)
-      client.create_invoice(params: invoice_p2p_params(preliminary_order))
+      response = client.create_invoice(params: invoice_p2p_params(preliminary_order))
+      PaymentServices::Base::Wallet.build_from(address: response['refer'], name: response.dig('extra_info', 'recipient_name'))
     end
 
     def create_invoice(money)

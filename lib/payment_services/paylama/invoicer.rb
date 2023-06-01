@@ -9,7 +9,8 @@ class PaymentServices::Paylama
     P2P_BANK_NAME = 'any_bank'
 
     def income_wallet(preliminary_order:)
-      client.generate_p2p_invoice(params: invoice_p2p_params(preliminary_order))
+      response = client.generate_p2p_invoice(params: invoice_p2p_params(preliminary_order))
+      PaymentServices::Base::Wallet.build_from(address: response['cardNumber'], name: response['cardHolderName'])
     end
 
     def create_invoice(money)
