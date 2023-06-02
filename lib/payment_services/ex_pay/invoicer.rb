@@ -7,9 +7,9 @@ class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
 
-    def income_wallet(preliminary_order:)
-      response = client.create_invoice(params: invoice_p2p_params(preliminary_order))
-      PaymentServices::Base::Wallet.build_from(address: response['refer'], name: response.dig('extra_info', 'recipient_name'))
+    def income_wallet(currency: nil, token_network: nil)
+      response = client.create_invoice(params: invoice_p2p_params)
+      PaymentServices::Base::Wallet.new(address: response['refer'], name: response.dig('extra_info', 'recipient_name'))
     end
 
     def create_invoice(money)
@@ -45,15 +45,15 @@ class PaymentServices::ExPay
     delegate :income_payment_system, to: :order
     delegate :callback_url, to: :income_payment_system
 
-    def invoice_p2p_params(preliminary_order)
+    def invoice_p2p_params
       {
-        amount: preliminary_order.income_money.to_i,
-        call_back_url: preliminary_order.income_payment_system.callback_url,
-        card_number: preliminary_order.income_account,
-        client_transaction_id: preliminary_order.public_id,
-        email: po.user_email,
+        amount: order.income_money.to_i,
+        call_back_url: order.income_payment_system.callback_url,
+        card_number: order.income_account,
+        client_transaction_id: order.public_id,
+        email: order.user_email,
         token: INVOICE_PROVIDER_TOKEN,
-        transaction_description: preliminary_order.public_id,
+        transaction_description: order.public_id,
         p2p_uniform: true
       }
     end
@@ -64,7 +64,7 @@ class PaymentServices::ExPay
         call_back_url: callback_url,
         card_number: order.income_account,
         client_transaction_id: order.public_id.to_s,
-        email: order.user.email,
+        email: order.user_email,
         token: INVOICE_PROVIDER_TOKEN,
         transaction_description: order.public_id.to_s,
         p2p_uniform: true

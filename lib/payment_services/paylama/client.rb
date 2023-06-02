@@ -10,7 +10,7 @@ class PaymentServices::Paylama
       @secret_key = secret_key
     end
 
-    def generate_fiat_invoice(params:)
+    def create_fiat_invoice(params:)
       safely_parse http_request(
         url: "#{FIAT_API_URL}/generate_invoice_h2h",
         method: :POST,
@@ -28,7 +28,7 @@ class PaymentServices::Paylama
       )
     end
 
-    def generate_p2p_invoice(params:)
+    def create_p2p_invoice(params:)
       safely_parse http_request(
         url: "#{FIAT_API_URL}/generate_invoice_card_transfer",
         method: :POST,

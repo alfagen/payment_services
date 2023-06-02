@@ -7,11 +7,9 @@ class PaymentServices::Base
     attribute :address, String
     attribute :name, String
 
-    def self.build_from(address:, name:)
-      new(
-        address: address,
-        name: name
-      )
+    def initialize(address:, name:)
+      @address = address
+      @name = name
     end
   end
 end

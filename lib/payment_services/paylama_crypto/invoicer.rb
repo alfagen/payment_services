@@ -14,7 +14,7 @@ class PaymentServices::PaylamaCrypto
       response = client.create_crypto_address(currency: provider_crypto_currency)
       raise "Can't create crypto address: #{response['cause']}" unless response['id']
 
-      PaymentServices::Base::Wallet.build_from(address: response['address'], name: response['id'])
+      PaymentServices::Base::Wallet.new(address: response['address'], name: response['id'])
     end
 
     def async_invoice_state_updater?

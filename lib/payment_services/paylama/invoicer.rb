@@ -8,14 +8,14 @@ class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
     P2P_BANK_NAME = 'any_bank'
 
-    def income_wallet(preliminary_order:)
-      response = client.generate_p2p_invoice(params: invoice_p2p_params(preliminary_order))
-      PaymentServices::Base::Wallet.build_from(address: response['cardNumber'], name: response['cardHolderName'])
+    def income_wallet(currency: nil, token_network: nil)
+      response = client.create_p2p_invoice(params: invoice_p2p_params)
+      PaymentServices::Base::Wallet.new(address: response['cardNumber'], name: response['cardHolderName'])
     end
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
-      response = client.generate_fiat_invoice(params: invoice_h2h_params)
+      response = client.create_fiat_invoice(params: invoice_h2h_params)
       raise "Can't create invoice: #{response['cause']}" unless response['success']
 
       invoice.update!(
@@ -59,11 +59,11 @@ class PaymentServices::Paylama
       }
     end
 
-    def invoice_p2p_params(preliminary_order)
+    def invoice_p2p_params
       {
         bankName: P2P_BANK_NAME,
-        amount: preliminary_order.income_money.to_i,
-        comment: preliminary_order.public_id.to_s,
+        amount: order.income_money.to_i,
+        comment: order.public_id.to_s,
         currencyID: invoice_fiat_currency_id
       }
     end
