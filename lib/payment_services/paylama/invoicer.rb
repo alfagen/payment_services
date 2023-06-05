@@ -72,10 +72,6 @@ class PaymentServices::Paylama
       @invoice_fiat_currency_id ||= CurrencyRepository.build_from(kassa_currency: order.income_payment_system.currency).fiat_currency_id
     end
 
-    def income_wallet
-      @income_wallet ||= order.income_wallet
-    end
-
     def client
       @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
