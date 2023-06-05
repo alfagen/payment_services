@@ -69,7 +69,7 @@ class PaymentServices::Paylama
     end
 
     def invoice_fiat_currency_id
-      @invoice_fiat_currency_id ||= CurrencyRepository.build_from(kassa_currency: po.income_payment_system.currency).fiat_currency_id
+      @invoice_fiat_currency_id ||= CurrencyRepository.build_from(kassa_currency: order.income_payment_system.currency).fiat_currency_id
     end
 
     def income_wallet
