@@ -15,7 +15,7 @@ class PaymentServices::Paylama
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
-      response = client.create_fiat_invoice(params: invoice_h2h_params)
+      response = client.create_fiat_invoice(params: invoice_params)
       raise "Can't create invoice: #{response['cause']}" unless response['success']
 
       invoice.update!(
@@ -45,7 +45,7 @@ class PaymentServices::Paylama
 
     private
 
-    def invoice_h2h_params
+    def invoice_params
       {
         amount: invoice.amount.to_i,
         expireAt: order.income_payment_timeout,
