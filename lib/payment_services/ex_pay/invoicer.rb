@@ -7,10 +7,14 @@ class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
 
+    def income_wallet(currency:, token_network:)
+      response = client.create_invoice(params: invoice_p2p_params)
+      PaymentServices::Base::Wallet.new(address: response['refer'], name: response.dig('extra_info', 'recipient_name'))
+    end
+
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
       response = client.create_invoice(params: invoice_params)
-
       raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
 
       invoice.update!(
@@ -41,13 +45,26 @@ class PaymentServices::ExPay
     delegate :income_payment_system, to: :order
     delegate :callback_url, to: :income_payment_system
 
+    def invoice_p2p_params
+      {
+        amount: order.income_money.to_i,
+        call_back_url: order.income_payment_system.callback_url,
+        card_number: order.income_account,
+        client_transaction_id: order.public_id,
+        email: order.user_email,
+        token: INVOICE_PROVIDER_TOKEN,
+        transaction_description: order.public_id,
+        p2p_uniform: true
+      }
+    end
+
     def invoice_params
       {
         amount: invoice.amount.to_i,
         call_back_url: callback_url,
         card_number: order.income_account,
         client_transaction_id: order.public_id.to_s,
-        email: order.user.email,
+        email: order.user_email,
         token: INVOICE_PROVIDER_TOKEN,
         transaction_description: order.public_id.to_s,
         p2p_uniform: true
