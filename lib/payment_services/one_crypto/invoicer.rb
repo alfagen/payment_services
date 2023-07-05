@@ -9,7 +9,7 @@ class PaymentServices::OneCrypto
     def income_wallet(currency:, token_network:)
       invoice_params = {
         token: PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: currency, token_network: token_network).provider_crypto_currency,
-        client_transaction_id: order.public_id.to_s
+        client_transaction_id: (Time.zone.now.to_f * 1000).ceil.to_s
       }
 
       response = client.create_invoice(params: invoice_params)
