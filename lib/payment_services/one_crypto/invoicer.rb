@@ -4,7 +4,7 @@ require_relative 'invoice'
 require_relative 'client'
 require_relative 'transaction'
 
-class PaymentServices::ExPay
+class PaymentServices::OneCrypto
   class Invoicer < ::PaymentServices::Base::Invoicer
     def income_wallet(currency:, token_network:)
       response = client.create_invoice(params: invoice_params)
