@@ -28,7 +28,7 @@ class PaymentServices::OneCrypto
     end
 
     def valid_amount?(payout_amount, payout_currency)
-      (amount == 0 || amount == payout_amount) && currency == payout_currency
+      (amount.nil? || amount == payout_amount) && currency == payout_currency
     end
 
     def succeed?
