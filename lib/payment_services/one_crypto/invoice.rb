@@ -20,14 +20,14 @@ class PaymentServices::OneCrypto
       cancel! if transaction.failed?
     end
 
-    def amount_provider_currency
-      @amount_provider_currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: amount_currency, token_network: token_network).provider_crypto_currency
-    end
-
     private
 
     delegate :income_payment_system, to: :order
     delegate :token_network, to: :income_payment_system
+
+    def amount_provider_currency
+      @amount_provider_currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: amount_currency, token_network: token_network).provider_crypto_currency
+    end
 
     def validate_transaction_amount(transaction:)
       raise "#{amount.to_f} #{amount_provider_currency} is needed. But #{transaction.amount} #{transaction.currency} has come." unless transaction.valid_amount?(amount.to_f, amount_provider_currency)

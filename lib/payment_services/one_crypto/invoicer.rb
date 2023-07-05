@@ -7,15 +7,19 @@ require_relative 'transaction'
 class PaymentServices::OneCrypto
   class Invoicer < ::PaymentServices::Base::Invoicer
     def income_wallet(currency:, token_network:)
+      invoice_params = {
+        token: PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: currency, token_network: token_network).provider_crypto_currency,
+        client_transaction_id: order.public_id.to_s
+      }
+
       response = client.create_invoice(params: invoice_params)
+      raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
+
       PaymentServices::Base::Wallet.new(address: response['refer'], name: response['tracker_id'])
     end
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
-      response = client.create_invoice(params: invoice_params)
-      raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
-
       invoice.update!(deposit_id: order.income_wallet.name)
     end
 
@@ -34,13 +38,6 @@ class PaymentServices::OneCrypto
     end
 
     private
-
-    def invoice_params
-      {
-        token: invoice.amount_provider_currency,
-        client_transaction_id: order.public_id.to_s
-      }
-    end
 
     def client
       @client ||= Client.new(api_key: api_key, secret_key: api_secret)
