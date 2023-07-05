@@ -9,7 +9,7 @@ class PaymentServices::OneCrypto
     def income_wallet(currency:, token_network:)
       invoice_params = {
         token: PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: currency, token_network: token_network).provider_crypto_currency,
-        client_transaction_id: order.public_id.to_s,
+        client_transaction_id: order.id_in_unixtime.to_s,
         call_back_url: order.income_payment_system.callback_url
       }
 
