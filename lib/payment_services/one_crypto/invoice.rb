@@ -20,6 +20,10 @@ class PaymentServices::OneCrypto
       cancel! if transaction.failed?
     end
 
+    def transaction_created_at
+      nil
+    end
+
     private
 
     delegate :income_payment_system, to: :order
