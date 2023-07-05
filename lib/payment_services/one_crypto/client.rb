@@ -20,12 +20,12 @@ class PaymentServices::OneCrypto
 
     def transaction(tracker_id:)
       params = { tracker_id: tracker_id }
-      safely_parse http_request(
+      safely_parse(http_request(
         url: "#{API_URL}/get",
         method: :POST,
         body: params.to_json,
         headers: build_headers(signature: build_signature(params))
-      )
+      ))['transaction']
     end
 
     private
