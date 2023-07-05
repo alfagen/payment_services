@@ -8,7 +8,7 @@ class PaymentServices::PaylamaCrypto
 
     def update_state_by_transaction(transaction)
       validate_transaction_amount(transaction: transaction)
-      has_transaction! if pending?
+      bind_transaction! if pending?
       update!(
         provider_state: transaction.status, 
         transaction_created_at: transaction.created_at,

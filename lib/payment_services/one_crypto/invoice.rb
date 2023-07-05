@@ -11,7 +11,7 @@ class PaymentServices::OneCrypto
     def update_state_by_transaction!(transaction)
       validate_transaction_amount(transaction: transaction)
 
-      has_transaction! if pending?
+      bind_transaction! if pending?
       update!(
         provider_state: transaction.status,
         transaction_id: transaction.transaction_id
