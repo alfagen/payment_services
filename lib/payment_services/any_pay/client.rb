@@ -32,6 +32,16 @@ class PaymentServices::AnyPay
       )).dig('result', 'payments', deposit_id)
     end
 
+    def balance(sign)
+      params = { sign: sign }
+      safely_parse http_request(
+        url: "#{API_URL}/payments/#{secret_key}",
+        method: :POST,
+        body: params,
+        headers: build_headers
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key
