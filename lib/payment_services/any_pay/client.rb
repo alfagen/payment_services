@@ -32,16 +32,6 @@ class PaymentServices::AnyPay
       )).dig('result', 'payments', deposit_id)
     end
 
-    def balance(sign)
-      params = { 'sign' => sign }
-      safely_parse http_request(
-        url: "#{API_URL}/payments/#{secret_key}",
-        method: :POST,
-        body: params,
-        headers: build_headers
-      )
-    end
-
     private
 
     attr_reader :api_key, :secret_key
@@ -54,9 +44,20 @@ class PaymentServices::AnyPay
     end
 
     def build_signature(api_method_name, params)
-      str = api_method_name + secret_key + [params[:project_id], params[:pay_id], params[:amount], params[:currency], params[:desc], params[:method]].join + api_key 
-      # Digest::SHA256.hexdigest(api_method_name + secret_key + params.values.join + api_key)
-      Digest::SHA256.hexdigest(str)
+      sign_string = api_method_name + secret_key + [params[:project_id], params[:pay_id], params[:amount], params[:currency], params[:desc], params[:method]].join + api_key 
+      Digest::SHA256.hexdigest(sign_string)
+    end
+
+    def build_request(uri:, method:, body: nil, headers: nil)
+      request = if method == :POST
+                  Net::HTTP::Post.new(uri.request_uri, headers)
+                elsif method == :GET
+                  Net::HTTP::Get.new(uri.request_uri, headers)
+                else
+                  raise "Запрос #{method} не поддерживается!"
+                end
+      request.set_form_data(body)
+      request
     end
   end
 end
