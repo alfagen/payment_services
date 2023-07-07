@@ -16,7 +16,7 @@ class PaymentServices::AnyPay
       safely_parse(http_request(
         url: "#{API_URL}/create-payment/#{secret_key}",
         method: :POST,
-        body: request_body.to_json,
+        body: request_body,
         headers: build_headers
       )).dig('result')
     end
@@ -27,13 +27,13 @@ class PaymentServices::AnyPay
       safely_parse(http_request(
         url: "#{API_URL}/payments/#{secret_key}",
         method: :POST,
-        body: request_body.to_json,
+        body: request_body,
         headers: build_headers
       )).dig('result', 'payments', deposit_id)
     end
 
     def balance(sign)
-      params = { 'project_id' => PROJECT_ID, 'sign' => sign }
+      params = { 'sign' => sign }
       safely_parse http_request(
         url: "#{API_URL}/payments/#{secret_key}",
         method: :POST,
