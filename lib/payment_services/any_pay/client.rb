@@ -54,7 +54,7 @@ class PaymentServices::AnyPay
     end
 
     def build_signature(api_method_name, params)
-      sign_string = api_method_name + secret_key + api_key
+      sign_string = [api_method_name, secret_key, api_key].join(':')
       Digest::SHA256.hexdigest(sign_string)
     end
   end
