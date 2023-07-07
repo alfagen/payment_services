@@ -54,7 +54,9 @@ class PaymentServices::AnyPay
     end
 
     def build_signature(api_method_name, params)
-      Digest::SHA256.hexdigest(api_method_name + secret_key + params.values.join + api_key)
+      str = api_method_name + secret_key + [params[:project_id], params[:pay_id], params[:amount], params[:currency], params[:desc], params[:method]].join + api_key 
+      # Digest::SHA256.hexdigest(api_method_name + secret_key + params.values.join + api_key)
+      Digest::SHA256.hexdigest(str)
     end
   end
 end

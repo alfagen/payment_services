@@ -46,9 +46,9 @@ class PaymentServices::AnyPay
         currency: currency.to_s,
         desc: order.public_id.to_s,
         method: PAYMENT_METHOD,
-        email: order.user_email,
-        success_url: order.success_redirect,
-        fail_url: order.failed_redirect
+        email: order.user_email
+        # success_url: order.success_redirect,
+        # fail_url: order.failed_redirect
       }
     end
 
