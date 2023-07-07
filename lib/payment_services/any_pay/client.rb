@@ -37,7 +37,7 @@ class PaymentServices::AnyPay
       safely_parse(http_request(
         url: "#{API_URL}/balance/#{secret_key}",
         method: :POST,
-        body: request_body.to_json,
+        body: URI.encode_www_form(request_body),
         headers: build_headers
       ))
     end
