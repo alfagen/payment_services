@@ -21,7 +21,8 @@ class PaymentServices::Base
                 else
                   raise "Запрос #{method} не поддерживается!"
                 end
-      request.body = body
+      request.set_form_data(body)
+      # request.body = body
       request
     end
 
