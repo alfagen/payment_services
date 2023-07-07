@@ -33,7 +33,7 @@ class PaymentServices::AnyPay
     end
 
     def balance(sign)
-      params = { sign: sign }
+      params = { 'sign' => sign }
       safely_parse http_request(
         url: "#{API_URL}/payments/#{secret_key}",
         method: :POST,
