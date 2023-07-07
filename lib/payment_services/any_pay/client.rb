@@ -37,7 +37,7 @@ class PaymentServices::AnyPay
       safely_parse(http_request(
         url: "#{API_URL}/balance/#{secret_key}",
         method: :POST,
-        body: request_body.to_json,
+        body: URI.encode_www_form(request_body),
         headers: build_headers
       ))
     end
@@ -54,7 +54,7 @@ class PaymentServices::AnyPay
     end
 
     def build_signature(api_method_name, params)
-      sign_string = [api_method_name, secret_key, api_key].join(':')
+      sign_string = api_method_name + secret_key + api_key
       Digest::SHA256.hexdigest(sign_string)
     end
   end
