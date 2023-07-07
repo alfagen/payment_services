@@ -32,12 +32,12 @@ class PaymentServices::AnyPay
       )).dig('result', 'payments', deposit_id)
     end
 
-    def balance
-      request_body = { sign: build_signature('balance', {}) }
+    def balance(sign)
+      request_body = { sign: sign }
       safely_parse(http_request(
         url: "#{API_URL}/balance/#{secret_key}",
         method: :POST,
-        body: URI.encode_www_form(request_body),
+        body: request_body.to_json,
         headers: build_headers
       ))
     end
@@ -54,7 +54,7 @@ class PaymentServices::AnyPay
     end
 
     def build_signature(api_method_name, params)
-      sign_string = [api_method_name, secret_key, api_key].join(':')
+      sign_string = api_method_name + secret_key + api_key
       Digest::SHA256.hexdigest(sign_string)
     end
   end
