@@ -3,7 +3,7 @@
 class PaymentServices::AnyPay
   class Invoice < ::PaymentServices::Base::FiatInvoice
     SUCCESS_PROVIDER_STATE  = 'paid'
-    FAILED_PROVIDER_STATE   = %w(canceled expired error)
+    FAILED_PROVIDER_STATES   = %w(canceled expired error)
 
     self.table_name = 'any_pay_invoices'
 
