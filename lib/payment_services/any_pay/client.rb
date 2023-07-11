@@ -75,7 +75,7 @@ class PaymentServices::AnyPay
     def build_payout_signature(method_name:, params:)
       sign_string = [
         method_name, secret_key, params[:payout_id], params[:payout_type],
-        params[:amount], params[:wallet], api_key 
+        params[:amount], params[:wallet], params[:commission_type], api_key 
       ].join
       sha256_hex(sign_string)
     end
