@@ -33,7 +33,6 @@ class PaymentServices::AnyPay
     end
 
     def create_payout(params:)
-      params = { project_id: PROJECT_ID }.merge(params)
       request_body = params.merge(sign: build_payout_signature(method_name: 'create-payout', params: params))
       safely_parse(http_request(
         url: "#{API_URL}/create-payout/#{secret_key}",
@@ -44,7 +43,7 @@ class PaymentServices::AnyPay
     end
 
     def payout(withdrawal_id:)
-      params = { project_id: PROJECT_ID, trans_id: withdrawal_id }
+      params = { trans_id: withdrawal_id }
       request_body = params.merge(sign: build_payout_signature(method_name: 'payouts', params: params))
       safely_parse(http_request(
         url: "#{API_URL}/payouts/#{secret_key}",
@@ -75,8 +74,8 @@ class PaymentServices::AnyPay
 
     def build_payout_signature(method_name:, params:)
       sign_string = [
-        method_name, secret_key, params[:project_id], params[:payout_id],
-        params[:payout_type], params[:amount], params[:wallet], api_key 
+        method_name, secret_key, params[:payout_id], params[:payout_type],
+        params[:amount], params[:wallet], api_key 
       ].join
       sha256_hex(sign_string)
     end

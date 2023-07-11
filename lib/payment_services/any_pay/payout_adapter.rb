@@ -38,7 +38,7 @@ class PaymentServices::AnyPay
 
     def payout_params
       {
-        payout_id: payout.id,
+        payout_id: payout.order_payout_id,
         payout_type: PAYOUT_TYPE,
         amount: payout.amount.to_f,
         wallet: payout.destination_account,
