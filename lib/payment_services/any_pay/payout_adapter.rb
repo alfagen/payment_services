@@ -41,7 +41,7 @@ class PaymentServices::AnyPay
         payout_id: payout.order_payout_id,
         payout_type: PAYOUT_TYPE,
         amount: payout.amount.to_f,
-        wallet: payout.destination_account,
+        wallet: payout.destination_account[1..-1],
         commission_type: COMMISSION_PAYEER
       }
     end
