@@ -20,7 +20,7 @@ class PaymentServices::AnyPay
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      provider_payout = client.transaction(withdrawal_id: payout.withdrawal_id)
+      provider_payout = client.payout(withdrawal_id: payout.withdrawal_id)
       payout.update_state_by_provider(transaction['status']) if provider_payout
       provider_payout
     end
