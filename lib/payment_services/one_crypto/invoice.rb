@@ -9,7 +9,7 @@ class PaymentServices::OneCrypto
     monetize :amount_cents, as: :amount
 
     def update_state_by_transaction!(transaction)
-      validate_transaction_amount(transaction: transaction)
+      validate_transaction_amount!(transaction: transaction)
 
       bind_transaction! if pending?
       update!(
@@ -33,7 +33,7 @@ class PaymentServices::OneCrypto
       @amount_provider_currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: amount_currency, token_network: token_network).provider_crypto_currency
     end
 
-    def validate_transaction_amount(transaction:)
+    def validate_transaction_amount!(transaction:)
       raise "#{amount.to_f} #{amount_provider_currency} is needed. But #{transaction.amount} #{transaction.currency} has come." unless transaction.valid_amount?(amount.to_f, amount_provider_currency)
     end
   end
