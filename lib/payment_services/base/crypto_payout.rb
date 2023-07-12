@@ -27,7 +27,10 @@ class PaymentServices::Base
     end
 
     def update_state_by_provider!(transaction)
-      update!(provider_state: transaction.status)
+      update!(
+        provider_state: transaction.status,
+        fee: transaction.fee
+      )
 
       confirm! if transaction.succeed?
       fail! if transaction.failed?
