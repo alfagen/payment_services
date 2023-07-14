@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 class PaymentServices::Base
-  class CryptoPayout < ApplicationRecord
+  class CryptoPayout < ActiveRecord::Base
     include Workflow
 
     scope :ordered, -> { order(id: :desc) }
 
-    monetize :amount_cents, as: :amount
     validates :amount_cents, :destination_account, :state, :order_payout_id, presence: true
 
     workflow_column :state
