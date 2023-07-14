@@ -52,7 +52,7 @@ class PaymentServices::OneCrypto
     end
 
     def client
-      @client ||= PaymentServices::Paylama::Client.new(api_key: api_key, secret_key: api_secret)
+      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
   end
 end
