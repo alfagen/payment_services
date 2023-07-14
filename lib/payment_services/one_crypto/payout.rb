@@ -5,5 +5,9 @@ class PaymentServices::OneCrypto
     self.table_name = 'one_crypto_payouts'
 
     monetize :amount_cents, as: :amount
+
+    def txid
+      nil
+    end
   end
 end
