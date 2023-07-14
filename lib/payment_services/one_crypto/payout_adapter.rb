@@ -41,7 +41,7 @@ class PaymentServices::OneCrypto
       {
         token: currency,
         amount: payout.amount.to_f,
-        client_transaction_id: "#{payout.order_payout_id}-#{payout.id}"
+        client_transaction_id: "#{payout.order_payout_id}-#{payout.id}",
         receiver: payout.destination_account
       }
     end
