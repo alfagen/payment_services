@@ -7,7 +7,7 @@ class PaymentServices::OneCrypto
     monetize :amount_cents, as: :amount
 
     def txid
-      nil
+      ''
     end
   end
 end
