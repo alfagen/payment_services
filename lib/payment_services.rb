@@ -15,6 +15,7 @@ module PaymentServices
   require 'payment_services/base/payout_adapter'
   require 'payment_services/base/client'
   require 'payment_services/base/crypto_invoice'
+  require 'payment_services/base/crypto_payout'
   require 'payment_services/base/fiat_invoice'
   require 'payment_services/base/fiat_payout'
   require 'payment_services/base/wallet'
