@@ -22,7 +22,7 @@ class PaymentServices::OneCrypto
 
       raw_transaction = client.transaction(tracker_id: payout.withdrawal_id)
       transaction = Transaction.build_from(raw_transaction)
-      payout.update_state_by_transaction(transaction)
+      payout.update_state_by_provider!(transaction)
       raw_transaction
     end
 
