@@ -50,6 +50,7 @@ class PaymentServices::CoinPaymentsHub
       tag = ''
 
       json_string = { iv: iv, value: value, mac: mac, tag: tag }.to_json
+      json_string = json_string.force_encoding("UTF-8").encode("ISO-8859-1")
       Base64.encode64(json_string)
     end
   end
