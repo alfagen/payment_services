@@ -43,7 +43,8 @@ class PaymentServices::CoinPaymentsHub
       key = OpenSSL::PKCS5.pbkdf2_hmac(md5_api_key, salt, iter, key_len, digest)
       cipher.key = key
 
-      iv = Base64.encode64(iv)
+      iv = Base64.urlsafe_encode64(iv)
+      # iv = Base64.encode64(iv)
       value = cipher.update(params.to_json) + cipher.final
       value = value.force_encoding("ISO-8859-1").encode("UTF-8")
       mac = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), iv, md5_api_key)
@@ -51,7 +52,8 @@ class PaymentServices::CoinPaymentsHub
 
       json_string = { iv: iv, value: value, mac: mac, tag: tag }.to_json
       json_string = json_string.force_encoding("UTF-8").encode("ISO-8859-1")
-      Base64.encode64(json_string)
+      # Base64.encode64(json_string)
+      Base64.urlsafe_encode64(json_string)
     end
   end
 end
