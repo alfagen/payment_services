@@ -45,6 +45,7 @@ class PaymentServices::CoinPaymentsHub
 
       iv = Base64.encode64(iv)
       value = cipher.update(params.to_json) + cipher.final
+      value = value.force_encoding("ISO-8859-1").encode("UTF-8")
       mac = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), iv, md5_api_key)
       tag = ''
 
