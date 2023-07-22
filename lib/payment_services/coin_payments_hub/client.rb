@@ -47,7 +47,5 @@ class PaymentServices::CoinPaymentsHub
       json_string = { iv: iv, value: value, mac: mac, tag: tag }.to_json
       Base64.encode64(json_string).gsub(/\n/, '')
     end
-
-    sign_params
   end
 end
