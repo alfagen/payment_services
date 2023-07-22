@@ -13,6 +13,7 @@ class PaymentServices::CoinPaymentsHub
     end
 
     def create_invoice(params:)
+      logger.info "params: #{params}"
       safely_parse http_request(
         url: "#{API_URL}/invoice/create",
         method: :POST,
@@ -32,7 +33,7 @@ class PaymentServices::CoinPaymentsHub
     end
 
     def sign_params(params)
-      md5_api_key = Digest::MD5.hexdigest('1qaz2wsx')
+      md5_api_key = Digest::MD5.hexdigest(api_key)
       cipher = OpenSSL::Cipher.new("aes-256-cbc")
       cipher.encrypt
       iv = cipher.iv = cipher.random_iv
