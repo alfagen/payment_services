@@ -13,7 +13,7 @@ class PaymentServices::CoinPaymentsHub
     end
 
     def create_invoice(params:)
-      logger.info "params: #{params}"
+      logger.info "params: #{params.to_json}"
       safely_parse http_request(
         url: "#{API_URL}/invoice/create",
         method: :POST,
