@@ -19,10 +19,6 @@ class PaymentServices::CoinPaymentsHub
       invoice.update!(deposit_id: response.dig('result', 'uuid'))
     end
 
-    def async_invoice_state_updater?
-      false
-    end
-
     def invoice
       @invoice ||= Invoice.find_by(order_public_id: order.public_id)
     end
