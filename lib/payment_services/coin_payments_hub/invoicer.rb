@@ -8,12 +8,12 @@ require_relative 'currency_repository'
 class PaymentServices::CoinPaymentsHub
   class Invoicer < ::PaymentServices::Base::Invoicer
     PROVIDER_SUCCESS_STATE = 'ok'
-    CreateInvoiceRequestError = Class.new StandardError
+    Error = Class.new StandardError
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
       response = client.create_invoice(params: invoice_params)
-      raise CreateInvoiceRequestError, "Can't create invoice: #{response.dig('result', 'error')}" unless response['state'] == PROVIDER_SUCCESS_STATE
+      validate_response!(response)
 
       create_temp_kassa_wallet(address: response.dig('result', 'address'))
       invoice.update!(deposit_id: response.dig('result', 'uuid'))
@@ -46,6 +46,12 @@ class PaymentServices::CoinPaymentsHub
     def create_temp_kassa_wallet(address:)
       wallet = wallets.find_or_create_by(account: address)
       order.update(income_wallet_id: wallet.id)
+    end
+
+    def validate_response!(response)
+      return if response['state'] == PROVIDER_SUCCESS_STATE
+    
+      raise Error, "Can't create invoice: #{response.dig('result', 'error')}" 
     end
 
     def client

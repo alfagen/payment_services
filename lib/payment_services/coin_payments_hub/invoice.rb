@@ -3,7 +3,7 @@
 class PaymentServices::CoinPaymentsHub
   class Invoice < ::PaymentServices::Base::CryptoInvoice
     INITIAL_PROVIDER_STATE  = 'wait'
-    TransactionAmountValidationError = Class.new StandardError
+    Error = Class.new StandardError
 
     self.table_name = 'coin_payments_hub_invoices'
 
@@ -31,7 +31,7 @@ class PaymentServices::CoinPaymentsHub
     delegate :token_network, to: :income_payment_system
 
     def validate_transaction_amount!(transaction:)
-      raise TransactionAmountValidationError, "#{amount.to_f} #{amount_currency} is needed. But #{transaction.amount} #{transaction.currency} has come." unless transaction.valid_amount?(amount.to_f, amount_currency)
+      raise Error, "#{amount.to_f} #{amount_currency} is needed. But #{transaction.amount} #{transaction.currency} has come." unless transaction.valid_amount?(amount.to_f, amount_currency)
     end
   end
 end
