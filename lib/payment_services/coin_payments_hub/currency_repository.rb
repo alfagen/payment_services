@@ -10,6 +10,7 @@ class PaymentServices::CoinPaymentsHub
       erc20: '808977fc-9a72-4725-b723-bde4c995dba4',
       trc20: '51d1d35b-8d73-4384-aa7d-fad09de2c1dc'
     }.stringify_keys.freeze
+    TokenNetworkInvalidError = Class.new StandardError
 
     include Virtus.model
 
@@ -30,7 +31,7 @@ class PaymentServices::CoinPaymentsHub
     private
 
     def raise_token_network_invalid!
-      raise 'Token network invalid'
+      raise TokenNetworkInvalidError, 'Token network invalid'
     end
   end
 end
