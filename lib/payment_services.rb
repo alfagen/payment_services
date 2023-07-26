@@ -44,6 +44,7 @@ module PaymentServices
   autoload :ExPay, 'payment_services/ex_pay'
   autoload :OneCrypto, 'payment_services/one_crypto'
   autoload :AnyPay, 'payment_services/any_pay'
+  autoload :MoneyGate, 'payment_services/money_gate'
 
   UnauthorizedPayout = Class.new StandardError
 
