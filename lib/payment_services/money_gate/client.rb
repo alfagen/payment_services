@@ -10,7 +10,7 @@ class PaymentServices::MoneyGate
     end
 
     def create_invoice(params:)
-      request_body = URI.encode_www_form(params.merge(sign: build_signature(params)))
+      request_body = params.merge(sign: build_signature(params))
       safely_parse http_request(
         url: "#{API_URL}/create_deal/#{api_key}",
         method: :POST,
