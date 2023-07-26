@@ -61,5 +61,17 @@ class PaymentServices::MoneyGate
         'Content-Type' => 'application/x-www-form-urlencoded'
       }
     end
+
+    def build_request(uri:, method:, body: nil, headers: nil)
+      request = if method == :POST
+                  Net::HTTP::Post.new(uri.request_uri, headers)
+                elsif method == :GET
+                  Net::HTTP::Get.new(uri.request_uri, headers)
+                else
+                  raise "Запрос #{method} не поддерживается!"
+                end
+      request.set_form_data(body)
+      request
+    end
   end
 end
