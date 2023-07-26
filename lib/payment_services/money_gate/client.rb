@@ -50,6 +50,8 @@ class PaymentServices::MoneyGate
     attr_reader :api_key, :secret_key
 
     def build_signature(params)
+      sign_str = params.values.join('+') + "+ #{secret_key}"
+      logger.info sign_str
       Digest::SHA1.hexdigest(params.values.join('+') + "+ #{secret_key}")
     end
 
