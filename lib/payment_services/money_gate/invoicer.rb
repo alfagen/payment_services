@@ -38,18 +38,18 @@ class PaymentServices::MoneyGate
 
     def invoice_params
       {
-        client: order.user_email,
-        product: "Order #{order.public_id}",
+        payment_method_id: PAYMENT_METHOD_ID.to_s,
+        message: '',
         price: (invoice.amount.to_f * 100).to_i,
         quantity: 1,
+        client: order.user_email,
+        product: order.public_id.to_s,
         currency: '',
+        language: 'ru',
+        card_number: '',
         fiat_currency: 'uah',
         uuid: order.public_id.to_s,
-        language: 'ru',
-        message: '',
-        description: "Order #{order.public_id}",
-        card_number: '',
-        payment_method_id: PAYMENT_METHOD_ID.to_s
+        description: order.public_id.to_s,
       }
     end
 

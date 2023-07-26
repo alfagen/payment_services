@@ -52,7 +52,7 @@ class PaymentServices::MoneyGate
     def build_signature(params)
       sign_str = params.values.join('+') + "+ #{secret_key}"
       logger.info sign_str
-      Digest::SHA1.hexdigest(params.values.join('+') + "+ #{secret_key}")
+      Digest::SHA1.hexdigest(params.values.join('+') + "+#{secret_key}")
     end
 
     def build_headers
