@@ -40,7 +40,7 @@ class PaymentServices::MoneyGate
       {
         client: order.user_email,
         product: "Order #{order.public_id}",
-        price: invoice.amount.to_f * 100,
+        price: (invoice.amount.to_f * 100).to_i,
         quantity: 1,
         currency: '',
         fiat_currency: 'uah',
