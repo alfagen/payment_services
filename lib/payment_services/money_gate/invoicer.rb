@@ -43,9 +43,9 @@ class PaymentServices::MoneyGate
         price: invoice.amount.to_f * 100,
         quantity: 1,
         fiat_currency: 'uah',
-        uuid: order.public_id,
+        uuid: order.public_id.to_s,
         description: "Order #{order.public_id}",
-        payment_method_id: PAYMENT_METHOD_ID
+        payment_method_id: PAYMENT_METHOD_ID.to_s
       }
     end
 

@@ -50,7 +50,7 @@ class PaymentServices::MoneyGate
     attr_reader :api_key, :secret_key
 
     def build_signature(params)
-      Digest::SHA1.hexdigest(params.values.join + secret_key)
+      Digest::SHA1.hexdigest(params.values.join('+') + "+ #{secret_key}")
     end
 
     def build_headers
