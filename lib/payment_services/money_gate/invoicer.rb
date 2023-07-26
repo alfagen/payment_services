@@ -46,7 +46,7 @@ class PaymentServices::MoneyGate
         fiat_currency: 'uah',
         uuid: order.public_id.to_s,
         language: 'ru',
-        message: ''
+        message: '',
         description: "Order #{order.public_id}",
         card_number: '',
         payment_method_id: PAYMENT_METHOD_ID.to_s
