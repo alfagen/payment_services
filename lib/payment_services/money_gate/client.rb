@@ -9,9 +9,8 @@ class PaymentServices::MoneyGate
       @secret_key = secret_key
     end
 
-    def create_invoice(params:, signature:)
-      logger.info params
-      request_body = URI.encode_www_form(params.merge(sign: signature))
+    def create_invoice(params:)
+      request_body = URI.encode_www_form(params.merge(sign: build_signature(params)))
       safely_parse http_request(
         url: "#{API_URL}/create_deal/#{api_key}",
         method: :POST,
@@ -51,9 +50,9 @@ class PaymentServices::MoneyGate
     attr_reader :api_key, :secret_key
 
     def build_signature(params)
-      sign_str = params.values.join('+') + "+#{secret_key}"
+      sign_str = params.keys.join('+') + "+#{secret_key}"
       logger.info sign_str
-      Digest::SHA1.hexdigest(params.values.join('+') + "+#{secret_key}")
+      Digest::SHA1.hexdigest(sign_str)
     end
 
     def build_headers
