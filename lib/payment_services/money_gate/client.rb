@@ -14,7 +14,7 @@ class PaymentServices::MoneyGate
       safely_parse http_request(
         url: "#{API_URL}/create_deal/#{api_key}",
         method: :POST,
-        body: request_body,
+        body: request_body.to_json,
         headers: build_headers
       )
     end
@@ -58,20 +58,8 @@ class PaymentServices::MoneyGate
     def build_headers
       {
         'Accept' => 'application/json',
-        'Content-Type' => 'application/x-www-form-urlencoded'
+        'Content-Type' => 'application/json'
       }
-    end
-
-    def build_request(uri:, method:, body: nil, headers: nil)
-      request = if method == :POST
-                  Net::HTTP::Post.new(uri.request_uri, headers)
-                elsif method == :GET
-                  Net::HTTP::Get.new(uri.request_uri, headers)
-                else
-                  raise "Запрос #{method} не поддерживается!"
-                end
-      request.set_form_data(body)
-      request
     end
   end
 end
