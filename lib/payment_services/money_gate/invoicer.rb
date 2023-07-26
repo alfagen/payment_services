@@ -11,7 +11,7 @@ class PaymentServices::MoneyGate
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
-      response = client.create_invoice(params: invoice_params)
+      response = client.create_invoice(params: invoice_params, signature: '')
       validate_response!(response)
 
       create_temp_kassa_wallet(address: response.dig('paymentCredentials'))
