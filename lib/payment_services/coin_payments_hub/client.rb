@@ -22,10 +22,11 @@ class PaymentServices::CoinPaymentsHub
       )
     end
 
-    def transaction(params:, url:, method:)
+    def transaction(deposit_id:)
+      params = { order_id: deposit_id }
       safely_parse http_request(
-        url: "#{API_URL}/#{url}",
-        method: method,
+        url: "#{API_URL}/invoice/status",
+        method: :POST,
         body: sign_params(params),
         headers: build_headers
       )

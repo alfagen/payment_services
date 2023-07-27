@@ -13,10 +13,7 @@ class PaymentServices::CoinPaymentsHub
       validate_transaction_amount!(transaction: transaction)
 
       bind_transaction! if pending?
-      update!(
-        provider_state: transaction.status,
-        transaction_id: transaction.transaction_id
-      )
+      update!(provider_state: transaction.status)
       pay!(payload: transaction) if transaction.succeed?
       cancel! if transaction.failed?
     end

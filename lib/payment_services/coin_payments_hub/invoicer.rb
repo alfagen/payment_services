@@ -16,7 +16,20 @@ class PaymentServices::CoinPaymentsHub
       validate_response!(response)
 
       create_temp_kassa_wallet(address: response.dig('result', 'address'))
-      invoice.update!(deposit_id: response.dig('result', 'uuid'))
+      invoice.update!(deposit_id: order.public_id.to_s)
+    end
+
+    def async_invoice_state_updater?
+      true
+    end
+
+    def update_invoice_state!
+      response = client.transaction(deposit_id: invoice.deposit_id)
+      validate_response!(response)
+
+      raw_transaction = response['result']
+      transaction = Transaction.build_from(raw_transaction)
+      invoice.update_state_by_transaction!(transaction)
     end
 
     def invoice
@@ -38,8 +51,7 @@ class PaymentServices::CoinPaymentsHub
         withdrawal_wallet: withdrawal_wallet,
         order_id: order.public_id.to_s,
         ttl: PreliminaryOrder::MAX_LIVE.to_i,
-        is_client_repeat_wallet: false,
-        url_result: order.income_payment_system.callback_url
+        is_client_repeat_wallet: false
       }
     end
 

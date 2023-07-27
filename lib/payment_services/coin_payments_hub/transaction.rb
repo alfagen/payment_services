@@ -10,7 +10,6 @@ class PaymentServices::CoinPaymentsHub
     attribute :amount, Float
     attribute :currency, String
     attribute :status, String
-    attribute :transaction_id, String
     attribute :source, Hash
 
     def self.build_from(raw_transaction)
@@ -18,7 +17,6 @@ class PaymentServices::CoinPaymentsHub
         amount: raw_transaction['paid_amount'].to_f,
         currency: raw_transaction['currency_symbol'],
         status: raw_transaction['status'],
-        transaction_id: raw_transaction['uuid'],
         source: raw_transaction
       )
     end
