@@ -18,7 +18,7 @@ class PaymentServices::CoinPaymentsHub
       safely_parse http_request(
         url: "#{API_URL}/invoice/create",
         method: :POST,
-        body: { payload: sign_params(params) }.to_json,
+        body: sign_params(params),
         headers: build_headers
       )
     end
