@@ -7,6 +7,7 @@ require 'base64'
 class PaymentServices::CoinPaymentsHub
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://api.coinpaymentshub.com/v1'
+    PROJECT_UUID = '039e74d1-ef06-483d-b64d-1fa56334aa65'
 
     def initialize(api_key:)
       @api_key = api_key
@@ -28,7 +29,8 @@ class PaymentServices::CoinPaymentsHub
 
     def build_headers
       {
-        'Content-Type'  => 'application/json'
+        'Content-Type'  => 'application/json',
+        'project' => PROJECT_UUID
       }
     end
 
