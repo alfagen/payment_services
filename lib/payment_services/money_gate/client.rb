@@ -9,7 +9,8 @@ class PaymentServices::MoneyGate
       @secret_key = secret_key
     end
 
-    def create_invoice(params:)
+    def create_invoice(params:, payment_method_id:)
+      params = params.merge(payment_method_id: payment_method_id)
       request_body = params.merge(sign: build_signature(params))
       safely_parse http_request(
         url: "#{API_URL}/create_deal/#{api_key}",
