@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::MoneyGate
   class Invoicer < ::PaymentServices::Base::Invoicer
     PROVIDER_SUCCESS_STATE = 0
-    PAYMENT_METHOD_ID = 394
+    PAYMENT_METHOD_ID = 449
     Error = Class.new StandardError
 
     def create_invoice(money)
