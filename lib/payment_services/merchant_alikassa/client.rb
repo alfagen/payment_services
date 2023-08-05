@@ -44,7 +44,7 @@ class PaymentServices::MerchantAlikassa
     def build_signature(params)
       private_key = OpenSSL::PKey::read(File.read(PRIVATE_KEY_FILE_PATH), secret_key)
       signature = private_key.sign(OpenSSL::Digest::SHA1.new, params.to_json)
-      Base64.encode64(signature)
+      Base64.encode64(signature).gsub(/\n/, '')
     end
   end
 end
