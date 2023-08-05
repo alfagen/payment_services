@@ -43,7 +43,7 @@ class PaymentServices::MerchantAlikassa
       {
         amount: invoice.amount.to_f,
         order_id: order.public_id.to_s,
-        service: "payment_card_#{currency.to_s}_hpp",
+        service: "payment_card_#{currency.to_s.downcase}_hpp",
         customer_ip: order.remote_ip,
         customer_browser_user_agent: DEFAULT_USER_AGENT,
         success_redirect_url: order.success_redirect,
