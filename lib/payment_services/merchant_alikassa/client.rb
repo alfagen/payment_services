@@ -24,12 +24,15 @@ class PaymentServices::MerchantAlikassa
     end
 
     def transaction(deposit_id:)
-      params = { id: deposit_id }
+      params = { id: deposit_id }.to_json
+      headers = build_headers(signature: build_signature(params))
+      logger.info "params as json: #{params}"
+      logger.info "headers: #{headers}"
       safely_parse http_request(
         url: "#{API_URL}/payment/status",
         method: :POST,
-        body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
+        body: params,
+        headers: headers
       )
     end
 
