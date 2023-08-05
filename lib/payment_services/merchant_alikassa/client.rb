@@ -3,7 +3,7 @@
 class PaymentServices::MerchantAlikassa
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://api-merchant.alikassa.com/v1'
-    PRIVATE_KEY_FILE_PATH = 'config/alikassa_privatekey.pem'
+    PRIVATE_KEY_FILE_PATH = 'config/alikassa_payments_privatekey.pem'
 
     def initialize(api_key:, secret_key:)
       @api_key = api_key
