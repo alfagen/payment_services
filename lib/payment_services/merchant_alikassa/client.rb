@@ -11,28 +11,21 @@ class PaymentServices::MerchantAlikassa
     end
 
     def create_invoice(params:)
-      params = params.to_json
-      headers = build_headers(signature: build_signature(params))
-      logger.info "params as json: #{params}"
-      logger.info "headers: #{headers}"
       safely_parse http_request(
         url: "#{API_URL}/payment",
         method: :POST,
-        body: params,
-        headers: headers
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
       )
     end
 
     def transaction(deposit_id:)
-      params = { id: deposit_id }.to_json
-      headers = build_headers(signature: build_signature(params))
-      logger.info "params as json: #{params}"
-      logger.info "headers: #{headers}"
+      params = { id: deposit_id }
       safely_parse http_request(
         url: "#{API_URL}/payment/status",
         method: :POST,
-        body: params,
-        headers: headers
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
       )
     end
 
@@ -50,7 +43,7 @@ class PaymentServices::MerchantAlikassa
 
     def build_signature(params)
       private_key = OpenSSL::PKey::read(File.read(PRIVATE_KEY_FILE_PATH), secret_key)
-      signature = private_key.sign(OpenSSL::Digest::SHA1.new, params)
+      signature = private_key.sign(OpenSSL::Digest::SHA1.new, params.to_json)
       Base64.encode64(signature).gsub(/\n/, '')
     end
   end
