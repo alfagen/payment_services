@@ -14,7 +14,7 @@ class PaymentServices::MerchantAlikassa
       safely_parse http_request(
         url: "#{API_URL}/payment",
         method: :POST,
-        body: params,
+        body: params.to_json,
         headers: build_headers(signature: build_signature(params))
       )
     end
@@ -24,7 +24,7 @@ class PaymentServices::MerchantAlikassa
       safely_parse http_request(
         url: "#{API_URL}/payment/status",
         method: :POST,
-        body: params,
+        body: params.to_json,
         headers: build_headers(signature: build_signature(params))
       )
     end
