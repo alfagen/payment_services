@@ -33,7 +33,7 @@ class PaymentServices::PayForU
     def build_headers
       {
         'Content-Type'  => 'application/json',
-        'Authorization' => api_key
+        'Authorization' => "Bearer #{api_key}"
       }
     end
 
