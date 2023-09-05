@@ -4,16 +4,15 @@ class PaymentServices::PayForU
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://sandbox.payforu.cash/public/api/v1'
 
-    def initialize(api_key:, secret_key:)
-      @api_key    = api_key
-      @secret_key = secret_key
+    def initialize(api_key:)
+      @api_key = api_key
     end
 
     def create_invoice(params:)
       safely_parse http_request(
         url: "#{API_URL}/shop/orders",
         method: :POST,
-        body: params.merge(signature: build_signature(params)).to_json,
+        body: params.to_json,
         headers: build_headers
       )
     end
@@ -28,18 +27,13 @@ class PaymentServices::PayForU
 
     private
 
-    attr_reader :api_key, :secret_key
+    attr_reader :api_key
 
     def build_headers
       {
         'Content-Type'  => 'application/json',
         'Authorization' => "Bearer #{api_key}"
       }
-    end
-
-    def build_signature(params)
-      sign_string = params.merge(signatureKey: secret_key).map { |key, value| "#{key}=#{value}" }.join('|')
-      Digest::SHA1.hexdigest(sign_string)
     end
   end
 end

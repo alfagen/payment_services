@@ -41,15 +41,19 @@ class PaymentServices::PayForU
       {
         amount: invoice.amount.to_i,
         currency: currency.to_s,
-        customerEmail: order.user_email,
-        customerID: order.user_id,
-        externalOrderId: order.public_id.to_s,
-        returnUrl: order.success_redirect
+        customer: {
+          id: order.user_id,
+          email: order.user_email
+        },
+        integration: {
+          externalOrderId: order.public_id.to_s,
+          returnUrl: order.success_redirect
+        }
       }
     end
 
     def client
-      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
+      @client ||= Client.new(api_key: api_key)
     end
   end
 end
