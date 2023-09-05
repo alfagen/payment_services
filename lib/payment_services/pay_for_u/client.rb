@@ -13,7 +13,7 @@ class PaymentServices::PayForU
       safely_parse http_request(
         url: "#{API_URL}/shop/orders",
         method: :POST,
-        body: build_body_signature(params),
+        body: params.merge(signature: build_signature(params)).to_json,
         headers: build_headers
       )
     end
@@ -37,7 +37,7 @@ class PaymentServices::PayForU
       }
     end
 
-    def build_body_signature(params)
+    def build_signature(params)
       sign_string = params.merge(signatureKey: secret_key).map { |key, value| "#{key}=#{value}" }.join('|')
       Digest::SHA1.hexdigest(sign_string)
     end
