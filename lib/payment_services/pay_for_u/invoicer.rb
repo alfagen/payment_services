@@ -42,7 +42,7 @@ class PaymentServices::PayForU
         amount: invoice.amount.to_i,
         currency: currency.to_s,
         customer: {
-          id: order.user_id,
+          id: order.user_id.to_s,
           email: order.user_email
         },
         integration: {
