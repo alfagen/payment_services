@@ -2,7 +2,7 @@
 
 class PaymentServices::BestApi
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'http://bestapi.cc/api'
+    API_URL = 'https://bestapi.cc/api'
 
     def initialize(api_key:)
       @api_key = api_key
