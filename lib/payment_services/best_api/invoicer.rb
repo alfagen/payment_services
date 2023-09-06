@@ -28,13 +28,16 @@ class PaymentServices::BestApi
 
     private
 
+    delegate :income_payment_system, to: :order
+    delegate :wallets, to: :income_payment_system
+
     def create_temp_kassa_wallet(address:)
       wallet = wallets.find_or_create_by(account: address)
       order.update(income_wallet_id: wallet.id)
     end
 
     def client
-      @client ||= Client.new(api_key: api_key)
+      @client ||= Client.new(api_key: api_key, secret_key: secret_key)
     end
   end
 end
