@@ -5,12 +5,16 @@ require_relative 'client'
 
 class PaymentServices::BestApi
   class Invoicer < ::PaymentServices::Base::Invoicer
-    def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
-      response = client.create_invoice(amount: money.to_i, currency: money.currency.to_s)
- 
-      create_temp_kassa_wallet(address: response['card_number'])
+    def income_wallet(currency:, token_network:)
+      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+      response = client.income_wallet(amount: order.calculated_income_money.to_i, currency: currency.to_s)
+
       invoice.update!(deposit_id: response['trade'])
+      PaymentServices::Base::Wallet.new(address: response['card_number'])
+    end
+
+    def create_invoice(money)
+      invoice
     end
 
     def async_invoice_state_updater?
@@ -28,16 +32,8 @@ class PaymentServices::BestApi
 
     private
 
-    delegate :income_payment_system, to: :order
-    delegate :wallets, to: :income_payment_system
-
-    def create_temp_kassa_wallet(address:)
-      wallet = wallets.find_or_create_by(account: address)
-      order.update(income_wallet_id: wallet.id)
-    end
-
     def client
-      @client ||= Client.new(api_key: api_key, api_secret: api_secret)
+      @client ||= Client.new(api_key: api_key)
     end
   end
 end
