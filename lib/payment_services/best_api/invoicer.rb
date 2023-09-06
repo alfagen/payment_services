@@ -10,7 +10,7 @@ class PaymentServices::BestApi
       response = client.income_wallet(amount: order.calculated_income_money.to_i, currency: currency.to_s)
 
       invoice.update!(deposit_id: response['trade'])
-      PaymentServices::Base::Wallet.new(address: response['card_number'], name: nil)
+      PaymentServices::Base::Wallet.new(address: response['card_number'].split('|').first, name: nil)
     end
 
     def create_invoice(money)
