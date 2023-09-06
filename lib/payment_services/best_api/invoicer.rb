@@ -37,7 +37,7 @@ class PaymentServices::BestApi
     end
 
     def client
-      @client ||= Client.new(api_key: api_key, secret_key: secret_key)
+      @client ||= Client.new(api_key: api_key, api_secret: api_secret)
     end
   end
 end

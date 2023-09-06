@@ -2,9 +2,9 @@
 
 class PaymentServices::BestApi
   class Client < ::PaymentServices::Base::Client
-    def initialize(api_key:, secret_key:)
+    def initialize(api_key:, api_secret:)
       @api_key = api_key
-      @secret_key = secret_key
+      @api_secret = api_secret
     end
 
     def create_invoice(amount:, currency:)
@@ -25,10 +25,10 @@ class PaymentServices::BestApi
 
     private
 
-    attr_reader :api_key, :secret_key
+    attr_reader :api_key, :api_secret
 
     def base_api_url
-      "https://#{secret_key}/api"
+      "https://#{api_secret}/api"
     end
   end
 end
