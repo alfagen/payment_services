@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::BestApi
   class Invoicer < ::PaymentServices::Base::Invoicer
     def income_wallet(currency:, token_network:)
-      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+      create_invoice!
       response = client.income_wallet(amount: order.calculated_income_money.to_i, currency: currency.to_s)
 
       invoice.update!(deposit_id: response['trade'])
@@ -31,6 +31,10 @@ class PaymentServices::BestApi
     end
 
     private
+
+    def create_invoice!
+      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+    end
 
     def client
       @client ||= Client.new(api_key: api_key)
