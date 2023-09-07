@@ -6,7 +6,7 @@ require_relative 'transaction'
 
 class PaymentServices::OneCrypto
   class Invoicer < ::PaymentServices::Base::Invoicer
-    def income_wallet(currency:, token_network:)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
       invoice_params = {
         token: PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: currency, token_network: token_network).provider_crypto_currency,
         client_transaction_id: order.id_in_unixtime.to_s,

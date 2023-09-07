@@ -5,7 +5,7 @@ require_relative 'client'
 
 class PaymentServices::BestApi
   class Invoicer < ::PaymentServices::Base::Invoicer
-    def income_wallet(currency:, token_network:)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
       response = client.income_wallet(amount: order.calculated_income_money.to_i, currency: currency.to_s)
 

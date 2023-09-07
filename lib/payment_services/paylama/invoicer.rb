@@ -8,7 +8,7 @@ class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
     P2P_BANK_NAME = 'tinkoff'
 
-    def income_wallet(currency:, token_network:)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
       response = client.create_p2p_invoice(params: invoice_p2p_params)
       PaymentServices::Base::Wallet.new(address: response['cardNumber'], name: response['cardHolderName'])
     end

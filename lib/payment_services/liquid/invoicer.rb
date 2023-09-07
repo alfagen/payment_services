@@ -12,7 +12,7 @@ class PaymentServices::Liquid
       Invoice.create!(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
 
-    def income_wallet(currency:, token_network:)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
       response = Client.new(currency: currency, token_id: api_wallet.merchant_id.to_i, api_key: api_key).wallet
 
       PaymentServices::Base::Wallet.new(address: response['address'].first, name: response['address'].last)
