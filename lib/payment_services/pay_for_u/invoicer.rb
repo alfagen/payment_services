@@ -25,7 +25,7 @@ class PaymentServices::PayForU
 
     def update_invoice_state!
       transaction = client.transaction(deposit_id: invoice.deposit_id)
-      invoice.update_state_by_provider(transaction['status']) if transaction
+      invoice.update_state_by_provider(transaction['status']) if transaction && amount_matched?(transaction)
     end
 
     def invoice
@@ -50,6 +50,10 @@ class PaymentServices::PayForU
           returnUrl: order.success_redirect
         }
       }
+    end
+
+    def amount_matched?(transaction)
+      transaction['amount'].to_i == invoice.amount.to_i
     end
 
     def client

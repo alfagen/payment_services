@@ -3,7 +3,7 @@
 class PaymentServices::PayForU
   class Invoice < ::PaymentServices::Base::FiatInvoice
     SUCCESS_PROVIDER_STATE  = 'completed'
-    FAILED_PROVIDER_STATES  = %w(canceled error)
+    FAILED_PROVIDER_STATE   = 'error'
 
     self.table_name = 'pay_for_u_invoices'
 
@@ -16,7 +16,7 @@ class PaymentServices::PayForU
     end
 
     def provider_failed?
-      provider_state.in? FAILED_PROVIDER_STATES
+      provider_state == FAILED_PROVIDER_STATE
     end
   end
 end
