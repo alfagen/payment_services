@@ -5,7 +5,10 @@ require_relative 'client'
 
 class PaymentServices::PayForUH2h
   class Invoicer < ::PaymentServices::Base::Invoicer
-    PAYMENT_BANK = 'sberbank'
+    CURRENCY_TO_PROVIDER_BANK = {
+      'UAH' => 'anyuabank',
+      'RUB' => 'anyrubank'
+    }
     PAYMENT_TYPE = 'card2card'
     PROVIDER_REQUISITES_FOUND_STATE = 'customer_confirm'
 
@@ -73,7 +76,7 @@ class PaymentServices::PayForUH2h
     def invoice_h2h_params
       {
         payment: {
-          bank: PAYMENT_BANK,
+          bank: CURRENCY_TO_PROVIDER_BANK[currency.to_s],
           type: PAYMENT_TYPE
         }
       }
