@@ -83,7 +83,7 @@ class PaymentServices::PayForUH2h
         attempts ||= 1
         transaction = client.transaction(deposit_id: invoice.deposit_id)
 
-        break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE || (attempts += 1) <= PROVIDER_REQUEST_RETRIES
+        break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE || (attempts += 1) > PROVIDER_REQUEST_RETRIES
         sleep 2
       end
       card_number, card_holder = transaction.dig('requisites', 'cardInfo'), transaction.dig('requisites', 'cardholder')
