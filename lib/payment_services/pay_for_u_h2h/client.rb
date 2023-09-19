@@ -19,14 +19,5 @@ class PaymentServices::PayForUH2h
         headers: build_headers
       )
     end
-
-    def cancel_payment(deposit_id:)
-      safely_parse http_request(
-        url: "#{API_URL}/shop/orders/#{deposit_id}/cancel",
-        method: :POST,
-        body: {}.to_json,
-        headers: build_headers
-      )
-    end
   end
 end
