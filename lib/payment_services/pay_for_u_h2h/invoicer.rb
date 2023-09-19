@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::PayForUH2h
   class Invoicer < ::PaymentServices::Base::Invoicer
     PAYMENT_BANK = 'privatbank'
-    PAYMENT_TYPE = 'host2host'
+    PAYMENT_TYPE = 'card2card'
     PROVIDER_REQUISITES_FOUND_STATE = 'customer_confirm'
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
