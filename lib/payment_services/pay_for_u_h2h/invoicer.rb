@@ -5,7 +5,7 @@ require_relative 'client'
 
 class PaymentServices::PayForUH2h
   class Invoicer < ::PaymentServices::Base::Invoicer
-    PAYMENT_BANK = 'privatbank'
+    PAYMENT_BANK = 'sberbank'
     PAYMENT_TYPE = 'card2card'
     PROVIDER_REQUISITES_FOUND_STATE = 'customer_confirm'
 
