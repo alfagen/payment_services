@@ -17,7 +17,9 @@ class PaymentServices::PayForUH2h
       client.start_payment(deposit_id: deposit_id)
 
       loop do
+        sleep 3
         transaction = client.transaction(deposit_id: deposit_id)
+
         break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE
       end
       card_number, card_holder = transaction.dig('requisites', 'cardInfo'), transaction.dig('requisites', 'cardholder')
