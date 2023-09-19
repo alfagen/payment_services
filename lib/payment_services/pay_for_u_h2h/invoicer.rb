@@ -15,6 +15,7 @@ class PaymentServices::PayForUH2h
       invoice.update!(deposit_id: deposit_id)
       client.update_invoice(deposit_id: deposit_id, params: invoice_h2h_params)
       client.start_payment(deposit_id: deposit_id)
+      transaction = nil
 
       loop do
         sleep 3
