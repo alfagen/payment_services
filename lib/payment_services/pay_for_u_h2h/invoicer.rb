@@ -18,7 +18,7 @@ class PaymentServices::PayForUH2h
       transaction = nil
 
       loop do
-        sleep 3
+        sleep 2
         transaction = client.transaction(deposit_id: deposit_id)
 
         break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE

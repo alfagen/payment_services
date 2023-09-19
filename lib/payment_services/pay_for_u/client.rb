@@ -2,7 +2,7 @@
 
 class PaymentServices::PayForU
   class Client < ::PaymentServices::Base::Client
-    API_URL = Rails.env.production? ? 'https://payforu.cash/public/api/v1' : 'https://sandbox.payforu.cash/public/api/v1'
+    API_URL = 'https://payforu.cash/public/api/v1'
 
     def initialize(api_key:)
       @api_key = api_key
