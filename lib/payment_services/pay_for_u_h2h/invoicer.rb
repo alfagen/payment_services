@@ -12,7 +12,7 @@ class PaymentServices::PayForUH2h
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
       deposit_id = client.create_invoice(params: invoice_params).dig('id')
-      invoice.update!(deposit_id: response['id'])
+      invoice.update!(deposit_id: deposit_id)
       client.update_invoice(deposit_id: deposit_id, params: invoice_h2h_params)
       client.start_payment(deposit_id: deposit_id)
 
