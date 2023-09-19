@@ -19,5 +19,14 @@ class PaymentServices::PayForUH2h
         headers: build_headers
       )
     end
+
+    def confirm_payment(deposit_id:)
+      safely_parse http_request(
+        url: "#{API_URL}/shop/orders/#{deposit_id}/confirm-payment",
+        method: :POST,
+        body: {}.to_json,
+        headers: build_headers
+      )
+    end
   end
 end

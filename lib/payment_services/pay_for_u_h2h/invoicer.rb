@@ -43,6 +43,10 @@ class PaymentServices::PayForUH2h
       @invoice ||= Invoice.find_by(order_public_id: order.public_id)
     end
 
+    def confirm_payment
+      client.confirm_payment(deposit_id: invoice.deposit_id)
+    end
+
     private
 
     delegate :income_payment_system, to: :order
@@ -77,13 +81,13 @@ class PaymentServices::PayForUH2h
 
       loop do
         attempts ||= 1
-        transaction = client.transaction(deposit_id: deposit_id)
+        transaction = client.transaction(deposit_id: invoice.deposit_id)
 
         break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE || (attempts += 1) <= PROVIDER_REQUEST_RETRIES
         sleep 2
       end
       card_number, card_holder = transaction.dig('requisites', 'cardInfo'), transaction.dig('requisites', 'cardholder')
-      client.update_invoice(deposit_id: deposit_id, params: { payment: { customerCardLastDigits: card_number.last(4) } })
+      client.update_invoice(deposit_id: invoice.deposit_id, params: { payment: { customerCardLastDigits: card_number.last(4) } })
       [card_number, card_holder]
     end
 
