@@ -74,7 +74,7 @@ class PaymentServices::PayForUH2h
     end
 
     def create_invoice!
-      invoice = Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
       deposit_id = client.create_invoice(params: invoice_params).dig('id')
       invoice.update!(deposit_id: deposit_id)
     end
@@ -96,12 +96,11 @@ class PaymentServices::PayForUH2h
     end
 
     def fetch_transaction
-      loop do
-        attempts ||= 1
-        transaction = client.transaction(deposit_id: invoice.deposit_id)
-
-        break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE || (attempts += 1) > PROVIDER_REQUEST_RETRIES
+      PROVIDER_REQUEST_RETRIES.times do
         sleep 2
+
+        transaction = client.transaction(deposit_id: invoice.deposit_id)
+        break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE
       end
     end
 
