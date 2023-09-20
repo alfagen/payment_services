@@ -100,7 +100,7 @@ class PaymentServices::PayForUH2h
         sleep 2
 
         transaction = client.transaction(deposit_id: invoice.deposit_id)
-        break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE
+        break transaction if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE
       end
     end
 
