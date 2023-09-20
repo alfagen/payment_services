@@ -15,12 +15,9 @@ class PaymentServices::PayForUH2h
     Error = Class.new StandardError
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
-      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
-      deposit_id = client.create_invoice(params: invoice_params).dig('id')
-      invoice.update!(deposit_id: deposit_id)
-      client.update_invoice(deposit_id: deposit_id, params: invoice_h2h_params)
-      client.start_payment(deposit_id: deposit_id)
-      card_number, card_holder = requisites
+      create_invoice!
+      update_provider_invoice_and_start_payment
+      card_number, card_holder = fetch_card_details
       raise Error, 'Нет доступных реквизитов для оплаты' unless card_number.present?
 
       PaymentServices::Base::Wallet.new(address: card_number, name: card_holder)
@@ -76,9 +73,29 @@ class PaymentServices::PayForUH2h
       }
     end
 
-    def requisites
-      transaction = nil
+    def create_invoice!
+      invoice = Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+      deposit_id = client.create_invoice(params: invoice_params).dig('id')
+      invoice.update!(deposit_id: deposit_id)
+    end
 
+    def update_provider_invoice_and_start_payment
+      update_provider_invoice(params: invoice_h2h_params)
+      client.start_payment(deposit_id: invoice.deposit_id)
+    end
+
+    def update_provider_invoice(params:)
+      client.update_invoice(deposit_id: invoice.deposit_id, params: params)
+    end
+
+    def fetch_card_details
+      transaction = fetch_transaction
+      card_number, card_holder = transaction.dig('requisites', 'cardInfo'), transaction.dig('requisites', 'cardholder')
+      update_provider_invoice(params: { payment: { customerCardLastDigits: card_number.last(4) } })
+      [card_number, card_holder]
+    end
+
+    def fetch_transaction
       loop do
         attempts ||= 1
         transaction = client.transaction(deposit_id: invoice.deposit_id)
@@ -86,9 +103,6 @@ class PaymentServices::PayForUH2h
         break if transaction['status'] == PROVIDER_REQUISITES_FOUND_STATE || (attempts += 1) > PROVIDER_REQUEST_RETRIES
         sleep 2
       end
-      card_number, card_holder = transaction.dig('requisites', 'cardInfo'), transaction.dig('requisites', 'cardholder')
-      client.update_invoice(deposit_id: invoice.deposit_id, params: { payment: { customerCardLastDigits: card_number.last(4) } })
-      [card_number, card_holder]
     end
 
     def valid_transaction?(transaction)
