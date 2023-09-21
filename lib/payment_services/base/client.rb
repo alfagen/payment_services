@@ -18,6 +18,8 @@ class PaymentServices::Base
                   Net::HTTP::Post.new(uri.request_uri, headers)
                 elsif method == :GET
                   Net::HTTP::Get.new(uri.request_uri, headers)
+                elsif method == :PATCH
+                  Net::HTTP::Patch.new(uri.request_uri, headers)
                 else
                   raise "Запрос #{method} не поддерживается!"
                 end
