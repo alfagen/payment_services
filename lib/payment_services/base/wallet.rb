@@ -7,9 +7,10 @@ class PaymentServices::Base
     attribute :address, String
     attribute :name, String
 
-    def initialize(address:, name:)
+    def initialize(address:, name:, memo: nil)
       @address = address
       @name = name
+      @memo = memo
     end
   end
 end

@@ -7,19 +7,17 @@ class PaymentServices::PaylamaFps
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
 
-    def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
+      create_invoice!
       response = client.create_fps_invoice(params: invoice_fps_params)
       raise Error, response['cause'] unless response['success']
 
-      invoice.update!(
-        deposit_id: response['externalID'],
-        pay_url: response['formURL']
-      )
+      invoice.update!(deposit_id: response['externalID'])
+      PaymentServices::Base::Wallet.new(address: prepare_phone_number(response['phoneNumber']), name: response['cardHolderName'], memo: response['bankName'].capitalize)
     end
 
-    def pay_invoice_url
-      invoice.present? ? URI.parse(invoice.reload.pay_url) : ''
+    def create_invoice(money)
+      invoice
     end
 
     def async_invoice_state_updater?
@@ -39,18 +37,22 @@ class PaymentServices::PaylamaFps
 
     delegate :income_payment_system, to: :order
 
+    def create_invoice!
+      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+    end
+
     def invoice_fps_params
       {
         payerID: order.user_id.to_s,
         currencyID: PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: income_payment_system.currency).fiat_currency_id,
         expireAt: order.income_payment_timeout,
         amount: invoice.amount.to_i,
-        clientOrderID: order.public_id.to_s,
-        redirectURLs: {
-          successURL: order.success_redirect,
-          failURL: order.failed_redirect
-        }
+        clientOrderID: order.public_id.to_s
       }
+    end
+
+    def prepare_phone_number(provider_phone_number)
+      "+#{provider_phone_number[0]} (#{provider_phone_number[1..3]}) #{provider_phone_number[4..6]}-#{provider_phone_number[7..8]}-#{provider_phone_number[9..10]}"
     end
 
     def client
