@@ -18,7 +18,7 @@ class PaymentServices::PayForUH2h
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
       update_provider_invoice_and_start_payment
-      card_number, card_holder = fetch_card_details
+      card_number, card_holder = fetch_card_details!
 
       PaymentServices::Base::Wallet.new(address: card_number, name: card_holder)
     end
@@ -88,7 +88,7 @@ class PaymentServices::PayForUH2h
       client.update_invoice(deposit_id: invoice.deposit_id, params: params)
     end
 
-    def fetch_card_details
+    def fetch_card_details!
       transaction = fetch_transaction
       raise Error, 'Нет доступных реквизитов для оплаты' if transaction.is_a? Integer
 
