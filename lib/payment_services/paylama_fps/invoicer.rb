@@ -45,7 +45,11 @@ class PaymentServices::PaylamaFps
         payerID: order.user_id.to_s,
         amount: invoice.amount.to_i,
         currencyID: PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: income_payment_system.currency).fiat_currency_id,
-        expireAt: order.income_payment_timeout
+        expireAt: order.income_payment_timeout,
+        redirect: {
+          successURL: order.success_redirect,
+          failURL: order.failed_redirect
+        }
       }
     end
 
