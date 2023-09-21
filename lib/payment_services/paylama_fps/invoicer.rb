@@ -7,17 +7,19 @@ class PaymentServices::PaylamaFps
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
 
-    def prepare_invoice_and_get_wallet!(currency:, token_network:)
-      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+    def create_invoice(money)
+      Invoice.create!(amount: money, order_public_id: order.public_id)
       response = client.create_fps_invoice(params: invoice_fps_params)
       raise Error, response['cause'] unless response['success']
 
-      invoice.update!(deposit_id: response['externalID'])
-      PaymentServices::Base::Wallet.new(address: response['phoneNumber'], name: nil)
+      invoice.update!(
+        deposit_id: response['externalID'],
+        pay_url: response['formURL']
+      )
     end
 
-    def create_invoice(money)
-      invoice
+    def pay_invoice_url
+      invoice.present? ? URI.parse(invoice.reload.pay_url) : ''
     end
 
     def async_invoice_state_updater?
