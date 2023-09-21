@@ -7,7 +7,8 @@ class PaymentServices::PayForUH2h
   class Invoicer < ::PaymentServices::Base::Invoicer
     CURRENCY_TO_PROVIDER_BANK = {
       'UAH' => 'anyuabank',
-      'RUB' => 'anyrubank'
+      'RUB' => 'sberbank',
+      'UZS' => 'uzcard'
     }
     PAYMENT_TYPE = 'card2card'
     PROVIDER_REQUISITES_FOUND_STATE = 'customer_confirm'
@@ -18,7 +19,6 @@ class PaymentServices::PayForUH2h
       create_invoice!
       update_provider_invoice_and_start_payment
       card_number, card_holder = fetch_card_details
-      raise Error, 'Нет доступных реквизитов для оплаты' unless card_number.present?
 
       PaymentServices::Base::Wallet.new(address: card_number, name: card_holder)
     end
@@ -90,6 +90,8 @@ class PaymentServices::PayForUH2h
 
     def fetch_card_details
       transaction = fetch_transaction
+      raise Error, 'Нет доступных реквизитов для оплаты' if transaction.is_a? Integer
+
       card_number, card_holder = transaction.dig('requisites', 'cardInfo'), transaction.dig('requisites', 'cardholder')
       update_provider_invoice(params: { payment: { customerCardLastDigits: card_number.last(4) } })
       [card_number, card_holder]
