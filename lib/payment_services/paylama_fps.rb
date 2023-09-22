@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module PaymentServices
-  class PaylamaFps < Base
-    autoload :Invoicer, 'payment_services/paylama_fps/invoicer'
+  class PaylamaSbp < Base
+    autoload :Invoicer, 'payment_services/paylama_sbp/invoicer'
     register :invoicer, Invoicer
   end
 end

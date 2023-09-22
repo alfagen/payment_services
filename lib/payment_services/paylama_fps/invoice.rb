@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-class PaymentServices::PaylamaFps
+class PaymentServices::PaylamaSbp
   class Invoice < ::PaymentServices::Base::FiatInvoice
     SUCCESS_PROVIDER_STATE  = 'Succeed'
     FAILED_PROVIDER_STATE   = 'Failed'
 
-    self.table_name = 'paylama_fps_invoices'
+    self.table_name = 'paylama_sbp_invoices'
 
     monetize :amount_cents, as: :amount
 

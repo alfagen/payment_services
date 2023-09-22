@@ -3,7 +3,7 @@
 require_relative 'invoice'
 require_relative 'client'
 
-class PaymentServices::PaylamaFps
+class PaymentServices::PaylamaSbp
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
 
@@ -13,7 +13,11 @@ class PaymentServices::PaylamaFps
       raise Error, response['cause'] unless response['success']
 
       invoice.update!(deposit_id: response['externalID'])
-      PaymentServices::Base::Wallet.new(address: prepare_phone_number(response['phoneNumber']), name: response['cardHolderName'], memo: response['bankName'].capitalize)
+      PaymentServices::Base::Wallet.new(
+        address: prepare_phone_number(response['phoneNumber']),
+        name: response['cardHolderName'],
+        memo: response['bankName'].capitalize
+      )
     end
 
     def create_invoice(money)
@@ -43,12 +47,16 @@ class PaymentServices::PaylamaFps
 
     def invoice_fps_params
       {
-        payerID: order.user_id.to_s,
-        currencyID: PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: income_payment_system.currency).fiat_currency_id,
+        payerID: "user_#{order.user_id.to_s}",
+        currencyID: currency_id,
         expireAt: order.income_payment_timeout,
         amount: invoice.amount.to_i,
         clientOrderID: order.public_id.to_s
       }
+    end
+
+    def currency_id
+      PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: income_payment_system.currency).fiat_currency_id
     end
 
     def prepare_phone_number(provider_phone_number)

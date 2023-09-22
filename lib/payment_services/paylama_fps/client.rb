@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PaymentServices::PaylamaFps
+class PaymentServices::PaylamaSbp
   class Client < ::PaymentServices::Paylama::Client
     def create_provider_invoice(params:)
       safely_parse http_request(
