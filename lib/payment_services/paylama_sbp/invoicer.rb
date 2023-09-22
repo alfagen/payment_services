@@ -47,7 +47,7 @@ class PaymentServices::PaylamaSbp
 
     def invoice_fps_params
       {
-        payerID: "user_#{order.user_id.to_s}",
+        payerID: "#{Rails.env}_user_id_#{order.user_id}",
         currencyID: currency_id,
         expireAt: order.income_payment_timeout,
         amount: invoice.amount.to_f,
