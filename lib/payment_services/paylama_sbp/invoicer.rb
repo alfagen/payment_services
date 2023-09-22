@@ -30,7 +30,7 @@ class PaymentServices::PaylamaSbp
 
     def update_invoice_state!
       transaction = client.payment_status(payment_id: invoice.deposit_id, type: 'invoice')
-      invoice.update_state_by_provider(transaction['status']) if transaction
+      invoice.update_state_by_provider(transaction['status']) if valid_transaction?(transaction)
     end
 
     def invoice
@@ -50,7 +50,7 @@ class PaymentServices::PaylamaSbp
         payerID: "#{Rails.env}_user_id_#{order.user_id}",
         currencyID: currency_id,
         expireAt: order.income_payment_timeout,
-        amount: invoice.amount.to_f,
+        amount: invoice.amount.to_i,
         clientOrderID: order.public_id.to_s
       }
     end
@@ -61,6 +61,10 @@ class PaymentServices::PaylamaSbp
 
     def prepare_phone_number(provider_phone_number)
       "+#{provider_phone_number[0]} (#{provider_phone_number[1..3]}) #{provider_phone_number[4..6]}-#{provider_phone_number[7..8]}-#{provider_phone_number[9..10]}"
+    end
+
+    def valid_transaction?(transaction)
+      transaction && transaction['amount'].to_i == invoice.amount.to_i
     end
 
     def client
