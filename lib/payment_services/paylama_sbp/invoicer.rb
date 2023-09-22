@@ -50,7 +50,7 @@ class PaymentServices::PaylamaSbp
         payerID: "user_#{order.user_id.to_s}",
         currencyID: currency_id,
         expireAt: order.income_payment_timeout,
-        amount: invoice.amount.to_i,
+        amount: invoice.amount.to_f,
         clientOrderID: order.public_id.to_s
       }
     end
