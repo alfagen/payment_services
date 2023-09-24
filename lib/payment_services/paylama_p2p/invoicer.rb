@@ -14,7 +14,7 @@ class PaymentServices::PaylamaP2p
       response = client.create_provider_invoice(params: invoice_p2p_params)
       raise Error, response['cause'] unless response['success']
 
-      invoice.update!(deposit_id: response['externalID'])
+      invoice.update!(deposit_id: response['externalId'])
       PaymentServices::Base::Wallet.new(
         address: response['cardNumber'],
         name: response['cardHolderName'],
