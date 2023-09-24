@@ -54,7 +54,7 @@ class PaymentServices::PaylamaP2p
         amount: invoice.amount.to_i,
         bankName: PROVIDER_BANK_NAME,
         comment: "Order #{order.public_id}",
-        currencyID: currency_id,
+        currencyID: PROVIDER_CURRENCY_ID,
         expireAt: order.income_payment_timeout
       }
     end
