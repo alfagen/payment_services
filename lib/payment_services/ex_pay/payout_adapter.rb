@@ -5,8 +5,7 @@ require_relative 'client'
 
 class PaymentServices::ExPay
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    PROVIDER_TOKEN = 'CARDRUBP2P'
-    PROVIDER_SUBTOKEN = 'CARDRUB'
+    PAYOUT_PROVIDER_TOKEN = 'CARDRUBP2P'
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
@@ -40,11 +39,11 @@ class PaymentServices::ExPay
     def payout_params
       order = OrderPayout.find(payout.order_payout_id).order
       {
-        token: PROVIDER_TOKEN,
-        sub_token: PROVIDER_SUBTOKEN,
-        amount: payout.amount.to_f,
+        amount: payout.amount.to_i,
+        call_back_url: order.outcome_payment_system.callback_url,
+        client_transaction_id: "#{order.public_id}-#{payout.order_payout_id}",
         receiver: payout.destination_account,
-        client_transaction_id: "#{order.public_id}-#{payout.order_payout_id}"
+        token: PAYOUT_PROVIDER_TOKEN
       }
     end
 
