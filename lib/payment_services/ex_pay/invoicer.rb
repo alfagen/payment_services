@@ -40,10 +40,10 @@ class PaymentServices::ExPay
         token: PROVIDER_TOKEN,
         sub_token: PROVIDER_SUBTOKEN,
         amount: order.income_money.to_f,
-        client_transaction_id: order.public_id,
+        client_transaction_id: order.public_id.to_s,
         client_merchant_id: '0',
         fingerprint: "#{Rails.env}_user_id_#{order.user_id}",
-        transaction_description: order.public_id
+        transaction_description: order.public_id.to_s
       }
     end
 
