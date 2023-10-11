@@ -3,8 +3,6 @@
 require_relative 'invoice'
 require_relative 'client'
 
-56973f6f894ded8547d2b9d1ef9991ba3ab4232734e3a584b12168c6295b545f19ae9f7832627c846ecd4dbbaab04653454b750f388c128c8527837702997400
-
 class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     PROVIDER_TOKEN = 'CARDRUBP2P'
