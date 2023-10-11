@@ -7,6 +7,7 @@ class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     PROVIDER_TOKEN = 'CARDRUBP2P'
     PROVIDER_SUBTOKEN = 'CARDRUB'
+    MERCHANT_ID = '1'
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       response = client.create_invoice(params: invoice_p2p_params)
@@ -41,7 +42,7 @@ class PaymentServices::ExPay
         sub_token: PROVIDER_SUBTOKEN,
         amount: order.income_money.to_f,
         client_transaction_id: order.public_id.to_s,
-        client_merchant_id: '0',
+        client_merchant_id: MERCHANT_ID,
         fingerprint: "#{Rails.env}_user_id_#{order.user_id}",
         transaction_description: order.public_id.to_s
       }
