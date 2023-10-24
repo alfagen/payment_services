@@ -21,7 +21,7 @@ class PaymentServices::ExPay
     end
 
     def pay_invoice_url
-      (invoice.present? && invoice.reload.pay_url.present?) ? URI.parse(invoice.pay_url) : ''
+      invoice.reload.pay_url if invoice
     end
 
     def async_invoice_state_updater?

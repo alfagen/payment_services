@@ -2,7 +2,7 @@
 
 class PaymentServices::ExPay
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://testenv2.expay.cash/api/transaction'
+    API_URL = 'https://apiv2.expay.cash/api/transaction'
 
     def initialize(api_key:, secret_key:)
       @api_key    = api_key
