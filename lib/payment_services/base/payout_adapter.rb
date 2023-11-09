@@ -5,7 +5,7 @@
 # Адаптер выполняющий запрос на специфичный API-клиент для непосредственной выплаты
 #
 
-class PaymentServices::Base::PayoutAdapter
+class PaymentServices::Base
   class PayoutAdapter
     include Virtus.model strict: true
 
