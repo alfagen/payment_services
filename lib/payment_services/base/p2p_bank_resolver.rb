@@ -63,8 +63,7 @@ class PaymentServices::Base
     end
 
     def provider_bank
-      PAYWAY_TO_PROVIDER_BANK.dig(invoicer_class_name, currency.to_s.downcase, bank_name.to_s) 
-        || raise "Нету доступного банка для шлюза #{invoicer_class_name}"
+      PAYWAY_TO_PROVIDER_BANK.dig(invoicer_class_name, currency.to_s.downcase, bank_name.to_s) || raise("Нету доступного банка для шлюза #{invoicer_class_name}")
     end
 
     private
