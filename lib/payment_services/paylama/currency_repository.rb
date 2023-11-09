@@ -2,7 +2,7 @@
 
 class PaymentServices::Paylama
   class CurrencyRepository
-    CURRENCY_TO_PROVIDER_CURRENCY = { RUB: 1, USD: 2, KZT: 3, EUR: 4, DSH: 'DASH' }.stringify_keys.freeze
+    CURRENCY_TO_PROVIDER_CURRENCY = { RUB: 1, USD: 2, KZT: 3, EUR: 4, UZS: 36, AZN: 37, DSH: 'DASH' }.stringify_keys.freeze
     TOKEN_NETWORK_TO_PROVIDER_CURRENCY = { erc20: 'USDT', trc20: 'USDTTRC', bep20: 'USDTBEP', bep2: 'BNB' }.stringify_keys.freeze
     TOKEN_NETWORK_TO_GETBLOCK_CURRENCY = { erc20: 'USDTERC20', trc20: 'USDTTRC20' }.stringify_keys.freeze
     BNB_BEP20_PROVIDER_CURRENCY = 'BNB20'

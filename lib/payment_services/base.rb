@@ -6,7 +6,7 @@ module PaymentServices
   # Базовый класс для платежного сервиса. Описывает подсервисы и хранит конфигурацию
   #
   class Base
-    SUBSERVICES = %i[invoicer importer payout_adapter client crypto_invoice crypto_payout fiat_invoice fiat_payout wallet].freeze
+    SUBSERVICES = %i[invoicer importer payout_adapter client crypto_invoice crypto_payout fiat_invoice fiat_payout wallet p2p_bank_resolver].freeze
 
     # Реестр подсервисов
     class Registry

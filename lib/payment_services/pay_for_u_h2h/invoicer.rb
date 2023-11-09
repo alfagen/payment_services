@@ -5,11 +5,6 @@ require_relative 'client'
 
 class PaymentServices::PayForUH2h
   class Invoicer < ::PaymentServices::Base::Invoicer
-    CURRENCY_TO_PROVIDER_BANK = {
-      'UAH' => 'anyuabank',
-      'RUB' => 'sberbank',
-      'UZS' => 'uzcard'
-    }
     PAYMENT_TYPE = 'card2card'
     PROVIDER_REQUISITES_FOUND_STATE = 'customer_confirm'
     PROVIDER_REQUEST_RETRIES = 5
@@ -67,7 +62,7 @@ class PaymentServices::PayForUH2h
     def invoice_h2h_params
       {
         payment: {
-          bank: CURRENCY_TO_PROVIDER_BANK[currency.to_s],
+          bank: provider_bank,
           type: PAYMENT_TYPE
         }
       }
@@ -108,6 +103,10 @@ class PaymentServices::PayForUH2h
 
     def valid_transaction?(transaction)
       transaction && transaction['amount'].to_i == invoice.amount.to_i
+    end
+
+    def provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(invoicer: self).provider_bank
     end
 
     def client

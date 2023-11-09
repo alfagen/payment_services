@@ -6,7 +6,6 @@ require_relative 'client'
 class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
-    PROVIDER_TOKEN = 'CARDRUBP2P'
     MERCHANT_ID = '1'
 
     def create_invoice(money)
@@ -48,13 +47,17 @@ class PaymentServices::ExPay
 
     def invoice_p2p_params
       {
-        token: PROVIDER_TOKEN,
+        token: provider_bank,
         amount: order.income_money.to_f,
         client_transaction_id: order.public_id.to_s,
         client_merchant_id: MERCHANT_ID,
         fingerprint: "#{Rails.env}_user_id_#{order.user_id}",
         transaction_description: order.public_id.to_s
       }
+    end
+
+    def provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(invoicer: self).provider_bank
     end
 
     def client

@@ -19,6 +19,7 @@ module PaymentServices
   require 'payment_services/base/fiat_invoice'
   require 'payment_services/base/fiat_payout'
   require 'payment_services/base/wallet'
+  require 'payment_services/base/p2p_bank_resolver'
 
   autoload :QIWI, 'payment_services/qiwi'
   autoload :AdvCash, 'payment_services/adv_cash'

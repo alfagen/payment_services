@@ -6,8 +6,6 @@ require_relative 'client'
 class PaymentServices::PaylamaP2p
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
-    PROVIDER_BANK_NAME = 'sberbank'
-    PROVIDER_CURRENCY_ID = 1
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
@@ -52,15 +50,23 @@ class PaymentServices::PaylamaP2p
         clientOrderID: order.public_id.to_s,
         payerID: "#{Rails.env}_user_id_#{order.user_id}",
         amount: invoice.amount.to_i,
-        bankName: PROVIDER_BANK_NAME,
+        bankName: provider_bank,
         comment: "Order #{order.public_id}",
-        currencyID: PROVIDER_CURRENCY_ID,
+        currencyID: currency_id,
         expireAt: order.income_payment_timeout
       }
     end
 
     def valid_transaction?(transaction)
       transaction && transaction['amount'].to_i == invoice.amount.to_i
+    end
+
+    def provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(invoicer: self).provider_bank
+    end
+
+    def currency_id
+      @currency_id ||= Paylama::CurrencyRepository.build_from(kassa_currency: order.income_payment_system.currency).fiat_currency_id
     end
 
     def client
