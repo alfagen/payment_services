@@ -7,7 +7,7 @@ class PaymentServices::Base
     attribute :invoicer
 
     PAYWAY_TO_PROVIDER_BANK = {
-      'PaymentServices::PayForUH2h' => {
+      'PaymentServices::PayForUH2h::Invoicer' => {
         'uah' => {
           '' => 'anyuabank'
         },
@@ -26,7 +26,7 @@ class PaymentServices::Base
           ''    => 'yapikredi'
         }
       },
-      'PaymentServices::PaylamaP2p' => {
+      'PaymentServices::PaylamaP2p::Invoicer' => {
         'rub' => {
           'sberbank' => 'sberbank',
           'tinkoff'  => 'tinkoff',
@@ -42,7 +42,7 @@ class PaymentServices::Base
           ''    => 'visa/mc'
         }
       },
-      'PaymentServices::ExPay' => {
+      'PaymentServices::ExPay::Invoicer' => {
         'rub' => {
           'sberbank' => 'SBERRUB',
           'tinkoff'  => 'TCSBRUB',
