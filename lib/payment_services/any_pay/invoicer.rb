@@ -5,7 +5,8 @@ require_relative 'client'
 
 class PaymentServices::AnyPay
   class Invoicer < ::PaymentServices::Base::Invoicer
-    PAYMENT_METHOD = 'qiwi'
+    QIWI_PAYMENT_METHOD = 'qiwi'
+    CARD_PAYMENT_METHOD = 'card'
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -45,11 +46,19 @@ class PaymentServices::AnyPay
         amount: invoice.amount.to_f,
         currency: currency.to_s,
         desc: order.public_id.to_s,
-        method: PAYMENT_METHOD,
+        method: payment_method,
         email: order.user_email,
         success_url: order.success_redirect,
         fail_url: order.failed_redirect
       }
+    end
+
+    def payway
+      @payway ||= order.income_payment_system.payway.inquiry
+    end
+
+    def payment_method
+      payway.qiwi? ? QIWI_PAYMENT_METHOD : CARD_PAYMENT_METHOD
     end
 
     def client
