@@ -7,18 +7,21 @@ class PaymentServices::MerchantAlikassa
   class Invoicer < ::PaymentServices::Base::Invoicer
     DEFAULT_USER_AGENT = 'Chrome/47.0.2526.111'
 
-    def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
+      create_invoice!
       response = client.create_invoice(params: invoice_params)
+      raise response['message'] if response['errors']
 
-      invoice.update!(
-        deposit_id: response['id'],
-        pay_url: response['url']
+      invoice.update!(deposit_id: response['id'])
+      PaymentServices::Base::Wallet.new(
+        address: response['cardNumber'],
+        name: response['cardHolderName'],
+        memo: PROVIDER_BANK_NAME.capitalize
       )
     end
 
-    def pay_invoice_url
-      invoice.present? ? URI.parse(invoice.reload.pay_url) : ''
+    def create_invoice(money)
+      invoice
     end
 
     def async_invoice_state_updater?
@@ -39,11 +42,16 @@ class PaymentServices::MerchantAlikassa
     delegate :income_payment_system, to: :order
     delegate :currency, to: :income_payment_system
 
+    def create_invoice!
+      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+    end
+
     def invoice_params
       {
         amount: invoice.amount.to_f,
         order_id: order.public_id.to_s,
-        service: "payment_card_#{currency.to_s.downcase}_hpp",
+        service: "payment_card_number_#{currency.to_s.downcase}_hpp",
+        customer_user_id: "#{Rails.env}_#{order.user_id}",
         customer_ip: order.remote_ip,
         customer_browser_user_agent: DEFAULT_USER_AGENT,
         success_redirect_url: order.success_redirect,
