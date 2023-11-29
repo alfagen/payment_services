@@ -5,17 +5,17 @@ require_relative 'client'
 
 class PaymentServices::ExPay
   class Invoicer < ::PaymentServices::Base::Invoicer
-    INVOICE_PROVIDER_TOKEN = 'CARDRUBP2P'
-
-    def income_wallet(currency:, token_network:)
-      response = client.create_invoice(params: invoice_p2p_params)
-      PaymentServices::Base::Wallet.new(address: response['refer'], name: response.dig('extra_info', 'recipient_name'))
-    end
+    MERCHANT_ID = '1'
+    CURRENCY_TO_PROVIDER_TOKEN = {
+      'RUB' => 'CARDRUBP2P',
+      'UZS' => 'UZSP2P',
+      'AZN' => 'AZNP2P'
+    }.freeze
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
-      response = client.create_invoice(params: invoice_params)
-      raise "Can't create invoice: #{response['description']}" unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
+      response = client.create_invoice(params: invoice_p2p_params)
+      raise response['description'] unless response['status'] == Invoice::INITIAL_PROVIDER_STATE
 
       invoice.update!(
         deposit_id: response['tracker_id'],
@@ -24,7 +24,7 @@ class PaymentServices::ExPay
     end
 
     def pay_invoice_url
-      invoice.present? ? URI.parse(invoice.reload.pay_url) : ''
+      invoice.reload.pay_url if invoice
     end
 
     def async_invoice_state_updater?
@@ -42,33 +42,27 @@ class PaymentServices::ExPay
 
     private
 
-    delegate :income_payment_system, to: :order
+    delegate :income_payment_system, :income_currency, to: :order
     delegate :callback_url, to: :income_payment_system
+
+    def create_invoice!
+      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+    end
 
     def invoice_p2p_params
       {
-        amount: order.income_money.to_i,
-        call_back_url: order.income_payment_system.callback_url,
-        card_number: order.income_account,
-        client_transaction_id: order.public_id,
-        email: order.user_email,
-        token: INVOICE_PROVIDER_TOKEN,
-        transaction_description: order.public_id,
-        p2p_uniform: true
+        token: CURRENCY_TO_PROVIDER_TOKEN[income_currency.to_s],
+        sub_token: provider_bank,
+        amount: order.income_money.to_f,
+        client_transaction_id: order.public_id.to_s,
+        client_merchant_id: MERCHANT_ID,
+        fingerprint: "#{Rails.env}_user_id_#{order.user_id}",
+        transaction_description: order.public_id.to_s
       }
     end
 
-    def invoice_params
-      {
-        amount: invoice.amount.to_i,
-        call_back_url: callback_url,
-        card_number: order.income_account,
-        client_transaction_id: order.public_id.to_s,
-        email: order.user_email,
-        token: INVOICE_PROVIDER_TOKEN,
-        transaction_description: order.public_id.to_s,
-        p2p_uniform: true
-      }
+    def provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(invoicer: self).provider_bank
     end
 
     def client

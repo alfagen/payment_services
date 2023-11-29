@@ -8,7 +8,7 @@ class PaymentServices::Paylama
   class Invoicer < ::PaymentServices::Base::Invoicer
     P2P_BANK_NAME = 'tinkoff'
 
-    def income_wallet(currency:, token_network:)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
       response = client.create_p2p_invoice(params: invoice_p2p_params)
       PaymentServices::Base::Wallet.new(address: response['cardNumber'], name: response['cardHolderName'])
     end
@@ -25,7 +25,7 @@ class PaymentServices::Paylama
     end
 
     def pay_invoice_url
-      invoice.present? ? URI.parse(invoice.reload.pay_url) : ''
+      (invoice.present? && invoice.reload.pay_url.present?) ? URI.parse(invoice.pay_url) : ''
     end
 
     def async_invoice_state_updater?

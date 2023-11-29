@@ -3,18 +3,15 @@
 require_relative 'invoice'
 require_relative 'client'
 
-class PaymentServices::AnyPay
+class PaymentServices::PayForU
   class Invoicer < ::PaymentServices::Base::Invoicer
-    QIWI_PAYMENT_METHOD = 'qiwi'
-    CARD_PAYMENT_METHOD = 'card'
-
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
       response = client.create_invoice(params: invoice_params)
 
       invoice.update!(
-        deposit_id: response['transaction_id'],
-        pay_url: response['payment_url']
+        deposit_id: response['id'],
+        pay_url: response.dig('integration', 'link')
       )
     end
 
@@ -28,7 +25,7 @@ class PaymentServices::AnyPay
 
     def update_invoice_state!
       transaction = client.transaction(deposit_id: invoice.deposit_id)
-      invoice.update_state_by_provider(transaction['status']) if transaction
+      invoice.update_state_by_provider(transaction['status']) if transaction && amount_matched?(transaction)
     end
 
     def invoice
@@ -42,27 +39,25 @@ class PaymentServices::AnyPay
 
     def invoice_params
       {
-        pay_id: order.public_id.to_s,
-        amount: invoice.amount.to_f,
+        amount: invoice.amount.to_i,
         currency: currency.to_s,
-        desc: order.public_id.to_s,
-        method: payment_method,
-        email: order.user_email,
-        success_url: order.success_redirect,
-        fail_url: order.failed_redirect
+        customer: {
+          id: order.user_id.to_s,
+          email: order.user_email
+        },
+        integration: {
+          externalOrderId: order.public_id.to_s,
+          returnUrl: order.success_redirect
+        }
       }
     end
 
-    def payway
-      @payway ||= order.income_payment_system.payway.inquiry
-    end
-
-    def payment_method
-      payway.qiwi? ? QIWI_PAYMENT_METHOD : CARD_PAYMENT_METHOD
+    def amount_matched?(transaction)
+      transaction['amount'].to_i == invoice.amount.to_i
     end
 
     def client
-      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
+      @client ||= Client.new(api_key: api_key)
     end
   end
 end

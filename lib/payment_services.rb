@@ -19,6 +19,7 @@ module PaymentServices
   require 'payment_services/base/fiat_invoice'
   require 'payment_services/base/fiat_payout'
   require 'payment_services/base/wallet'
+  require 'payment_services/base/p2p_bank_resolver'
 
   autoload :QIWI, 'payment_services/qiwi'
   autoload :AdvCash, 'payment_services/adv_cash'
@@ -45,6 +46,12 @@ module PaymentServices
   autoload :OneCrypto, 'payment_services/one_crypto'
   autoload :AnyPay, 'payment_services/any_pay'
   autoload :MerchantAlikassa, 'payment_services/merchant_alikassa'
+  autoload :CoinPaymentsHub, 'payment_services/coin_payments_hub'
+  autoload :PayForU, 'payment_services/pay_for_u'
+  autoload :BestApi, 'payment_services/best_api'
+  autoload :PayForUH2h, 'payment_services/pay_for_u_h2h'
+  autoload :PaylamaSbp, 'payment_services/paylama_sbp'
+  autoload :PaylamaP2p, 'payment_services/paylama_p2p'
 
   UnauthorizedPayout = Class.new StandardError
 

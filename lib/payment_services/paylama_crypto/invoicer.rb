@@ -9,7 +9,7 @@ class PaymentServices::PaylamaCrypto
       Invoice.create(amount: money, order_public_id: order.public_id, address: order.income_account_emoney)
     end
 
-    def income_wallet(currency:, token_network:)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
       provider_crypto_currency = PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: currency, token_network: token_network).provider_crypto_currency
       response = client.create_crypto_address(currency: provider_crypto_currency)
       raise "Can't create crypto address: #{response['cause']}" unless response['id']
