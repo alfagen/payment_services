@@ -15,8 +15,7 @@ class PaymentServices::MerchantAlikassa
       invoice.update!(deposit_id: response['id'])
       PaymentServices::Base::Wallet.new(
         address: response['cardNumber'],
-        name: response['cardHolderName'],
-        memo: PROVIDER_BANK_NAME.capitalize
+        name: nil
       )
     end
 
