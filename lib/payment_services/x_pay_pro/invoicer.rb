@@ -13,7 +13,7 @@ class PaymentServices::XPayPro
       invoice.update!(deposit_id: response.dig('tx', 'tx_id'))
       PaymentServices::Base::Wallet.new(
         address: response.dig('tx', 'payment_requisite'),
-        name: 'holder',
+        name: nil,
         memo: response.dig('tx', 'payment_system').downcase.capitalize
       )
     end
