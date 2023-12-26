@@ -56,6 +56,13 @@ class PaymentServices::Base
           '' => 'CARDAZN'
         }
       },
+      'PaymentServices::XPayPro::Invoicer' => {
+        'rub' => {
+          'sberbank' => 'SBERBANK',
+          'tinkoff'  => 'TINKOFF',
+          ''         => 'BANK_ANY'
+        }
+      }
     }.freeze
 
     def initialize(invoicer:)

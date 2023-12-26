@@ -52,6 +52,7 @@ module PaymentServices
   autoload :PayForUH2h, 'payment_services/pay_for_u_h2h'
   autoload :PaylamaSbp, 'payment_services/paylama_sbp'
   autoload :PaylamaP2p, 'payment_services/paylama_p2p'
+  autoload :XPayPro, 'payment_services/x_pay_pro'
 
   UnauthorizedPayout = Class.new StandardError
 
