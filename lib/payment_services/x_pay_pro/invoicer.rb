@@ -13,8 +13,8 @@ class PaymentServices::XPayPro
       invoice.update!(deposit_id: response.dig('tx', 'tx_id'))
       PaymentServices::Base::Wallet.new(
         address: response.dig('tx', 'payment_requisite'),
-        name: nil,
-        memo: response.dig('tx', 'payment_system')
+        name: 'holder',
+        memo: response.dig('tx', 'payment_system').downcase.capitalize
       )
     end
 
@@ -54,7 +54,7 @@ class PaymentServices::XPayPro
     end
 
     def transaction_valid?(transaction)
-      amount_confirmed = transaction['in_amount_confirmed']
+      amount_confirmed = transaction.dig('tx', 'in_amount_confirmed')
       amount_confirmed.to_f == invoice.amount.to_f || amount_confirmed == '0'
     end
 
