@@ -35,12 +35,18 @@ class PaymentServices::OkoOtc
         sum: amount.to_i,
         currencyFrom: amount.currency.to_s,
         wallet: destination_account,
-        bank: amount.currency.to_s,
-        cardholder: order.outcome_fio,
+        bank: provider_bank,
         dateOfBirth: order.outcome_operator,
-        cardExpiration: card_expiration(order),
         orderUID: "#{order.public_id}-#{order_payout_id}"
       }
+      curr = amount.currency.to_s.downcase.inquiry
+      params[:cardholder] = order.outcome_fio if curr.eur? || curr.usd?
+      params[:cardExpiration] = card_expiration(order) if curr.eur? || curr.azn?
+      if curr.usdt?
+        params[:sumInRub] = 0
+        params[:sum] = 1
+      end
+
       response = client.process_payout(params: params)
       raise "Can't create payout. Error Code: #{response['errCode']}" unless response['status']
 
@@ -58,6 +64,10 @@ class PaymentServices::OkoOtc
 
     def provider_state(response)
       response['data'].first.dig('orderStats', 'statusName')
+    end
+
+    def provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self, direction: :outcome).provider_bank
     end
   end
 end

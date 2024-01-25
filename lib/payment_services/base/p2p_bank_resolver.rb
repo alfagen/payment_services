@@ -4,10 +4,11 @@ class PaymentServices::Base
   class P2pBankResolver
     include Virtus.model
 
-    attribute :invoicer
+    attribute :adapter
+    attribute :direction
 
     PAYWAY_TO_PROVIDER_BANK = {
-      'PaymentServices::PayForUH2h::Invoicer' => {
+      'PayForUH2h' => {
         'uah' => {
           '' => 'anyuabank'
         },
@@ -26,7 +27,7 @@ class PaymentServices::Base
           ''    => 'yapikredi'
         }
       },
-      'PaymentServices::PaylamaP2p::Invoicer' => {
+      'PaylamaP2p' => {
         'rub' => {
           'sberbank' => 'sberbank',
           'tinkoff'  => 'tinkoff',
@@ -42,7 +43,7 @@ class PaymentServices::Base
           ''    => 'visa/mc'
         }
       },
-      'PaymentServices::ExPay::Invoicer' => {
+      'ExPay' => {
         'rub' => {
           'sberbank' => 'SBERRUB',
           'tinkoff'  => 'TCSBRUB',
@@ -56,39 +57,68 @@ class PaymentServices::Base
           '' => 'CARDAZN'
         }
       },
-      'PaymentServices::XPayPro::Invoicer' => {
+      'XPayPro' => {
         'rub' => {
           'sberbank' => 'SBERBANK',
           'tinkoff'  => 'TINKOFF',
           ''         => 'BANK_ANY'
         }
       },
-      'PaymentServices::AnyMoney::Invoicer' => {
+      'AnyMoney' => {
         'rub' => {
           ''  => 'qiwi'
         },
         'uah' => {
           ''  => 'visamc_p2p'
         }
+      },
+      'OkoOtc' => {
+        'rub' => {
+          'sberbank' => 'Сбер',
+          'tinkoff'  => 'Тинькофф',
+          'qiwi'     => 'Киви',
+          ''         => 'Все банки РФ'
+        },
+        'eur' => {
+          ''  => 'EUR'
+        },
+        'usd' => {
+          ''  => 'USD'
+        },
+        'azn' => {
+          ''  => 'AZN'
+        },
+        'kzt' => {
+          ''  => 'KZT'
+        },
+        'uzs' => {
+          ''  => 'UZS'
+        },
+        'usdt' => {
+          '' => 'USDT'
+        }
       }
     }.freeze
 
-    def initialize(invoicer:)
-      @invoicer = invoicer
+    def initialize(adapter:, direction:)
+      @adapter = adapter
+      @direction = direction
     end
 
     def provider_bank
-      PAYWAY_TO_PROVIDER_BANK.dig(invoicer_class_name, income_currency.to_s.downcase, bank_name.to_s) || raise("Нету доступного банка для шлюза #{invoicer_class_name}")
+      PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, send("#{direction}_currency").to_s.downcase, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{invoicer_class_name}")
     end
 
     private
 
-    delegate :bank_name, to: :income_payment_system
-    delegate :income_currency, :income_payment_system, to: :order
-    delegate :order, to: :invoicer
+    delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, to: :order
 
-    def invoicer_class_name
-      @invoicer_class_name ||= invoicer.class.name
+    def order
+      @order ||= adapter.method_defined?(:order) ? adapter.order : adapter.wallet_transfers.first.order_payout.order
+    end
+
+    def adapter_class_name
+      @adapter_class_name ||= adapter.class.name.split('::')[1]
     end
   end
 end

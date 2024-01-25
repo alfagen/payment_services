@@ -60,7 +60,7 @@ class PaymentServices::PaylamaP2p
     end
 
     def provider_bank
-      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(invoicer: self).provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self, direction: :income).provider_bank
     end
 
     def currency_id
