@@ -74,10 +74,7 @@ class PaymentServices::Base
       },
       'OkoOtc' => {
         'rub' => {
-          'sberbank' => 'Сбер',
-          'tinkoff'  => 'Тинькофф',
-          'qiwi'     => 'Киви',
-          ''         => 'Все банки РФ'
+          '' => 'Все банки РФ'
         },
         'eur' => {
           ''  => 'EUR'
