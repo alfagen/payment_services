@@ -43,7 +43,7 @@ class PaymentServices::OkoOtc
       params[:cardholder] = order.outcome_fio if curr.eur? || curr.usd?
       params[:cardExpiration] = card_expiration(order) if curr.eur? || curr.azn?
       if curr.usdt?
-        params[:sumInRub] = 0
+        params[:sumInRub] = usdt_to_rub(amount: amount).to_i
         params[:sum] = 1
       end
 
@@ -68,6 +68,11 @@ class PaymentServices::OkoOtc
 
     def provider_bank
       @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self, direction: :outcome).provider_bank
+    end
+
+    def usdt_to_rub(amount:)
+      Gera::ExchangeRate.find_by(ps_from_id: 5, ps_to_id: 70).direction_rate.reverse_exchange(amount)
+      # Gera::ExchangeRate.find_by(ps_from_id: 69, ps_to_id: 72).direction_rate.reverse_exchange(amount).to_i
     end
   end
 end
