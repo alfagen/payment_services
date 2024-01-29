@@ -36,7 +36,6 @@ class PaymentServices::OkoOtc
         currencyFrom: amount.currency.to_s,
         wallet: destination_account,
         bank: provider_bank,
-        dateOfBirth: order.outcome_operator,
         orderUID: "#{order.public_id}-#{order_payout_id}"
       }
       curr = amount.currency.to_s.downcase.inquiry
