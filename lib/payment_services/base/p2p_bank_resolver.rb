@@ -74,7 +74,9 @@ class PaymentServices::Base
       },
       'OkoOtc' => {
         'rub' => {
-          '' => 'Все банки РФ'
+          '' => 'Все банки РФ',
+          'sberbank' => 'Все банки РФ',
+          'tinkoff'  => 'Все банки РФ'
         },
         'eur' => {
           ''  => 'EUR'
@@ -103,7 +105,7 @@ class PaymentServices::Base
     end
 
     def provider_bank
-      PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, send("#{direction}_currency").to_s.downcase, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{invoicer_class_name}")
+      PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, send("#{direction}_currency").to_s.downcase, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
     end
 
     private
