@@ -111,7 +111,7 @@ class PaymentServices::Base
     delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, to: :order
 
     def order
-      @order ||= adapter.method_defined?(:order) ? adapter.order : adapter.wallet_transfers.first.order_payout.order
+      @order ||= adapter.respond_to?(:order) ? adapter.order : adapter.wallet_transfers.first.order_payout.order
     end
 
     def adapter_class_name
