@@ -70,8 +70,7 @@ class PaymentServices::OkoOtc
     end
 
     def usdt_to_rub(amount:)
-      Gera::ExchangeRate.find_by(ps_from_id: 5, ps_to_id: 70).direction_rate.reverse_exchange(amount)
-      # Gera::ExchangeRate.find_by(ps_from_id: 69, ps_to_id: 72).direction_rate.reverse_exchange(amount).to_i
+      Gera::ExchangeRate.find_by(ps_from_id: 69, ps_to_id: 72).direction_rate.reverse_exchange(amount).to_i
     end
   end
 end
