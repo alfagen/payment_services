@@ -25,7 +25,10 @@ class PaymentServices::PayForU
 
     def update_invoice_state!
       transaction = client.transaction(deposit_id: invoice.deposit_id)
-      invoice.update_state_by_provider(transaction['status']) if transaction && amount_matched?(transaction)
+      if transaction && amount_matched?(transaction)
+        invoice.update(last_4_digits: transaction.dig('payment', 'customerCardLastDigits'))
+        invoice.update_state_by_provider(transaction['status'])
+      end
     end
 
     def invoice

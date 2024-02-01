@@ -44,7 +44,7 @@ class PaymentServices::PayForUH2h
 
     private
 
-    delegate :income_payment_system, to: :order
+    delegate :income_payment_system, :income_account, to: :order
     delegate :currency, to: :income_payment_system
 
     def invoice_params
@@ -91,7 +91,7 @@ class PaymentServices::PayForUH2h
       raise Error, 'Нет доступных реквизитов для оплаты' if transaction.is_a? Integer
 
       card_number, card_holder = transaction.dig('requisites', 'cardInfo'), transaction.dig('requisites', 'cardholder')
-      update_provider_invoice(params: { payment: { customerCardLastDigits: card_number.last(4) } })
+      update_provider_invoice(params: { payment: { customerCardLastDigits: income_account.last(4) } })
       [card_number, card_holder]
     end
 

@@ -17,7 +17,7 @@ class PaymentServices::OkoOtc
       payout = Payout.find(payout_id)
       return if payout.pending?
 
-      response = client.payout_status(withdrawal_id: "#{order.public_id}-#{order_payout_id}")
+      response = client.payout_status(withdrawal_id: payout.withdrawal_id)
 
       raise "Can't get withdraw history. Error Code: #{response['errCode']}" unless response['totalLen']
 
