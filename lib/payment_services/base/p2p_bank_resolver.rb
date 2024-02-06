@@ -108,20 +108,7 @@ class PaymentServices::Base
     }.freeze
 
     PAYWAY_TO_SBP = {
-      'OkoOtc' => {
-        'Тинькофф Банк' => 'Тинькофф',
-        'Сбер' => 'Сбербанк',
-        'Банк ВТБ' => 'Банк ВТБ',
-        'АЛЬФА-БАНК' => 'АЛЬФА-БАНК',
-        'Райффайзенбанк' => 'Райффайзенбанк',
-        'Банк ОТКРЫТИЕ' => 'Банк ОТКРЫТИЕ',
-        'Газпромбанк' => 'Газпромбанк',
-        'Промсвязьбанк' => 'Промсвязьбанк',
-        'Хоум кредит' => 'Хоум кредит',
-        'Россельхозбанк' => 'Россельхозбанк',
-        'Совкомбанк' => 'Совкомбанк',
-        'Точка ФК Открытие' => 'Точка ФК Открытие'
-      },
+      'OkoOtc' => {},
       'Wallex' => {
         'Тинькофф Банк' => 'tinkoff',
         'Сбер' => 'sber'
@@ -134,7 +121,7 @@ class PaymentServices::Base
     end
 
     def provider_bank
-      sbp? ? PAYWAY_TO_SBP.dig(adapter_class_name, sbp_client_bank) : PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, currency, send("#{direction}_payment_system").bank_name.to_s)
+      sbp? ? PAYWAY_TO_SBP.dig(adapter_class_name, sbp_client_bank) || sbp_client_bank : PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, currency, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
     end
 
     def sbp?
