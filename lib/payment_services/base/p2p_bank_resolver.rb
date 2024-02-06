@@ -132,16 +132,16 @@ class PaymentServices::Base
     end
 
     def provider_bank
-      sbp? ? PAYWAY_TO_SBP.dig(adapter_class_name, outcome_unk) : PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, currency, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
+      sbp? ? PAYWAY_TO_SBP.dig(adapter_class_name, sbp_client_bank) : PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, currency, send("#{direction}_payment_system").bank_name.to_s)
     end
 
     def sbp?
-      currency.rub? && outcome_unk.present?
+      currency.rub? && sbp_client_bank.present?
     end
 
     private
 
-    delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :outcome_unk, to: :order
+    delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :income_unk, :outcome_unk, to: :order
 
     def order
       @order ||= adapter.respond_to?(:order) ? adapter.order : adapter.wallet_transfers.first.order_payout.order
@@ -153,6 +153,10 @@ class PaymentServices::Base
 
     def currency
       @currency ||= send("#{direction}_currency").to_s.downcase.inquiry
+    end
+
+    def sbp_client_bank
+      @sbp_client_bank ||= send("#{direction}_unk")
     end
   end
 end
