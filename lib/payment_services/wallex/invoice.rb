@@ -2,7 +2,7 @@
 
 class PaymentServices::Wallex
   class Invoice < ::PaymentServices::Base::FiatInvoice
-    SUCCESS_PROVIDER_STATE = 5
+    SUCCESS_PROVIDER_STATE = 4
     FAILED_PROVIDER_STATE  = 2
 
     self.table_name = 'wallex_invoices'
