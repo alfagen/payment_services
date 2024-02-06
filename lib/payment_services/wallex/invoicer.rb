@@ -50,7 +50,7 @@ class PaymentServices::Wallex
       {
         client: order.user.email,
         amount: invoice.amount.to_f.to_s,
-        fiat_currency: invoice.currency.to_s.downcase,
+        fiat_currency: invoice.amount_currency.to_s.downcase,
         uuid: order.public_id.to_s,
         payment_method: sbp? ? SBP_PAYMENT_METHOD : CARD_PAYMENT_METHOD,
         bank: provider_bank
