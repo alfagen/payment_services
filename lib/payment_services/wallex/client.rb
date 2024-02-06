@@ -39,7 +39,9 @@ class PaymentServices::Wallex
     end
 
     def signature(params:)
-      Digest::SHA1.hexdigest(params.values.join + secret_key)
+      sign_string = params[:client] + params[:uuid] + params[:amount] + 
+        params[:fiat_currency] + params[:payment_method] + secret_key
+      Digest::SHA1.hexdigest(sign_string)
     end
   end
 end
