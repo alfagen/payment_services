@@ -97,6 +97,32 @@ class PaymentServices::Base
         'usdt' => {
           '' => 'USDT'
         }
+      },
+      'Wallex' => {
+        'rub' => {
+          'tinkoff'  => 'tinkoff',
+          'sberbank' => 'sber',
+          ''         => 'tinkoff'
+        }
+      }
+    }.freeze
+
+    PAYWAY_TO_SBP = {
+      'OkoOtc' => {
+        'Сбербанк' => 'Сбербанк',
+        'Тинькофф' => 'Тинькофф',
+        'ВТБ' => 'Банк ВТБ',
+        'Альфабанк' => 'АЛЬФА-БАНК',
+        'Райффайзенбанк' => 'Райффайзенбанк',
+        'ОТКРЫТИЕ' => 'Банк ОТКРЫТИЕ',
+        'Газпромбанк' => 'Газпромбанк',
+        'Промсвязьбанк' => 'Промсвязьбанк',
+        'Хоумкредит' => 'Хоум кредит',
+        'Россельхозбанк' => 'Россельхозбанк'
+      },
+      'Wallex' => {
+        'Сбербанк' => 'sber',
+        'Тинькофф' => 'tinkoff'
       }
     }.freeze
 
@@ -106,7 +132,11 @@ class PaymentServices::Base
     end
 
     def provider_bank
-      sbp? ? outcome_unk : PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, currency, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
+      sbp? ? PAYWAY_TO_SBP.dig(adapter_class_name, outcome_unk) : PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, currency, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
+    end
+
+    def sbp?
+      currency.rub? && outcome_unk.present?
     end
 
     private
@@ -123,10 +153,6 @@ class PaymentServices::Base
 
     def currency
       @currency ||= send("#{direction}_currency").to_s.downcase.inquiry
-    end
-
-    def sbp?
-      currency.rub? && outcome_unk.present?
     end
   end
 end
