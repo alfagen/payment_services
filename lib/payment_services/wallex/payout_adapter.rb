@@ -5,6 +5,8 @@ require_relative 'client'
 
 class PaymentServices::Wallex
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+    PAYOUT_SUCCESS_STATE = 'success'
+
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
         amount: amount,
@@ -31,14 +33,14 @@ class PaymentServices::Wallex
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
       response = client.create_payout(params: payout_params)
-      raise response['message'] unless response['success']
+      raise response['error'] unless response['status'] == PAYOUT_SUCCESS_STATE
 
       payout.pay!(withdrawal_id: response['id'])
     end
 
     def payout_params
       params = {
-        uuid: "#{Rails.env}-#{payout.id}",
+        uuid: "#{Rails.env}_#{payout.id}",
         amount: payout.amount.to_f.to_s,
         currency: 'rub',
         type: 'fiat',
