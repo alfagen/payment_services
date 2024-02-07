@@ -254,6 +254,8 @@ class PaymentServices::Base
 
     private
 
+    attr_reader :direction
+
     delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :income_unk, :outcome_unk, to: :order
 
     def order
