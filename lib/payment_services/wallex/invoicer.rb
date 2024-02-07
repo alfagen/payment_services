@@ -30,7 +30,7 @@ class PaymentServices::Wallex
     end
 
     def update_invoice_state!
-      transaction = client.transaction(deposit_id: invoice.deposit_id)
+      transaction = client.invoice_transaction(deposit_id: invoice.deposit_id)
       invoice.update_state_by_provider(transaction['status'])
     end
 
@@ -58,7 +58,7 @@ class PaymentServices::Wallex
     end
 
     def bank_resolver
-      @bank_resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self, direction: :income)
+      @bank_resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self)
     end
 
     def client

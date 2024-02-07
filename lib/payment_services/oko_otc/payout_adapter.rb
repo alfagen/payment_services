@@ -67,7 +67,7 @@ class PaymentServices::OkoOtc
     end
 
     def provider_bank
-      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self, direction: :outcome).provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self).provider_bank
     end
 
     def usdt_to_rub(amount:)

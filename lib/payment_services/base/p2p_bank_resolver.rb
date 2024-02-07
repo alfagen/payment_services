@@ -5,127 +5,251 @@ class PaymentServices::Base
     include Virtus.model
 
     attribute :adapter
-    attribute :direction
 
     PAYWAY_TO_PROVIDER_BANK = {
       'PayForUH2h' => {
-        'uah' => {
-          '' => 'anyuabank'
+        'income' => {
+          'uah' => {
+            '' => 'anyuabank'
+          },
+          'rub' => {
+            'sberbank' => 'sberbank',
+            'tinkoff'  => 'tinkoff',
+            ''         => 'sberbank'
+          },
+          'uzs' => {
+            'humo' => 'humo',
+            ''     => 'uzcard'
+          },
+          'azn' => {
+            'leo' => 'leobank',
+            'uni' => 'unibank',
+            ''    => 'yapikredi'
+          }
         },
-        'rub' => {
-          'sberbank' => 'sberbank',
-          'tinkoff'  => 'tinkoff',
-          ''         => 'sberbank'
-        },
-        'uzs' => {
-          'humo' => 'humo',
-          ''     => 'uzcard'
-        },
-        'azn' => {
-          'leo' => 'leobank',
-          'uni' => 'unibank',
-          ''    => 'yapikredi'
+        'outcome' => {
+          'uah' => {
+            '' => 'anyuabank'
+          },
+          'rub' => {
+            'sberbank' => 'sberbank',
+            'tinkoff'  => 'tinkoff',
+            ''         => 'sberbank'
+          },
+          'uzs' => {
+            'humo' => 'humo',
+            ''     => 'uzcard'
+          },
+          'azn' => {
+            'leo' => 'leobank',
+            'uni' => 'unibank',
+            ''    => 'yapikredi'
+          }
         }
       },
       'PaylamaP2p' => {
-        'rub' => {
-          'sberbank' => 'sberbank',
-          'tinkoff'  => 'tinkoff',
-          ''         => 'sberbank'
+        'income' => {
+          'rub' => {
+            'sberbank' => 'sberbank',
+            'tinkoff'  => 'tinkoff',
+            ''         => 'sberbank'
+          },
+          'uzs' => {
+            'humo' => 'humo',
+            ''     => 'visa/mc'
+          },
+          'azn' => {
+            'leo' => 'leobank',
+            'uni' => 'unibank',
+            ''    => 'visa/mc'
+          }
         },
-        'uzs' => {
-          'humo' => 'humo',
-          ''     => 'visa/mc'
-        },
-        'azn' => {
-          'leo' => 'leobank',
-          'uni' => 'unibank',
-          ''    => 'visa/mc'
+        'outcome' => {
+          'rub' => {
+            'sberbank' => 'sberbank',
+            'tinkoff'  => 'tinkoff',
+            ''         => 'sberbank'
+          },
+          'uzs' => {
+            'humo' => 'humo',
+            ''     => 'visa/mc'
+          },
+          'azn' => {
+            'leo' => 'leobank',
+            'uni' => 'unibank',
+            ''    => 'visa/mc'
+          }
         }
       },
       'ExPay' => {
-        'rub' => {
-          'sberbank' => 'SBERRUB',
-          'tinkoff'  => 'TCSBRUB',
-          ''         => 'CARDRUB'
+        'income' => {
+          'rub' => {
+            'sberbank' => 'SBERRUB',
+            'tinkoff'  => 'TCSBRUB',
+            ''         => 'CARDRUB'
+          },
+          'uzs' => {
+            'humo' => 'HUMOUZS',
+            '' => 'CARDUZS'
+          },
+          'azn' => {
+            '' => 'CARDAZN'
+          }
         },
-        'uzs' => {
-          'humo' => 'HUMOUZS',
-          '' => 'CARDUZS'
-        },
-        'azn' => {
-          '' => 'CARDAZN'
+        'outcome' => {
+          'rub' => {
+            'sberbank' => 'SBERRUB',
+            'tinkoff'  => 'TCSBRUB',
+            ''         => 'CARDRUB'
+          },
+          'uzs' => {
+            'humo' => 'HUMOUZS',
+            '' => 'CARDUZS'
+          },
+          'azn' => {
+            '' => 'CARDAZN'
+          }
         }
       },
       'XPayPro' => {
-        'rub' => {
-          'sberbank' => 'SBERBANK',
-          'tinkoff'  => 'TINKOFF',
-          ''         => 'BANK_ANY'
+        'income' => {
+          'rub' => {
+            'sberbank' => 'SBERBANK',
+            'tinkoff'  => 'TINKOFF',
+            ''         => 'BANK_ANY'
+          }
+        },
+        'outcome' => {
+          'rub' => {
+            'sberbank' => 'SBERBANK',
+            'tinkoff'  => 'TINKOFF',
+            ''         => 'BANK_ANY'
+          }
         }
       },
       'AnyMoney' => {
-        'rub' => {
-          ''  => 'qiwi'
+        'income' => {
+          'rub' => {
+            ''  => 'qiwi'
+          },
+          'uah' => {
+            ''  => 'visamc_p2p'
+          }
         },
-        'uah' => {
-          ''  => 'visamc_p2p'
+        'outcome' => {
+          'rub' => {
+            ''  => 'qiwi'
+          },
+          'uah' => {
+            ''  => 'visamc_p2p'
+          }
         }
       },
       'OkoOtc' => {
-        'rub' => {
-          '' => 'Все банки РФ',
-          'sberbank' => 'Сбербанк',
-          'tinkoff'  => 'Тинькофф',
-          'qiwi'     => 'Киви'
+        'income' => {
+          'rub' => {
+            '' => 'Все банки РФ',
+            'sberbank' => 'Сбербанк',
+            'tinkoff'  => 'Тинькофф',
+            'qiwi'     => 'Киви'
+          },
+          'eur' => {
+            ''  => 'EUR'
+          },
+          'usd' => {
+            ''  => 'USD'
+          },
+          'azn' => {
+            ''  => 'AZN'
+          },
+          'kzt' => {
+            ''  => 'KZT'
+          },
+          'uzs' => {
+            ''  => 'UZS'
+          },
+          'usdt' => {
+            '' => 'USDT'
+          }
         },
-        'eur' => {
-          ''  => 'EUR'
-        },
-        'usd' => {
-          ''  => 'USD'
-        },
-        'azn' => {
-          ''  => 'AZN'
-        },
-        'kzt' => {
-          ''  => 'KZT'
-        },
-        'uzs' => {
-          ''  => 'UZS'
-        },
-        'usdt' => {
-          '' => 'USDT'
+        'outcome' => {
+          'rub' => {
+            '' => 'Все банки РФ',
+            'sberbank' => 'Сбербанк',
+            'tinkoff'  => 'Тинькофф',
+            'qiwi'     => 'Киви'
+          },
+          'eur' => {
+            ''  => 'EUR'
+          },
+          'usd' => {
+            ''  => 'USD'
+          },
+          'azn' => {
+            ''  => 'AZN'
+          },
+          'kzt' => {
+            ''  => 'KZT'
+          },
+          'uzs' => {
+            ''  => 'UZS'
+          },
+          'usdt' => {
+            '' => 'USDT'
+          }
         }
       },
       'Wallex' => {
-        'rub' => {
-          'tinkoff'  => 'tinkoff',
-          'sberbank' => 'sber',
-          ''         => 'tinkoff'
+        'income' => {
+          'rub' => {
+            'tinkoff'  => 'tinkoff',
+            'sberbank' => 'sber',
+            ''         => 'sber'
+          }
+        },
+        'outcome' => {
+          'rub' => {
+            'tinkoff'  => 'Тинькофф',
+            'sberbank' => 'Сбер',
+            'qiwi'     => 'Киви',
+            ''         => 'Все банки РФ'
+          }
         }
       }
     }.freeze
 
     PAYWAY_TO_SBP = {
-      'OkoOtc' => {},
+      'OkoOtc' => {
+        'income'  => {},
+        'outcome' => {}
+      },
       'Wallex' => {
-        'Тинькофф Банк' => 'tinkoff',
-        'Сбер' => 'sber'
+        'income' => {
+          'Тинькофф Банк' => 'tinkoff',
+          'Сбер' => 'sber'
+        },
+        'outcome' => {
+          'Тинькофф Банк' => '100000000004',
+          'Сбер' => '100000000111'
+        }
       }
     }.freeze
 
-    def initialize(adapter:, direction:)
+    def initialize(adapter:)
       @adapter = adapter
-      @direction = direction
+      @direction = adapter.class.name.split('::')[2] == 'Invoicer' ? 'income' : 'outcome'
     end
 
     def provider_bank
-      sbp? ? PAYWAY_TO_SBP.dig(adapter_class_name, sbp_client_bank) || sbp_client_bank : PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, currency, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
+      PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, direction, currency, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
+    end
+
+    def sbp_bank
+      PAYWAY_TO_SBP.dig(adapter_class_name, direction, sbp_client_field) || sbp_client_field
     end
 
     def sbp?
-      currency.rub? && sbp_client_bank.present?
+      currency.rub? && sbp_client_field.present?
     end
 
     private
@@ -133,7 +257,7 @@ class PaymentServices::Base
     delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :income_unk, :outcome_unk, to: :order
 
     def order
-      @order ||= adapter.respond_to?(:order) ? adapter.order : adapter.wallet_transfers.first.order_payout.order
+      @order ||= direction.inquiry.income? ? adapter.order : adapter.wallet_transfers.first.order_payout.order
     end
 
     def adapter_class_name
@@ -144,8 +268,8 @@ class PaymentServices::Base
       @currency ||= send("#{direction}_currency").to_s.downcase.inquiry
     end
 
-    def sbp_client_bank
-      @sbp_client_bank ||= send("#{direction}_unk")
+    def sbp_client_field
+      @sbp_client_field ||= send("#{direction}_unk")
     end
   end
 end
