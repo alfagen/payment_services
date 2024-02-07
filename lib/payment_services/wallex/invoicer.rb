@@ -40,7 +40,7 @@ class PaymentServices::Wallex
 
     private
 
-    delegate :provider_bank, :sbp?, to: :bank_resolver
+    delegate :provider_bank, :sbp_bank, :sbp?, to: :bank_resolver
 
     def create_invoice!
       Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
@@ -53,7 +53,7 @@ class PaymentServices::Wallex
         fiat_currency: invoice.amount_currency.to_s.downcase,
         uuid: order.public_id.to_s,
         payment_method: sbp? ? SBP_PAYMENT_METHOD : CARD_PAYMENT_METHOD,
-        bank: provider_bank
+        bank: sbp? ? sbp_bank : provider_bank
       }
     end
 
