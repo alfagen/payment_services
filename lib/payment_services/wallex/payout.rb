@@ -2,6 +2,9 @@
 
 class PaymentServices::Wallex
   class Payout < ::PaymentServices::Base::FiatPayout
+    SUCCESS_PROVIDER_STATE = 3
+    FAILED_PROVIDER_STATE  = 2
+
     self.table_name = 'wallex_payouts'
 
     monetize :amount_cents, as: :amount
