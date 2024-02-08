@@ -12,11 +12,11 @@ class PaymentServices::Wallex
     private
 
     def provider_succeed?
-      provider_state == Invoice::SUCCESS_PROVIDER_STATE
+      provider_state == SUCCESS_PROVIDER_STATE
     end
 
     def provider_failed?
-      provider_state == Invoice::FAILED_PROVIDER_STATE
+      provider_state == FAILED_PROVIDER_STATE
     end
   end
 end
