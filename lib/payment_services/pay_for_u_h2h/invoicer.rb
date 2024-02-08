@@ -109,7 +109,7 @@ class PaymentServices::PayForUH2h
     end
 
     def provider_bank
-      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self).provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self).card_bank
     end
 
     def client

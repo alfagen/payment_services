@@ -26,7 +26,7 @@ class PaymentServices::Wallex
 
     private
 
-    delegate :provider_bank, :sbp_bank, :sbp?, to: :bank_resolver
+    delegate :card_bank, :sbp_bank, :sbp?, to: :bank_resolver
 
     attr_reader :payout
 
@@ -44,7 +44,7 @@ class PaymentServices::Wallex
         amount: payout.amount.to_f.to_s,
         currency: 'rub',
         type: 'fiat',
-        bank: provider_bank,
+        bank: card_bank,
         number: payout.destination_account,
         fiat: 'rub'
       }

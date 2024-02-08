@@ -6,7 +6,7 @@ class PaymentServices::Base
 
     attribute :adapter
 
-    PAYWAY_TO_PROVIDER_BANK = {
+    PAYWAY_TO_CARD_BANK = {
       'PayForUH2h' => {
         'income' => {
           'uah' => {
@@ -218,7 +218,7 @@ class PaymentServices::Base
       }
     }.freeze
 
-    PAYWAY_TO_SBP = {
+    PAYWAY_TO_SBP_BANK = {
       'OkoOtc' => {
         'income'  => {},
         'outcome' => {}
@@ -250,12 +250,12 @@ class PaymentServices::Base
       @direction = adapter.class.name.split('::')[2] == 'Invoicer' ? 'income' : 'outcome'
     end
 
-    def provider_bank
-      PAYWAY_TO_PROVIDER_BANK.dig(adapter_class_name, direction, currency, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
+    def card_bank
+      PAYWAY_TO_CARD_BANK.dig(adapter_class_name, direction, currency, send("#{direction}_payment_system").bank_name.to_s) || raise("Нету доступного банка для шлюза #{adapter_class_name}")
     end
 
     def sbp_bank
-      PAYWAY_TO_SBP.dig(adapter_class_name, direction, sbp_client_field) || sbp_client_field
+      PAYWAY_TO_SBP_BANK.dig(adapter_class_name, direction, sbp_client_field) || sbp_client_field
     end
 
     def sbp?
