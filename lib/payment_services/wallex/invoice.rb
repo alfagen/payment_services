@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PaymentServices::Wallex
+module PaymentServices::Wallex
   class Invoice < ::PaymentServices::Base::FiatInvoice
     SUCCESS_PROVIDER_STATE = 4
     FAILED_PROVIDER_STATE  = 2

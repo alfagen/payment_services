@@ -3,7 +3,7 @@
 require_relative 'invoice'
 require_relative 'client'
 
-class PaymentServices::Wallex
+module PaymentServices::Wallex
   class Invoicer < ::PaymentServices::Base::Invoicer
     SBP_PAYMENT_METHOD  = 'sbp'
     CARD_PAYMENT_METHOD = 'c2c'

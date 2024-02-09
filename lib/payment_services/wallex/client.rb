@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PaymentServices::Wallex
+module PaymentServices::Wallex
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://wallex.online'
     MERCHANT_ID = 286

@@ -3,7 +3,7 @@
 require_relative 'payout'
 require_relative 'client'
 
-class PaymentServices::Wallex
+module PaymentServices::Wallex
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     PAYOUT_SUCCESS_STATE = 'success'
 
