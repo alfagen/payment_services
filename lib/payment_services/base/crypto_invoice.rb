@@ -21,12 +21,7 @@ class PaymentServices::Base
       end
       state :paid do
         on_entry do
-          perform_kyt_verification! if order.income_kyt_check?
-          if kyt_verified?
-            confirm_order!
-          else
-            reject_order!
-          end
+          order.auto_confirm!(income_amount: amount, hash: transaction_id)
         end
       end
       state :cancelled
@@ -40,23 +35,6 @@ class PaymentServices::Base
 
     def pay(payload:)
       update(payload: payload)
-    end
-
-    def perform_kyt_verification!
-      update!(kyt_verified: kyt_verification_success?)
-    end
-
-    def kyt_verification_success?
-      sender_address = PaymentServices::Blockchair::Invoicer.new(order: order).transaction_for(self).sender_address
-      KytValidator.new(order: order, direction: :income, address: sender_address).perform
-    end
-
-    def confirm_order!
-      order.auto_confirm!(income_amount: amount, hash: transaction_id)
-    end
-
-    def reject_order!
-      order.reject!(status: :rejected, reason: I18n.t('validations.kyt.failed'))
     end
   end
 end
