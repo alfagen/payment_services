@@ -35,7 +35,7 @@ class PaymentServices::Tronscan
     end
 
     def collect_transactions
-      client.transactions(address: invoice.address, invoice_created_at: invoice.created_at)
+      client.transactions(address: invoice.address)
     end
 
     def client
