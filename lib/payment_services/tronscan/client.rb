@@ -15,8 +15,9 @@ class PaymentServices::Tronscan
     end
 
     def transactions(address:, invoice_created_at:)
-      params = { address: address, start_timestamp: invoice_created_at.to_i }.to_query
+      params = { address: address, start_timestamp: invoice_created_at.to_i }
       params[:trc20Id] = USDT_TRC_CONTRACT_ADDRESS if currency.usdt?
+      params = params.to_query
       safely_parse(http_request(
         url: "#{API_URL}/transfer/#{endpoint}?#{params}",
         method: :GET,
