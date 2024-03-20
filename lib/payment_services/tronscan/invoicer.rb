@@ -31,7 +31,7 @@ class PaymentServices::Tronscan
     delegate :currency, to: :income_payment_system
 
     def transaction_for(invoice)
-      TransactionMatcher.new(invoice: invoice, transactions: collect_transactions, currency: currency).perform
+      TransactionMatcher.new(invoice: invoice, transactions: collect_transactions).perform
     end
 
     def collect_transactions
