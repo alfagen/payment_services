@@ -14,8 +14,8 @@ class PaymentServices::Tronscan
       @currency = currency.inquiry
     end
 
-    def transactions(address:, invoice_created_at:)
-      params = { address: address, start_timestamp: invoice_created_at.to_i }
+    def transactions(address:)
+      params = { address: address }
       params[:trc20Id] = USDT_TRC_CONTRACT_ADDRESS if currency.usdt?
       params = params.to_query
       safely_parse(http_request(

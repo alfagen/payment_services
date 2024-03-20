@@ -27,18 +27,22 @@ class PaymentServices::Tronscan
 
       build_transaction(
         id: raw_transaction['hash'],
-        created_at: timestamp_in_utc(raw_transaction['block_timestamp']),
+        created_at: timestamp_in_utc(raw_transaction['block_timestamp'] / 1000),
         source: raw_transaction
       )
     end
 
     def match_transaction?(transaction)
-      match_amount?(transaction['amount'], transaction['decimals'])
+      match_amount?(transaction['amount'], transaction['decimals']) && match_time?(transaction['block_timestamp'] / 1000)
     end
 
     def match_amount?(received_amount, decimals)
       amount = received_amount.to_i / 10.0 ** decimals
       amount == invoice.amount.to_f
+    end
+
+    def match_time?(timestamp)
+      invoice.created_at.utc < timestamp_in_utc(timestamp)
     end
 
     def timestamp_in_utc(timestamp)
