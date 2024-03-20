@@ -31,7 +31,7 @@ class PaymentServices::Tronscan::TransactionMatcher
     )
   end
 
-  def match_generic_transaction?(transaction)
+  def match_transaction?(transaction)
     match_amount?(transaction['amount'], transaction['decimals'])
   end
 

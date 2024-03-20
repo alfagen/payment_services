@@ -20,6 +20,6 @@ class PaymentServices::Tronscan::Transaction
   end
 
   def successful?
-    source['confirmed'] == 1
+    source[:confirmed] == 1
   end
 end
