@@ -7,33 +7,51 @@ class PaymentServices::Tronscan
     def initialize(invoice:, transactions:)
       @invoice = invoice
       @transactions = transactions
+      @currency = invoice.amount_currency.to_s.downcase
     end
 
     def perform
-      match_transaction
+      send("match_#{currency}_transaction")
     end
 
     private
 
-    attr_reader :invoice, :transactions
+    attr_reader :invoice, :transactions, :currency
 
-    def build_transaction(id:, created_at:, source:)
-      Transaction.build_from(raw_transaction: { id: id, created_at: created_at, source: source })
+    def build_transaction(id:, created_at:, currency:, source:)
+      Transaction.build_from(raw_transaction: { id: id, created_at: created_at, currency: currency, source: source })
     end
 
-    def match_transaction
-      raw_transaction = transactions.find { |transaction| match_transaction?(transaction) }
+    def match_trx_transaction
+      raw_transaction = transactions.find { |transaction| match_trx_transaction?(transaction) }
       return unless raw_transaction
 
       build_transaction(
         id: raw_transaction['hash'],
         created_at: timestamp_in_utc(raw_transaction['block_timestamp'] / 1000),
+        currency: currency,
         source: raw_transaction
       )
     end
 
-    def match_transaction?(transaction)
+    def match_trx_transaction?(transaction)
       match_amount?(transaction['amount'], transaction['decimals']) && match_time?(transaction['block_timestamp'] / 1000)
+    end
+
+    def match_usdt_transaction
+      raw_transaction = transactions.find { |transaction| match_usdt_transaction?(transaction) }
+      return unless raw_transaction
+
+      build_transaction(
+        id: raw_transaction['transaction_id'],
+        created_at: timestamp_in_utc(raw_transaction['block_ts'] / 1000),
+        currency: currency,
+        source: raw_transaction
+      )
+    end
+
+    def match_usdt_transaction?(transaction)
+      match_amount?(transaction['quant'], transaction['tokenDecimal']) && match_time?(transaction['block_ts'] / 1000)
     end
 
     def match_amount?(received_amount, decimals)

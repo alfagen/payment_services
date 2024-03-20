@@ -5,8 +5,8 @@ class PaymentServices::Tronscan
     API_URL = 'https://apilist.tronscanapi.com/api'
     USDT_TRC_CONTRACT_ADDRESS = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
     CURRENCY_TO_ENDPOINT = {
-      'trx'  => 'trx',
-      'usdt' => 'trc20'
+      'trx'  => 'transfer/trx',
+      'usdt' => 'token_trc20/transfers'
     }.freeze
 
     def initialize(api_key:, currency:)
@@ -15,11 +15,15 @@ class PaymentServices::Tronscan
     end
 
     def transactions(address:)
-      params = { address: address }
-      params[:trc20Id] = USDT_TRC_CONTRACT_ADDRESS if currency.usdt?
+      if currency.usdt?
+        params = { toAddress: address, contract_address: USDT_TRC_CONTRACT_ADDRESS }
+      else
+        params = { address: address }
+      end
+
       params = params.to_query
       safely_parse(http_request(
-        url: "#{API_URL}/transfer/#{endpoint}?#{params}",
+        url: "#{API_URL}/#{endpoint}?#{params}",
         method: :GET,
         headers: build_headers
       ))['data']
