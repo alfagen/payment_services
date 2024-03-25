@@ -214,6 +214,16 @@ class PaymentServices::Base::P2pBankResolver
           ''         => 'Все банки РФ'
         }
       }
+    },
+    'MerchantAlikassa' => {
+      'income' => {
+        'rub' => {
+          'sberbank'   => 'sberbank',
+          'raiffeisen' => 'raiffeisen',
+          ''           => 'sberbank'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 

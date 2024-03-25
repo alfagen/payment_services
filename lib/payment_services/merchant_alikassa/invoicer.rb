@@ -49,13 +49,18 @@ class PaymentServices::MerchantAlikassa
       {
         amount: invoice.amount.to_f.round(1),
         order_id: order.public_id.to_s,
-        service: "payment_card_number_#{currency.to_s.downcase}_card",
+        service: "payment_card_number_card",
+        customer_code: provider_bank,
         customer_user_id: "#{Rails.env}_user_id_#{order.user_id}",
         customer_ip: order.remote_ip,
         customer_browser_user_agent: DEFAULT_USER_AGENT,
         success_redirect_url: order.success_redirect,
         fail_redirect_url: order.failed_redirect
       }
+    end
+
+    def provider_bank
+      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self).card_bank
     end
 
     def client
