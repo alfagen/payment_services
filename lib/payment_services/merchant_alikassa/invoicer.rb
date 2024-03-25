@@ -49,7 +49,7 @@ class PaymentServices::MerchantAlikassa
       {
         amount: invoice.amount.to_f.round(1),
         order_id: order.public_id.to_s,
-        service: "payment_card_number_card",
+        service: "payment_card_number_#{currency.to_s.downcase}_card",
         customer_code: provider_bank,
         customer_user_id: "#{Rails.env}_user_id_#{order.user_id}",
         customer_ip: order.remote_ip,
