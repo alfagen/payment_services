@@ -6,7 +6,7 @@ class PaymentServices::AdvCash
   class Client
     include AutoLogger
     TIMEOUT = 10
-    SOAP_URL = 'https://wallet.advcash.com/wsm/merchantWebService?wsdl'
+    SOAP_URL = 'https://account.volet.com/wsm/apiWebService?wsdl'
 
     def initialize(api_name:, authentication_token:, account_email:)
       @api_name = api_name
@@ -17,7 +17,7 @@ class PaymentServices::AdvCash
     def create_payout(params:)
       safely_parse soap_request(
         url: SOAP_URL,
-        operation: :send_money,
+        operation: :sendMoney,
         body: {
           arg0: authentication_params,
           arg1: params
@@ -28,7 +28,7 @@ class PaymentServices::AdvCash
     def find_transaction(id:)
       safely_parse soap_request(
         url: SOAP_URL,
-        operation: :find_transaction,
+        operation: :findTransaction,
         body: {
           arg0: authentication_params,
           arg1: id
