@@ -3,6 +3,7 @@
 class PaymentServices::OneCrypto
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://api.onecrypto.pro/api/transaction'
+    MERCHANT_ID = 'kassa.cc'
 
     def initialize(api_key:, secret_key:)
       @api_key    = api_key
@@ -13,7 +14,7 @@ class PaymentServices::OneCrypto
       safely_parse http_request(
         url: "#{API_URL}/create/in",
         method: :POST,
-        body: params.to_json,
+        body: params.merge(client_merchant_id: MERCHANT_ID).to_json,
         headers: build_headers(signature: build_signature(params))
       )
     end
