@@ -6,7 +6,7 @@ class PaymentServices::Base
 
     scope :ordered, -> { order(id: :desc) }
 
-    validates :amount_cents, :order_public_id, :state, :kyt_verified, presence: true
+    validates :amount_cents, :order_public_id, :state, presence: true
 
     workflow_column :state
     workflow do
