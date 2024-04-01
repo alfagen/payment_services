@@ -35,7 +35,7 @@ class PaymentServices::Tronscan
     end
 
     def match_trx_transaction?(transaction)
-      match_amount?(transaction['amount'], transaction['decimals']) && match_time?(transaction['block_timestamp'] / 1000)
+      match_amount?(transaction['amount'], transaction['tokenInfo']['tokenDecimal']) && match_time?(transaction['timestamp'] / 1000)
     end
 
     def match_usdt_transaction
