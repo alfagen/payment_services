@@ -49,7 +49,7 @@ class PaymentServices::Tronscan
     end
 
     def match_usdt_transaction?(transaction)
-      match_amount?(transaction['quant'], transaction['tokenDecimal']) && match_time?(transaction['block_ts'] / 1000)
+      match_amount?(transaction['quant'], transaction['tokenInfo']['tokenDecimal']) && match_time?(transaction['block_ts'] / 1000)
     end
 
     def match_amount?(received_amount, decimals)
