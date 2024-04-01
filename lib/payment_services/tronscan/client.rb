@@ -5,7 +5,7 @@ class PaymentServices::Tronscan
     API_URL = 'https://apilist.tronscanapi.com/api'
     USDT_TRC_CONTRACT_ADDRESS = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
     CURRENCY_TO_ENDPOINT = {
-      'trx'  => 'transfer/trx',
+      'trx'  => 'transaction',
       'usdt' => 'token_trc20/transfers'
     }.freeze
 
@@ -18,7 +18,7 @@ class PaymentServices::Tronscan
       if currency.usdt?
         params = { toAddress: address, contract_address: USDT_TRC_CONTRACT_ADDRESS }
       else
-        params = { address: address }
+        params = { address: address, limit: 100 }
       end
 
       params = params.to_query

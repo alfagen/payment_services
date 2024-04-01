@@ -23,16 +23,6 @@ class PaymentServices::Tronscan
     end
 
     def successful?
-      send("#{currency}_transaction_confirmed?")
-    end
-
-    private
-
-    def trx_transaction_confirmed?
-      source[:confirmed] == 1
-    end
-
-    def usdt_transaction_confirmed?
       source[:confirmed]
     end
   end
