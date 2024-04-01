@@ -28,7 +28,7 @@ class PaymentServices::Tronscan
 
       build_transaction(
         id: raw_transaction['hash'],
-        created_at: timestamp_in_utc(raw_transaction['block_timestamp'] / 1000),
+        created_at: timestamp_in_utc(raw_transaction['timestamp'] / 1000),
         currency: currency,
         source: raw_transaction
       )
