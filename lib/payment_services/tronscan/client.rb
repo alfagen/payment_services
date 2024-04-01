@@ -6,7 +6,7 @@ class PaymentServices::Tronscan
     USDT_TRC_CONTRACT_ADDRESS = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
     CURRENCY_TO_ENDPOINT = {
       'trx'  => 'transaction',
-      'usdt' => 'token_trc20/transfers'
+      'usdt' => 'new/token_trc20/transfers'
     }.freeze
 
     def initialize(api_key:, currency:)
