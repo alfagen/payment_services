@@ -22,11 +22,12 @@ class PaymentServices::Tronscan
       end
 
       params = params.to_query
-      safely_parse(http_request(
+      response = safely_parse(http_request(
         url: "#{API_URL}/#{endpoint}?#{params}",
         method: :GET,
         headers: build_headers
-      ))['data']
+      ))
+      response['data'] || response['token_transfers']
     end
 
     private
