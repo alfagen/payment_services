@@ -2,7 +2,7 @@
 
 class PaymentServices::BestApi
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://cardapi.top/api'
+    API_URL = 'https://nash-c6dd440834c0.herokuapp.com/api'
 
     def initialize(api_key:)
       @api_key = api_key
