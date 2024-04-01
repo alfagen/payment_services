@@ -18,8 +18,8 @@ class PaymentServices::Tronscan
 
     attr_reader :invoice, :transactions, :currency
 
-    def build_transaction(id:, created_at:, currency:, source:)
-      Transaction.build_from(raw_transaction: { id: id, created_at: created_at, currency: currency, source: source })
+    def build_transaction(id:, created_at:, source:)
+      Transaction.build_from(raw_transaction: { id: id, created_at: created_at, source: source })
     end
 
     def match_trx_transaction
@@ -29,7 +29,6 @@ class PaymentServices::Tronscan
       build_transaction(
         id: raw_transaction['hash'],
         created_at: timestamp_in_utc(raw_transaction['timestamp'] / 1000),
-        currency: currency,
         source: raw_transaction
       )
     end
@@ -45,7 +44,6 @@ class PaymentServices::Tronscan
       build_transaction(
         id: raw_transaction['transaction_id'],
         created_at: timestamp_in_utc(raw_transaction['block_ts'] / 1000),
-        currency: currency,
         source: raw_transaction
       )
     end
