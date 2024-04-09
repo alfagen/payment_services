@@ -16,14 +16,6 @@ class PaymentServices::BestApi
       )).first
     end
 
-    def transaction(deposit_id:)
-      safely_parse(http_request(
-        url: "#{API_URL}/check_trade/trade/#{deposit_id}",
-        method: :GET,
-        headers: {}
-      )).first
-    end
-
     private
 
     attr_reader :api_key

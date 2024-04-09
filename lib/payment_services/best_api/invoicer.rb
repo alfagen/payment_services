@@ -17,15 +17,6 @@ class PaymentServices::BestApi
       invoice
     end
 
-    def async_invoice_state_updater?
-      true
-    end
-
-    def update_invoice_state!
-      transaction = client.transaction(deposit_id: invoice.deposit_id)
-      invoice.update_state_by_provider(transaction['message']) if transaction && amount_matched?(transaction)
-    end
-
     def invoice
       @invoice ||= Invoice.find_by(order_public_id: order.public_id)
     end
@@ -38,10 +29,6 @@ class PaymentServices::BestApi
 
     def client
       @client ||= Client.new(api_key: api_key)
-    end
-
-    def amount_matched?(transaction)
-      transaction['amount'].nil? || transaction['amount'].to_i == invoice.amount.to_i
     end
 
     def prepare_card_number(provider_card_number)
