@@ -2,7 +2,7 @@
 
 class PaymentServices::OneCrypto
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://api.onecrypto.pro/api/transaction'
+    API_URL = 'https://apiv2.expay.cash/api/transaction'
     MERCHANT_ID = 'kassa.cc'
 
     def initialize(api_key:, secret_key:)
