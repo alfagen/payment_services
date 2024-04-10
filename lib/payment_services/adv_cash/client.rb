@@ -17,7 +17,7 @@ class PaymentServices::AdvCash
     def create_payout(params:)
       safely_parse soap_request(
         url: SOAP_URL,
-        operation: :sendMoney,
+        operation: :send_money,
         body: {
           arg0: authentication_params,
           arg1: params
@@ -28,7 +28,7 @@ class PaymentServices::AdvCash
     def find_transaction(id:)
       safely_parse soap_request(
         url: SOAP_URL,
-        operation: :findTransaction,
+        operation: :find_transaction,
         body: {
           arg0: authentication_params,
           arg1: id
