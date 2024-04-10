@@ -23,7 +23,10 @@ class PaymentServices::Exmo
       transaction = find_transaction(transactions: response['items'])
       return if transaction.nil?
 
-      invoice.update!(transaction_created_at: DateTime.strptime(transaction['created'].to_s,'%s').utc)
+      invoice.update!(
+        transaction_created_at: DateTime.strptime(transaction['created'].to_s,'%s').utc,
+        transaction_id: transaction.dig('extra', 'txid')
+      )
       invoice.update_state_by_provider(transaction['status'])
     end
 

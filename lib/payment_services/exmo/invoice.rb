@@ -21,7 +21,7 @@ class PaymentServices::Exmo
 
       state :paid do
         on_entry do
-          order.auto_confirm!(income_amount: amount)
+          order.auto_confirm!(income_amount: amount, hash: transaction_id)
         end
       end
       state :cancelled
@@ -41,7 +41,7 @@ class PaymentServices::Exmo
     private
 
     def success?
-      provider_state == 'Transferred'
+      transaction_id.present?
     end
 
     def failed?
