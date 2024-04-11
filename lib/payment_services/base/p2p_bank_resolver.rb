@@ -115,6 +115,7 @@ class PaymentServices::Base::P2pBankResolver
         'rub' => {
           'sberbank' => 'SBERBANK',
           'tinkoff'  => 'TINKOFF',
+          'raiffeisen' => 'RAIFFEISENBANK',
           ''         => 'BANK_ANY'
         }
       },
@@ -122,6 +123,7 @@ class PaymentServices::Base::P2pBankResolver
         'rub' => {
           'sberbank' => 'SBERBANK',
           'tinkoff'  => 'TINKOFF',
+          'raiffeisen' => 'RAIFFEISENBANK',
           ''         => 'BANK_ANY'
         }
       }
