@@ -51,6 +51,7 @@ class PaymentServices::ExPay
 
     def invoice_p2p_params
       {
+        refer_type: 'p2p_payform',
         token: CURRENCY_TO_PROVIDER_TOKEN[income_currency.to_s],
         sub_token: provider_bank,
         amount: order.income_money.to_f,
