@@ -28,11 +28,7 @@ class PaymentServices::YourPayments
     end
 
     def update_invoice_state!
-<<<<<<< HEAD
       transaction = client.transaction(transaction_id: invoice.deposit_id)
-=======
-      transaction = client.transaction(deposit_id: invoice.deposit_id)
->>>>>>> master
       invoice.update_state_by_provider(transaction['status'])
     end
 
@@ -62,33 +58,14 @@ class PaymentServices::YourPayments
 
     def create_invoice!
       Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
-<<<<<<< HEAD
       response = client.create_provider_transaction(params: invoice_params)
 
       raise Error, "Can't create invoice: #{response}" unless response['order_id']
       invoice.update!(deposit_id: response['order_id'])
-=======
-      deposit_id = client.create_invoice(params: invoice_params).dig('order_id')
-      invoice.update!(deposit_id: deposit_id)
-    end
-
-    def update_provider_invoice(params:)
-      client.update_invoice(deposit_id: invoice.deposit_id, params: params)
->>>>>>> master
     end
 
     def fetch_card_details!
       status = request_trader
-<<<<<<< HEAD
-      raise Error, 'Нет доступных реквизитов для оплаты' if status.is_a? Integer
-
-      requisites = client.requisites(invoice_id: invoice.deposit_id)
-      card_number = requisites['card']
-      raise Error, 'Нет доступных реквизитов для оплаты' unless card_number.present?
-
-      card_number = prepare_phone_number(card_number) if sbp_payment?
-      [card_number, requisites['holder'], requisites['bank']]
-=======
       raise Error, 'Нет доступных реквизитов для оплаты' unless status == PROVIDER_REQUISITES_FOUND_STATE
 
       payment_details = client.payment_details(invoice_id: invoice.deposit_id)
@@ -96,18 +73,13 @@ class PaymentServices::YourPayments
       number = prepare_phone_number(number) if sbp_payment?
 
       [number, payment_details['holder'], payment_details['bank']]
->>>>>>> master
     end
 
     def request_trader
       PROVIDER_REQUEST_RETRIES.times do
         sleep 2
 
-<<<<<<< HEAD
-        status = client.request_requisites(params: { order_id: invoice.deposit_id, bank: provider_bank })
-=======
         status = client.request_payment_details(params: { order_id: invoice.deposit_id, bank: provider_bank })
->>>>>>> master
         break status if status == PROVIDER_REQUISITES_FOUND_STATE
       end
     end
@@ -126,11 +98,7 @@ class PaymentServices::YourPayments
     end
 
     def prepare_phone_number(provider_phone_number)
-<<<<<<< HEAD
-      "#{provider_phone_number[0..1]} (#{provider_phone_number[2..4]}) #{provider_phone_number[5..7]}-#{provider_phone_number[8..9]}-#{provider_phone_number[10..11]}"
-=======
       "#{provider_phone_number[0..1]} (#{provider_phone_number[3..5]}) #{provider_phone_number[7..9]}-#{provider_phone_number[11..12]}-#{provider_phone_number[14..15]}"
->>>>>>> master
     end
 
     def client
