@@ -63,7 +63,7 @@ class PaymentServices::YourPayments
     attr_reader :api_key, :secret_key
 
     def build_signature(params)
-      Digest::MD5.hexdigest(secret_key + params.to_json)
+      Digest::MD5.hexdigest("#{secret_key}+#{params.to_json}")
     end
 
     def build_headers
