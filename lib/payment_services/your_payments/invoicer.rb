@@ -68,19 +68,24 @@ class PaymentServices::YourPayments
 
     def fetch_card_details!
       status = request_trader
-      raise Error, 'Нет доступных реквизитов для оплаты' if status.is_a? Integer
+      raise Error, 'Нет доступных реквизитов для оплаты' unless status
 
-      requisites = client.requisites(invoice_id: invoice.deposit_id)
-      [requisites['card'], requisites['holder'], requisites['bank']]
+      payment_details = client.payment_details(invoice_id: invoice.deposit_id)
+      number = payment_details['card']
+      number = prepare_phone_number(number) if sbp_payment?
+
+      [number, requisites['holder'], requisites['bank']]
     end
 
     def request_trader
       PROVIDER_REQUEST_RETRIES.times do
         sleep 2
 
-        status = client.request_requisites(params: { order_id: invoice.deposit_id, bank: provider_bank })
+        status = client.request_payment_details(params: { order_id: invoice.deposit_id, bank: provider_bank })
         break status if status == PROVIDER_REQUISITES_FOUND_STATE
       end
+
+      nil
     end
 
     def provider_bank
@@ -94,6 +99,10 @@ class PaymentServices::YourPayments
 
     def sbp_payment?
       @sbp_payment ||= income_unk.present?
+    end
+
+    def prepare_phone_number(provider_phone_number)
+      "#{provider_phone_number[0..1]} (#{provider_phone_number[2..4]}) #{provider_phone_number[5..7]}-#{provider_phone_number[8..9]}-#{provider_phone_number[10..11]}"
     end
 
     def client

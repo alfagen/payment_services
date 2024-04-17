@@ -19,7 +19,7 @@ class PaymentServices::YourPayments
       )
     end
 
-    def request_requisites(params:)
+    def request_payment_details(params:)
       safely_parse http_request(
         url: "#{API_URL}/public/execute",
         method: :POST,
@@ -28,7 +28,7 @@ class PaymentServices::YourPayments
       )
     end
 
-    def requisites(invoice_id:)
+    def payment_details(invoice_id:)
       params = { order_id: invoice_id }
       safely_parse http_request(
         url: "#{API_URL}/public/order-details",
