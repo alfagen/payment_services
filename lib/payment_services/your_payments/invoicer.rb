@@ -7,6 +7,9 @@ class PaymentServices::YourPayments
   class Invoicer < ::PaymentServices::Base::Invoicer
     PROVIDER_REQUISITES_FOUND_STATE = 'TRADER_ACCEPTED'
     PROVIDER_REQUEST_RETRIES = 3
+    CARD_METHOD_TYPE = 'card_number'
+    SBP_METHOD_TYPE  = 'phone_number'
+
     Error = Class.new StandardError
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
@@ -39,7 +42,7 @@ class PaymentServices::YourPayments
 
     private
 
-    delegate :income_payment_system, :income_account, to: :order
+    delegate :income_payment_system, :income_unk, to: :order
     delegate :currency, to: :income_payment_system
 
     def invoice_params
@@ -47,7 +50,7 @@ class PaymentServices::YourPayments
         type: 'buy',
         amount: invoice.amount_cents,
         currency: currency.to_s,
-        method_type: 'card_number',
+        method_type: method_type,
         customer_id: order.user_id.to_s,
         invoice_id: order.public_id.to_s
       }
@@ -85,7 +88,16 @@ class PaymentServices::YourPayments
     end
 
     def provider_bank
-      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self).card_bank
+      resolver = PaymentServices::Base::P2pBankResolver.new(adapter: self)
+      sbp_payment? ? resolver.sbp_bank : resolver.card_bank
+    end
+
+    def method_type
+      sbp_payment? ? SBP_METHOD_TYPE : CARD_METHOD_TYPE
+    end
+
+    def sbp_payment?
+      @sbp_payment ||= income_unk.present?
     end
 
     def client
