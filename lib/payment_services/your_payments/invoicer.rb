@@ -100,7 +100,7 @@ class PaymentServices::YourPayments
     end
 
     def prepare_phone_number(provider_phone_number)
-      "#{provider_phone_number[0..1]} (#{provider_phone_number[2..4]}) #{provider_phone_number[5..7]}-#{provider_phone_number[8..9]}-#{provider_phone_number[10..11]}"
+      "#{provider_phone_number[0..1]} (#{provider_phone_number[3..5]}) #{provider_phone_number[7..9]}-#{provider_phone_number[11..12]}-#{provider_phone_number[14..15]}"
     end
 
     def client
