@@ -13,7 +13,7 @@ class PaymentServices::YourPayments
       create_invoice!
       card_number, card_holder, bank_name = fetch_card_details!
 
-      PaymentServices::Base::Wallet.new(address: card_number, name: card_holder, memo: bank_name.capitalize)
+      PaymentServices::Base::Wallet.new(address: card_number, name: card_holder, memo: bank_name)
     end
 
     def create_invoice(money)
@@ -68,11 +68,11 @@ class PaymentServices::YourPayments
       raise Error, 'Нет доступных реквизитов для оплаты' if status.is_a? Integer
 
       requisites = client.requisites(invoice_id: invoice.deposit_id)
-      card_number, card_holder, bank_name = transaction.dig('card'), transaction.dig('holder'), transaction.dig('bank')
+      card_number, card_holder, bank_name = requisites.dig('card'), requisites.dig('holder'), requisites.dig('bank')
 
       raise Error, 'Нет доступных реквизитов для оплаты' unless card_number.present?
 
-      [card_number, card_holder, bank_name]
+      [card_number.delete(' '), card_holder, bank_name]
     end
 
     def fetch_trader
