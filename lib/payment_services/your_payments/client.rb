@@ -48,8 +48,8 @@ class PaymentServices::YourPayments
       )
     end
 
-    def transaction(invoice_id:)
-      params = { merchant_id: api_key, order_id: invoice_id }
+    def transaction(deposit_id:)
+      params = { merchant_id: api_key, order_id: deposit_id }
       safely_parse http_request(
         url: "#{API_URL}/merchant-api/get-order",
         method: :POST,
