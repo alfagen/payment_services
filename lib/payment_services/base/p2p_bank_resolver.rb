@@ -275,7 +275,7 @@ class PaymentServices::Base::P2pBankResolver
         'Банк ОТКРЫТИЕ' => 'tochka_sbp',
         'Газпромбанк' => 'gazprom_sbp',
         'Промсвязьбанк' => 'promsvyazbank_sbp',
-        'Хоум кредит' => 'home_sbp', ?
+        'Хоум кредит' => 'home_sbp',
         'Россельхозбанк' => 'rosselhozbank_sbp',
         'Совкомбанк' => 'sovcombank_sbp',
         'Точка ФК Открытие' => 'tochka_sbp'
