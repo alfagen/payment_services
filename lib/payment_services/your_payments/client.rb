@@ -38,8 +38,8 @@ class PaymentServices::YourPayments
       )
     end
 
-    def confirm_payment(invoice_id:)
-      params = { order_id: invoice_id }
+    def confirm_payment(deposit_id:)
+      params = { order_id: deposit_id }
       safely_parse http_request(
         url: "#{API_URL}/public/mark-paid",
         method: :POST,
