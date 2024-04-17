@@ -226,6 +226,17 @@ class PaymentServices::Base::P2pBankResolver
         }
       },
       'outcome' => {}
+    },
+    'YourPayments' => {
+      'income' => {
+        'rub' => {
+          'tinkoff'    => 'tinkoff',
+          'sberbank'   => 'sberbank',
+          'raiffeisen' => 'raiffeisen',
+          ''           => 'tinkoff'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 
