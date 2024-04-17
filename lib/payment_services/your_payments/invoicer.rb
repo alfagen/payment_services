@@ -68,7 +68,7 @@ class PaymentServices::YourPayments
 
     def fetch_card_details!
       status = request_trader
-      raise Error, 'Нет доступных реквизитов для оплаты' unless status
+      raise Error, 'Нет доступных реквизитов для оплаты' unless status == PROVIDER_REQUISITES_FOUND_STATE
 
       payment_details = client.payment_details(invoice_id: invoice.deposit_id)
       number = payment_details['card']
@@ -84,8 +84,6 @@ class PaymentServices::YourPayments
         status = client.request_payment_details(params: { order_id: invoice.deposit_id, bank: provider_bank })
         break status if status == PROVIDER_REQUISITES_FOUND_STATE
       end
-
-      nil
     end
 
     def provider_bank
