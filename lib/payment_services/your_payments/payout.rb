@@ -9,11 +9,11 @@ class PaymentServices::YourPayments
     private
 
     def provider_succeed?
-      provider_state.in? SUCCESS_PROVIDER_STATES
+      provider_state.in? Invoice::SUCCESS_PROVIDER_STATES
     end
 
     def provider_failed?
-      provider_state.in? FAILED_PROVIDER_STATES
+      provider_state.in? Invoice::FAILED_PROVIDER_STATES
     end
   end
 end
