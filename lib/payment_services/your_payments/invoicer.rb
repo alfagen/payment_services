@@ -74,7 +74,7 @@ class PaymentServices::YourPayments
       number = payment_details['card']
       number = prepare_phone_number(number) if sbp_payment?
 
-      [number, requisites['holder'], requisites['bank']]
+      [number, payment_details['holder'], payment_details['bank']]
     end
 
     def request_trader
