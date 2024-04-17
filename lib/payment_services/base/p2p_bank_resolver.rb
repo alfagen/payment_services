@@ -236,7 +236,12 @@ class PaymentServices::Base::P2pBankResolver
           ''           => 'tinkoff'
         }
       },
-      'outcome' => {}
+      'outcome' => {
+        'tinkoff'    => 'tinkoff',
+        'sberbank'   => 'sberbank',
+        'raiffeisen' => 'raiffeisen',
+        ''           => 'tinkoff'
+      }
     }
   }.freeze
 
@@ -280,7 +285,21 @@ class PaymentServices::Base::P2pBankResolver
         'Совкомбанк' => 'sovcombank_sbp',
         'Точка ФК Открытие' => 'tochka_sbp'
       },
-      'outcome' => {}
+      'outcome' => {
+        'income' => {
+          'Тинькофф Банк' => 'tinkoff_sbp',
+          'Сбер' => 'sberbank_sbp',
+          'Банк ВТБ' => 'vtb_sbp',
+          'АЛЬФА-БАНК' => 'alfabank_sbp',
+          'Райффайзенбанк' => 'raiffeisen_sbp',
+          'Банк ОТКРЫТИЕ' => 'tochka_sbp',
+          'Газпромбанк' => 'gazprom_sbp',
+          'Промсвязьбанк' => 'promsvyazbank_sbp',
+          'Хоум кредит' => 'home_sbp',
+          'Россельхозбанк' => 'rosselhozbank_sbp',
+          'Совкомбанк' => 'sovcombank_sbp',
+          'Точка ФК Открытие' => 'tochka_sbp'
+      }
     }
   }.freeze
 
