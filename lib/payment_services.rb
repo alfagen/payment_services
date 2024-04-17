@@ -55,6 +55,7 @@ module PaymentServices
   autoload :XPayPro, 'payment_services/x_pay_pro'
   autoload :Wallex, 'payment_services/wallex'
   autoload :Tronscan, 'payment_services/tronscan'
+  autoload :YourPayments, 'payment_services/your_payments'
 
   UnauthorizedPayout = Class.new StandardError
 
