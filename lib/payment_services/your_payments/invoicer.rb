@@ -67,20 +67,16 @@ class PaymentServices::YourPayments
     end
 
     def fetch_card_details!
-      status = fetch_trader
+      status = request_trader
       raise Error, 'Нет доступных реквизитов для оплаты' if status.is_a? Integer
 
       requisites = client.requisites(invoice_id: invoice.deposit_id)
-      card_number, card_holder, bank_name = requisites.dig('card'), requisites.dig('holder'), requisites.dig('bank')
-
-      raise Error, 'Нет доступных реквизитов для оплаты' unless card_number.present?
-
-      [card_number.delete(' '), card_holder, bank_name]
+      [requisites['card'], requisites['holder'], requisites['bank']]
     end
 
-    def fetch_trader
+    def request_trader
       PROVIDER_REQUEST_RETRIES.times do
-        sleep 3
+        sleep 2
 
         status = client.request_requisites(params: { order_id: invoice.deposit_id, bank: provider_bank })
         break status if status == PROVIDER_REQUISITES_FOUND_STATE

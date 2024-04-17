@@ -68,7 +68,7 @@ class PaymentServices::YourPayments
 
     def build_headers
       {
-        'Content-Type'  => 'application/json'
+        'Content-Type' => 'application/json'
       }
     end
   end
