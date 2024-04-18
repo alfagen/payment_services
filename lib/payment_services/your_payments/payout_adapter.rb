@@ -40,7 +40,7 @@ class PaymentServices::YourPayments
       {
         type: 'sell',
         amount: payout.amount_cents,
-        currency: payout.currency.to_s,
+        currency: payout.amount_currency.to_s,
         method_type: method_type,
         customer_id: order.user_id.to_s,
         invoice_id: order.public_id.to_s,
