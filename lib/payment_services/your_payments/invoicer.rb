@@ -28,7 +28,7 @@ class PaymentServices::YourPayments
     end
 
     def update_invoice_state!
-      transaction = client.transaction(deposit_id: invoice.deposit_id)
+      transaction = client.transaction(transaction_id: invoice.deposit_id)
       invoice.update_state_by_provider(transaction['status'])
     end
 
@@ -58,12 +58,10 @@ class PaymentServices::YourPayments
 
     def create_invoice!
       Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
-      deposit_id = client.create_invoice(params: invoice_params).dig('order_id')
-      invoice.update!(deposit_id: deposit_id)
-    end
+      response = client.create_provider_transaction(params: invoice_params)
 
-    def update_provider_invoice(params:)
-      client.update_invoice(deposit_id: invoice.deposit_id, params: params)
+      raise Error, "Can't create invoice: #{response}" unless response['order_id']
+      invoice.update!(deposit_id: response['order_id'])
     end
 
     def fetch_card_details!

@@ -9,7 +9,7 @@ class PaymentServices::YourPayments
       @secret_key = secret_key
     end
 
-    def create_invoice(params:)
+    def create_provider_transaction(params:)
       params.merge!(merchant_id: api_key)
       safely_parse http_request(
         url: "#{API_URL}/merchant-api/create-order",
@@ -48,8 +48,8 @@ class PaymentServices::YourPayments
       )
     end
 
-    def transaction(deposit_id:)
-      params = { merchant_id: api_key, order_id: deposit_id }
+    def transaction(transaction_id:)
+      params = { merchant_id: api_key, order_id: transaction_id }
       safely_parse http_request(
         url: "#{API_URL}/merchant-api/get-order",
         method: :POST,
