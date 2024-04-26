@@ -244,6 +244,17 @@ class PaymentServices::Base::P2pBankResolver
           ''           => 'tinkoff'
         }
       }
+    },
+    'Bridgex' => {
+      'income' => {
+        'rub' => {
+          'sberbank'   => 'sberbank',
+          'tinkoff'    => 'tinkoff',
+          'raiffeisen' => 'raiffeisen',
+          ''           => 'sberbank'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 
@@ -301,6 +312,14 @@ class PaymentServices::Base::P2pBankResolver
         'Совкомбанк' => 'sovcombank_sbp',
         'Точка ФК Открытие' => 'tochka_sbp'
       }
+    },
+    'Bridgex' => {
+      'income' => {
+        'Тинькофф Банк' => 'tinkoff',
+        'Сбер' => 'sberbank',
+        'Райффайзенбанк' => 'raiffeisen'
+      },
+      'outcome' => {}
     }
   }.freeze
 
