@@ -16,7 +16,7 @@ class PaymentServices::Bridgex
 
       invoice.update!(
         deposit_id: order.public_id.to_s,
-        pay_url: response['url']
+        pay_url: response.dig('result', 'url')
       )
     end
 
