@@ -50,7 +50,6 @@ class PaymentServices::Bridgex
         sbp: sbp?,
         qr: 'no',
         ttl: order.income_payment_timeout.to_i,
-        url_redirect: order.success_redirect,
         bank: provider_bank,
         test_mode: 'no'
       }
