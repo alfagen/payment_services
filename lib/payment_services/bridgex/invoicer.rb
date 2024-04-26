@@ -39,6 +39,8 @@ class PaymentServices::Bridgex
 
     private
 
+    delegate :income_unk, to: :order
+
     def invoice_params
       {
         order: order.public_id.to_s,
