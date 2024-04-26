@@ -43,6 +43,7 @@ class PaymentServices::Bridgex
 
     def invoice_params
       {
+        amount: invoice.amount.to_f,
         order: order.public_id.to_s,
         customer_ip: order.remote_ip,
         customer_ident: '1',
