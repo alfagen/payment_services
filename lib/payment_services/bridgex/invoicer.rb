@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::Bridgex
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
-    PAYMENT_TIMEOUT_IN_SECONDS = 600
+    PAYMENT_TIMEOUT_IN_SECONDS = 900
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -53,7 +53,7 @@ class PaymentServices::Bridgex
         qr: 'no',
         ttl: PAYMENT_TIMEOUT_IN_SECONDS,
         bank: provider_bank,
-        test_mode: 'yes'
+        test_mode: 'no'
       }
     end
 
