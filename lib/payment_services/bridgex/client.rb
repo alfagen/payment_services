@@ -10,11 +10,11 @@ class PaymentServices::Bridgex
     end
 
     def create_invoice(params:)
-      params.merge!(project: api_key)
+      param = { project: api_key }.merge(params)
       safely_parse http_request(
         url: "#{API_URL}/payment/create",
         method: :POST,
-        body: params.merge(sign: build_signature(params)).to_json,
+        body: param.merge(sign: build_signature(param)).to_json,
         headers: build_headers
       )
     end
