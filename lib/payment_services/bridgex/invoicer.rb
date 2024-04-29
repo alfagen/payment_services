@@ -30,7 +30,7 @@ class PaymentServices::Bridgex
 
     def update_invoice_state!
       transaction = client.transaction(deposit_id: invoice.deposit_id)
-      invoice.update_state_by_provider(response.dig('result', 'payment_status'))
+      invoice.update_state_by_provider(transaction.dig('result', 'payment_status'))
     end
 
     def invoice
