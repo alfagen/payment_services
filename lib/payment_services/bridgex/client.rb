@@ -20,7 +20,7 @@ class PaymentServices::Bridgex
     end
 
     def transaction(deposit_id:)
-      params = { project: api_key, order_id: deposit_id }
+      params = { project: api_key, order_id: deposit_id, test_mode: 'yes' }
       safely_parse http_request(
         url: "#{API_URL}/payment/status",
         method: :POST,
