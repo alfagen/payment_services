@@ -3,7 +3,7 @@
 class PaymentServices::Bridgex
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://p2p-api.bridgex.ai/v1'
-    TEST_MODE = 'yes'
+    TEST_MODE = 'no'
 
     def initialize(api_key:, secret_key:)
       @api_key = api_key
