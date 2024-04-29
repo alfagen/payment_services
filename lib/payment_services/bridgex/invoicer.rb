@@ -51,8 +51,7 @@ class PaymentServices::Bridgex
         sbp: sbp?,
         qr: 'no',
         ttl: PAYMENT_TIMEOUT_IN_SECONDS,
-        bank: provider_bank,
-        test_mode: 'yes'
+        bank: provider_bank
       }
     end
 

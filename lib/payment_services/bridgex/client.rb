@@ -3,6 +3,7 @@
 class PaymentServices::Bridgex
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://p2p-api.bridgex.ai/v1'
+    TEST_MODE = 'yes'
 
     def initialize(api_key:, secret_key:)
       @api_key = api_key
@@ -10,7 +11,7 @@ class PaymentServices::Bridgex
     end
 
     def create_invoice(params:)
-      params.merge!(project: api_key)
+      params.merge!(project: api_key, test_mode: TEST_MODE)
       safely_parse http_request(
         url: "#{API_URL}/payment/create",
         method: :POST,
@@ -20,7 +21,7 @@ class PaymentServices::Bridgex
     end
 
     def transaction(deposit_id:)
-      params = { project: api_key, order_id: deposit_id, test_mode: 'yes' }
+      params = { project: api_key, order_id: deposit_id, test_mode: TEST_MODE }
       safely_parse http_request(
         url: "#{API_URL}/payment/status",
         method: :POST,
