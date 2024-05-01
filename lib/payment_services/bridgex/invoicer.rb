@@ -45,7 +45,7 @@ class PaymentServices::Bridgex
       {
         amount: invoice.amount.to_i,
         order: order.public_id.to_s,
-        customer_ip: "",
+        customer_ip: order.remote_ip,
         customer_ident: '0',
         card: card?,
         sbp: sbp?,
