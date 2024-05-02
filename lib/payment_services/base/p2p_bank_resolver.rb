@@ -250,7 +250,7 @@ class PaymentServices::Base::P2pBankResolver
         'rub' => {
           'sberbank'   => 'sberbank',
           'tinkoff'    => 'tinkoff',
-          'raiffeisen' => 'raiffeisen',
+          'raiffeisen' => 'Raiffeisen',
           ''           => 'sberbank'
         }
       },
@@ -317,7 +317,7 @@ class PaymentServices::Base::P2pBankResolver
       'income' => {
         'Тинькофф Банк' => 'tinkoff',
         'Сбер' => 'sberbank',
-        'Райффайзенбанк' => 'raiffeisen'
+        'Райффайзенбанк' => 'Raiffeisen'
       },
       'outcome' => {}
     }
