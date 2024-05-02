@@ -49,7 +49,7 @@ class PaymentServices::Bridgex
         customer_ident: '1',
         card: card?,
         sbp: sbp?,
-        qr: qr?,
+        qr: 'no',
         ttl: PAYMENT_TIMEOUT_IN_SECONDS,
         bank: provider_bank
       }
@@ -66,10 +66,6 @@ class PaymentServices::Bridgex
 
     def card?
       sbp_payment? ? 'no' : 'yes'
-    end
-
-    def qr?
-      sbp_payment? ? 'yes' : 'no'
     end
 
     def sbp_payment?
