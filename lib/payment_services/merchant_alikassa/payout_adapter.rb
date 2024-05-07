@@ -44,7 +44,7 @@ class PaymentServices::MerchantAlikassa
       number = sbp? ? payout.destination_account[1..-1] : payout.destination_account
 
       params = {
-        amount: payout.amount.to_f.to_s,
+        amount: "%.2f" % payout.amount.to_f,
         number: payout.destination_account,
         order_id: order.public_id.to_s,
         service: service
