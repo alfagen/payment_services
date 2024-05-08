@@ -28,7 +28,7 @@ class PaymentServices::MerchantAlikassa
     end
 
     def update_invoice_state!
-      transaction = client.transaction(deposit_id: invoice.deposit_id)
+      transaction = client.invoice_transaction(deposit_id: invoice.deposit_id)
       invoice.update_state_by_provider(transaction['payment_status'])
     end
 
