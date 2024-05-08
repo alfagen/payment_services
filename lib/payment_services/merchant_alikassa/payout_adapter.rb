@@ -45,7 +45,7 @@ class PaymentServices::MerchantAlikassa
 
       params = {
         amount: "%.2f" % payout.amount.to_f,
-        number: payout.destination_account,
+        number: number,
         order_id: order.public_id.to_s,
         service: service
       }
