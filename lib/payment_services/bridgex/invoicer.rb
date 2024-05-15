@@ -39,10 +39,11 @@ class PaymentServices::Bridgex
 
     private
 
-    delegate :income_unk, to: :order
+    delegate :require_income_card_verification, to: :income_payment_system
+    delegate :income_unk, :income_payment_system, to: :order
 
     def invoice_params
-      {
+      params = {
         amount: invoice.amount.to_i,
         order: order.public_id.to_s,
         customer_ip: order.remote_ip,
@@ -53,6 +54,8 @@ class PaymentServices::Bridgex
         ttl: PAYMENT_TIMEOUT_IN_SECONDS,
         bank: provider_bank
       }
+      params[:category] = 17 if require_income_card_verification?
+      params
     end
 
     def provider_bank
