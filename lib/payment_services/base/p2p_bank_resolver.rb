@@ -252,10 +252,10 @@ class PaymentServices::Base::P2pBankResolver
     'Bridgex' => {
       'income' => {
         'rub' => {
-          'sberbank'   => 'sberbank',
-          'tinkoff'    => 'tinkoff',
+          'sberbank'   => 'Sberbank',
+          'tinkoff'    => 'Tinkoff',
           'raiffeisen' => 'Raiffeisen',
-          ''           => 'sberbank'
+          ''           => 'unused_param'
         }
       },
       'outcome' => {}

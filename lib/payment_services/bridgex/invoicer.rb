@@ -7,6 +7,7 @@ class PaymentServices::Bridgex
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
     PAYMENT_TIMEOUT_IN_SECONDS = 900
+    UNUSED_BANK_PARAM = 'unused_param'
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
@@ -51,10 +52,10 @@ class PaymentServices::Bridgex
         card: card?,
         sbp: sbp?,
         qr: 'no',
-        ttl: PAYMENT_TIMEOUT_IN_SECONDS,
-        bank: provider_bank
+        ttl: PAYMENT_TIMEOUT_IN_SECONDS
       }
       params[:category] = 17 if !require_income_card_verification
+      params[:bank] = provider_bank unless provider_bank == UNUSED_BANK_PARAM
       params
     end
 
