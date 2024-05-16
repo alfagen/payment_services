@@ -54,7 +54,7 @@ class PaymentServices::Bridgex
         ttl: PAYMENT_TIMEOUT_IN_SECONDS,
         bank: provider_bank
       }
-      params[:category] = 17 if require_income_card_verification
+      params[:category] = 17 if !require_income_card_verification
       params
     end
 
