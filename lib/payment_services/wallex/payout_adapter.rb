@@ -39,15 +39,16 @@ class PaymentServices::Wallex
     end
 
     def payout_params
+      order = OrderPayout.find(payout.order_payout_id).order
       params = {
         uuid: "#{Rails.env}_#{payout.id}",
         amount: payout.amount.to_f.to_s,
         currency: 'rub',
         type: 'fiat',
         bank: card_bank,
-        number: payout.destination_account,
         fiat: 'rub'
       }
+      params[:number] = sbp? ? order.outcome_phone : order.destination_account
       params[:bankCode] = sbp_bank if sbp?
       params
     end

@@ -358,13 +358,15 @@ class PaymentServices::Base::P2pBankResolver
   end
 
   def sbp?
-    @sbp ||= currency.rub? && sbp_client_field.present?
+    @sbp ||= currency.rub? && sbp_checkbox
   end
 
   private
 
   attr_reader :direction
 
+  delegate :income_sbp, to: :income_payment_system
+  delegate :outcome_sbp, to: :outcome_payment_system
   delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :income_unk, :outcome_unk, to: :order
 
   def order
@@ -381,5 +383,9 @@ class PaymentServices::Base::P2pBankResolver
 
   def sbp_client_field
     @sbp_client_field ||= send("#{direction}_unk")
+  end
+
+  def sbp_checkbox
+    @sbp_checkbox ||= send("#{direction}_sbp")
   end
 end
