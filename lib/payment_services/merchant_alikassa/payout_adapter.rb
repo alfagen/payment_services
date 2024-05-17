@@ -41,7 +41,8 @@ class PaymentServices::MerchantAlikassa
     end
 
     def payout_params
-      number = sbp? ? payout.destination_account[1..-1] : payout.destination_account
+      order = OrderPayout.find(payout.order_payout_id).order
+      number = sbp? ? order.outcome_phone[1..-1] : payout.destination_account
 
       params = {
         amount: "%.2f" % payout.amount.to_f,
