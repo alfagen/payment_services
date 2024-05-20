@@ -38,7 +38,7 @@ class PaymentServices::AdvCash
       {
         amount: invoice.formatted_amount,
         currency: invoice.amount_currency.to_s,
-        receiver: wallet.adv_cash_merchant_email,
+        receiver: order.income_wallet.adv_cash_merchant_email,
         orderId: order.public_id.to_s,
         redirectUrl: order.success_redirect
       }
