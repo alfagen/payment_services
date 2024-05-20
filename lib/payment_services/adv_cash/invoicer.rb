@@ -3,62 +3,49 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 require_relative 'invoice'
+require_relative 'client'
 
 class PaymentServices::AdvCash
   class Invoicer < ::PaymentServices::Base::Invoicer
-    ADV_CASH_URL = 'https://wallet.advcash.com/sci/'
-
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
+      response = client.create_invoice(params: invoice_params)
+
+      invoice.update!(
+        deposit_id: response['id'],
+        pay_url: response['paymentUrl']
+      )
+    end
+
+    def pay_invoice_url
+      invoice.present? ? URI.parse(invoice.reload.pay_url) : ''
+    end
+
+    def async_invoice_state_updater?
+      true
+    end
+
+    def update_invoice_state!
+      transaction = client.find_invoice(deposit_id: invoice.deposit_id)
+      invoice.update_state_by_provider(transaction['status'])
     end
 
     def invoice
       @invoice ||= Invoice.find_by(order_public_id: order.public_id)
     end
 
-    def invoice_form_data # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      routes_helper = Rails.application.routes.url_helpers
-      invoice = Invoice.find_by!(order_public_id: order.public_id)
-
-      form_data = {
-        email: order.income_wallet.adv_cash_merchant_email.presence ||
-               raise("Не установлено поле adv_cash_merchant_email у кошелька #{order.income_wallet.id}"),
-        shop_name: order.income_wallet.merchant_id.presence ||
-                   raise("Не установлено поле merchant_id у кошелька #{order.income_wallet.id}"),
-        amount: invoice.formatted_amount,
-        currency: invoice.amount.currency.to_s,
-        order_id: invoice.order_public_id
-      }
-
-      sign_array = [
-        form_data[:email],
-        form_data[:shop_name],
-        form_data[:amount],
-        form_data[:currency],
-        api_key,
-        form_data[:order_id]
-      ]
-      signature = Digest::SHA256.hexdigest(sign_array.join(':'))
-
+    def invoice_params
       {
-        url: ADV_CASH_URL,
-        method: 'post',
-        inputs: {
-          ac_account_email: form_data[:email],
-          ac_sci_name: form_data[:shop_name],
-          ac_order_id: form_data[:order_id],
-          ac_sign: signature,
-          ac_status_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/adv_cash/receive_payment",
-          ac_success_url: order.success_redirect,
-          ac_success_method: 'get',
-          ac_fail_url: order.failed_redirect,
-          ac_fail_method: 'get',
-          ac_status_url_method: 'post',
-          ac_amount: form_data[:amount],
-          ac_currency: form_data[:currency],
-          ac_comments: I18n.t('payment_systems.default_product', order_id: order.public_id)
-        }
+        amount: invoice.formatted_amount,
+        currency: invoice.amount_currency.to_s,
+        receiver: wallet.adv_cash_merchant_email,
+        orderId: order.public_id.to_s,
+        redirectUrl: order.success_redirect
       }
+    end
+
+    def client
+      @client ||= Client.new(api_name: wallet.merchant_id, authentication_token: api_key, account_email: wallet.adv_cash_merchant_email)
     end
   end
 end
