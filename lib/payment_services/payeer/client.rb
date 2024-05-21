@@ -35,6 +35,7 @@ class PaymentServices::Payeer
           apiId: secret_key,
           apiPass: api_key,
           action: 'paymentDetails',
+          merchantId: api_id,
           referenceId: deposit_id
         },
         headers: build_headers
