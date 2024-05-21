@@ -10,9 +10,9 @@ class PaymentServices::Payeer
 
     def update_state_by_provider(invoice_transactions)
       invoice_transactions_sum = invoice_transactions.sum do |transaction| 
-        transaction['currency'] == invoice.amount_currency ? transaction['amount'] : 0
+        transaction['currency'] == amount_currency ? transaction['amount'] : 0
       end 
-      pay! if invoice_transactions_sum == invoice.amount.to_f
+      pay! if invoice_transactions_sum == amount.to_f
     end
   end
 end
