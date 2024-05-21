@@ -1,15 +1,41 @@
 # frozen_string_literal: true
 
 class PaymentServices::Payeer
-  class Client
-    include AutoLogger
-    TIMEOUT = 10
+  class Client < ::PaymentServices::Base::Client
     API_URL = 'https://payeer.com/ajax/api/api.php'
 
-    def initialize(api_id:, api_key:, currency:)
+    def initialize(api_id:, api_key:, currency:, account:)
       @api_id = api_id
       @api_key = api_key
       @currency = currency
+      @account = account
+    end
+
+    def create_invoice(params:)
+      safely_parse http_request(
+        url: API_URL + '?invoiceCreate',
+        method: :POST,
+        body: params.merge(
+          account: account,
+          apiId: api_id,
+          apiPass: api_key,
+          action: 'invoiceCreate'
+        )
+      )
+    end
+
+    def find_invoice(deposit_id:)
+      safely_parse http_request(
+        url: API_URL + '?paymentDetails',
+        method: :POST,
+        body: {
+          account: account,
+          apiId: api_id,
+          apiPass: api_key,
+          action: 'paymentDetails',
+          referenceId: deposit_id
+        }
+      )
     end
 
     def create_payout(params:)
@@ -40,15 +66,7 @@ class PaymentServices::Payeer
 
     private
 
-    attr_reader :api_id, :api_key, :currency
-
-    def http_request(url:, method:, body: nil)
-      uri = URI.parse(url)
-      https = http(uri)
-      request = build_request(uri: uri, method: method, body: body)
-      logger.info "Request type: #{method} to #{uri} with payload #{request.body}"
-      https.request(request)
-    end
+    attr_reader :api_id, :api_key, :currency, :account
 
     def build_request(uri:, method:, body: nil)
       request = if method == :POST
@@ -66,26 +84,6 @@ class PaymentServices::Payeer
       {
         'content_type'  => 'application/x-www-form-urlencoded'
       }
-    end
-
-    def http(uri)
-      Net::HTTP.start(uri.host, uri.port,
-                      use_ssl: true,
-                      verify_mode: OpenSSL::SSL::VERIFY_NONE,
-                      open_timeout: TIMEOUT,
-                      read_timeout: TIMEOUT)
-    end
-
-    def safely_parse(response)
-      res = JSON.parse(response.body)
-      logger.info "Response: #{res}"
-      res
-    rescue JSON::ParserError => err
-      logger.warn "Request failed #{response.class} #{response.body}"
-      Bugsnag.notify err do |report|
-        report.add_tab(:response, response_class: response.class, response_body: response.body)
-      end
-      response.body
     end
   end
 end

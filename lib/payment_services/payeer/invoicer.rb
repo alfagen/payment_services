@@ -3,44 +3,51 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 require_relative 'invoice'
+require_relative 'client'
 
 class PaymentServices::Payeer
   class Invoicer < ::PaymentServices::Base::Invoicer
-    PAYEER_URL = 'https://payeer.com/merchant/'
-
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
+      response = client.create_invoice(params: invoice_params)
+
+      invoice.update!(
+        deposit_id: order.public_id.to_s,
+        pay_url: response['url']
+      )
     end
 
     def pay_invoice_url
-      invoice = Invoice.find_by!(order_public_id: order.public_id)
+      invoice.present? ? URI.parse(invoice.reload.pay_url) : ''
+    end
 
-      payment_data = {
-        amount: format('%.2f', invoice.amount.to_f),
-        currency: invoice.amount.currency.to_s,
-        description: Base64.strict_encode64(I18n.t('payment_systems.default_product', order_id: order.public_id))
-      }
+    def async_invoice_state_updater?
+      true
+    end
 
-      sign_array = [
-        order.income_wallet.merchant_id,
-        order.public_id,
-        payment_data[:amount],
-        payment_data[:currency],
-        payment_data[:description],
-        api_key
-      ]
-      signature = Digest::SHA256.hexdigest(sign_array.join(':')).upcase
+    def update_invoice_state!
+      transaction = client.find_invoice(deposit_id: invoice.deposit_id)
+      invoice.update_state_by_provider(transaction['items'])
+    end
 
-      uri = URI.parse(PAYEER_URL)
-      uri.query = {
+    def invoice
+      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
+    end
+
+    private
+
+    def client
+      @client ||= Client.new(api_id: order.income_wallet.merchant_id, api_key: api_key, currency: order.income_wallet.currency.to_s, account: order.income_wallet.num_ps)
+    end
+
+    def invoice_params
+      {
         m_shop: order.income_wallet.merchant_id,
-        m_orderid: order.public_id,
-        m_amount: payment_data[:amount],
-        m_curr: payment_data[:currency],
-        m_desc: payment_data[:description],
-        m_sign: signature
-      }.to_query
-      uri
+        m_orderid: order.public_id.to_s,
+        m_amount: invoice.amount.to_d,
+        m_curr: invoice.amount_currency.to_s,
+        m_desc: "##{order.public_id}"
+      }
     end
   end
 end
