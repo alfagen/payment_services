@@ -35,9 +35,11 @@ class PaymentServices::AdvCash
     end
 
     def invoice_params
+      currency = invoice.amount_currency.to_s
+      currency = 'RUR' if currency == 'RUB'
       {
         amount: invoice.formatted_amount,
-        currency: invoice.amount_currency.to_s,
+        currency: currency,
         receiver: order.income_wallet.adv_cash_merchant_email,
         orderId: order.public_id.to_s,
         redirectUrl: order.success_redirect
