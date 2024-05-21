@@ -1,15 +1,45 @@
 # frozen_string_literal: true
 
 class PaymentServices::Payeer
-  class Client
-    include AutoLogger
-    TIMEOUT = 10
+  class Client < ::PaymentServices::Base::Client
     API_URL = 'https://payeer.com/ajax/api/api.php'
 
-    def initialize(api_id:, api_key:, currency:)
+    def initialize(api_id:, api_key:, currency:, account:, secret_key:)
       @api_id = api_id
       @api_key = api_key
       @currency = currency
+      @account = account
+      @secret_key = secret_key
+    end
+
+    def create_invoice(params:)
+      safely_parse http_request(
+        url: API_URL + '?invoiceCreate',
+        method: :POST,
+        body: params.merge(
+          account: account,
+          apiId: secret_key,
+          apiPass: api_key,
+          action: 'invoiceCreate'
+        ),
+        headers: build_headers
+      )
+    end
+
+    def find_invoice(deposit_id:)
+      safely_parse http_request(
+        url: API_URL + '?paymentDetails',
+        method: :POST,
+        body: {
+          account: account,
+          apiId: secret_key,
+          apiPass: api_key,
+          action: 'paymentDetails',
+          merchantId: api_id,
+          referenceId: deposit_id
+        },
+        headers: build_headers
+      )
     end
 
     def create_payout(params:)
@@ -17,12 +47,13 @@ class PaymentServices::Payeer
         url: API_URL + '?transfer',
         method: :POST,
         body: params.merge(
-          apiId: api_id,
+          apiId: secret_key,
           apiPass: api_key,
           curIn: currency,
           curOut: currency,
           action: 'transfer'
-        )
+        ),
+        headers: build_headers
       )
     end
 
@@ -31,26 +62,19 @@ class PaymentServices::Payeer
         url: API_URL + '?history',
         method: :POST,
         body: params.merge(
-          apiId: api_id,
+          apiId: secret_key,
           apiPass: api_key,
           action: 'history'
-        )
+        ),
+        headers: build_headers
       )
     end
 
     private
 
-    attr_reader :api_id, :api_key, :currency
+    attr_reader :api_id, :api_key, :currency, :account, :secret_key
 
-    def http_request(url:, method:, body: nil)
-      uri = URI.parse(url)
-      https = http(uri)
-      request = build_request(uri: uri, method: method, body: body)
-      logger.info "Request type: #{method} to #{uri} with payload #{request.body}"
-      https.request(request)
-    end
-
-    def build_request(uri:, method:, body: nil)
+    def build_request(uri:, method:, body: nil, headers:)
       request = if method == :POST
                   Net::HTTP::Post.new(uri.request_uri, headers)
                 elsif method == :GET
@@ -62,30 +86,10 @@ class PaymentServices::Payeer
       request
     end
 
-    def headers
+    def build_headers
       {
         'content_type'  => 'application/x-www-form-urlencoded'
       }
-    end
-
-    def http(uri)
-      Net::HTTP.start(uri.host, uri.port,
-                      use_ssl: true,
-                      verify_mode: OpenSSL::SSL::VERIFY_NONE,
-                      open_timeout: TIMEOUT,
-                      read_timeout: TIMEOUT)
-    end
-
-    def safely_parse(response)
-      res = JSON.parse(response.body)
-      logger.info "Response: #{res}"
-      res
-    rescue JSON::ParserError => err
-      logger.warn "Request failed #{response.class} #{response.body}"
-      Bugsnag.notify err do |report|
-        report.add_tab(:response, response_class: response.class, response_body: response.body)
-      end
-      response.body
     end
   end
 end
