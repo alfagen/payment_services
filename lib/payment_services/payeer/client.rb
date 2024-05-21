@@ -20,7 +20,8 @@ class PaymentServices::Payeer
           apiId: api_id,
           apiPass: api_key,
           action: 'invoiceCreate'
-        )
+        ),
+        headers: build_headers
       )
     end
 
@@ -34,7 +35,8 @@ class PaymentServices::Payeer
           apiPass: api_key,
           action: 'paymentDetails',
           referenceId: deposit_id
-        }
+        },
+        headers: build_headers
       )
     end
 
@@ -48,7 +50,8 @@ class PaymentServices::Payeer
           curIn: currency,
           curOut: currency,
           action: 'transfer'
-        )
+        ),
+        headers: build_headers
       )
     end
 
@@ -60,7 +63,8 @@ class PaymentServices::Payeer
           apiId: api_id,
           apiPass: api_key,
           action: 'history'
-        )
+        ),
+        headers: build_headers
       )
     end
 
@@ -68,7 +72,7 @@ class PaymentServices::Payeer
 
     attr_reader :api_id, :api_key, :currency, :account
 
-    def build_request(uri:, method:, body: nil)
+    def build_request(uri:, method:, body: nil, headers:)
       request = if method == :POST
                   Net::HTTP::Post.new(uri.request_uri, headers)
                 elsif method == :GET
@@ -80,7 +84,7 @@ class PaymentServices::Payeer
       request
     end
 
-    def headers
+    def build_headers
       {
         'content_type'  => 'application/x-www-form-urlencoded'
       }
