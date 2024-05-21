@@ -4,11 +4,12 @@ class PaymentServices::Payeer
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://payeer.com/ajax/api/api.php'
 
-    def initialize(api_id:, api_key:, currency:, account:)
+    def initialize(api_id:, api_key:, currency:, account:, secret_key:)
       @api_id = api_id
       @api_key = api_key
       @currency = currency
       @account = account
+      @secret_key = secret_key
     end
 
     def create_invoice(params:)
@@ -17,7 +18,7 @@ class PaymentServices::Payeer
         method: :POST,
         body: params.merge(
           account: account,
-          apiId: api_id,
+          apiId: secret_key,
           apiPass: api_key,
           action: 'invoiceCreate'
         ),
@@ -31,7 +32,7 @@ class PaymentServices::Payeer
         method: :POST,
         body: {
           account: account,
-          apiId: api_id,
+          apiId: secret_key,
           apiPass: api_key,
           action: 'paymentDetails',
           referenceId: deposit_id
@@ -45,7 +46,7 @@ class PaymentServices::Payeer
         url: API_URL + '?transfer',
         method: :POST,
         body: params.merge(
-          apiId: api_id,
+          apiId: secret_key,
           apiPass: api_key,
           curIn: currency,
           curOut: currency,
@@ -60,7 +61,7 @@ class PaymentServices::Payeer
         url: API_URL + '?history',
         method: :POST,
         body: params.merge(
-          apiId: api_id,
+          apiId: secret_key,
           apiPass: api_key,
           action: 'history'
         ),
@@ -70,7 +71,7 @@ class PaymentServices::Payeer
 
     private
 
-    attr_reader :api_id, :api_key, :currency, :account
+    attr_reader :api_id, :api_key, :currency, :account, :secret_key
 
     def build_request(uri:, method:, body: nil, headers:)
       request = if method == :POST

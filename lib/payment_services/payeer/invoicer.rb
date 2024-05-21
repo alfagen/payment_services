@@ -37,7 +37,7 @@ class PaymentServices::Payeer
     private
 
     def client
-      @client ||= Client.new(api_id: order.income_wallet.merchant_id, api_key: api_key, currency: order.income_wallet.currency.to_s, account: order.income_wallet.num_ps)
+      @client ||= Client.new(api_id: order.income_wallet.merchant_id, api_key: api_key, currency: order.income_wallet.currency.to_s, account: order.income_wallet.num_ps, secret_key: api_secret)
     end
 
     def invoice_params
