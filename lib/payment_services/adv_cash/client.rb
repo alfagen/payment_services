@@ -14,6 +14,28 @@ class PaymentServices::AdvCash
       @account_email = account_email
     end
 
+    def create_invoice(params:)
+      safely_parse soap_request(
+        url: SOAP_URL,
+        operation: :create_p2p_order,
+        body: {
+          arg0: authentication_params,
+          arg1: params
+        }
+      )
+    end
+
+    def find_invoice(deposit_id:)
+      safely_parse soap_request(
+        url: SOAP_URL,
+        operation: :find_p2p_order_by_order_id,
+        body: {
+          arg0: authentication_params,
+          arg1: deposit_id
+        }
+      )
+    end
+
     def create_payout(params:)
       safely_parse soap_request(
         url: SOAP_URL,
