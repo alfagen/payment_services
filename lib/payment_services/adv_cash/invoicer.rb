@@ -13,7 +13,7 @@ class PaymentServices::AdvCash
 
       invoice.update!(
         deposit_id: response[:id],
-        pay_url: response[:paymentUrl]
+        pay_url: response[:payment_url]
       )
     end
 

@@ -25,13 +25,13 @@ class PaymentServices::AdvCash
       )
     end
 
-    def find_invoice(invoice_id:)
+    def find_invoice(deposit_id:)
       safely_parse soap_request(
         url: SOAP_URL,
         operation: :find_p2p_order_by_order_id,
         body: {
           arg0: authentication_params,
-          arg1: invoice_id
+          arg1: deposit_id
         }
       )
     end
