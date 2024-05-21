@@ -9,11 +9,11 @@ class PaymentServices::AdvCash
   class Invoicer < ::PaymentServices::Base::Invoicer
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
-      response = client.create_invoice(params: invoice_params)
+      response = client.create_invoice(params: invoice_params).dig(:create_p2p_order_response, :return)
 
       invoice.update!(
-        deposit_id: response['id'],
-        pay_url: response['paymentUrl']
+        deposit_id: response[:id],
+        pay_url: response[:paymentUrl]
       )
     end
 
@@ -26,8 +26,8 @@ class PaymentServices::AdvCash
     end
 
     def update_invoice_state!
-      transaction = client.find_invoice(deposit_id: invoice.deposit_id)
-      invoice.update_state_by_provider(transaction['status'])
+      transaction = client.find_invoice(deposit_id: invoice.deposit_id).dig(:find_p2p_order_by_order_id_response, :return)
+      invoice.update_state_by_provider(transaction[:status])
     end
 
     def invoice
