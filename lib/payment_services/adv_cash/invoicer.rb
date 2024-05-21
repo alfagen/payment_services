@@ -12,7 +12,7 @@ class PaymentServices::AdvCash
       response = client.create_invoice(params: invoice_params).dig(:create_p2p_order_response, :return)
 
       invoice.update!(
-        deposit_id: response[:id],
+        deposit_id: response[:order_id],
         pay_url: response[:payment_url]
       )
     end
