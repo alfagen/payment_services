@@ -11,7 +11,7 @@ class PaymentServices::Transfera
 
     def create_invoice(params:)
       safely_parse http_request(
-        url: "#{API_URL}/integrations/ru/transactions/new",
+        url: "#{API_URL}/integrations/ru/transactions/new/",
         method: :POST,
         body: params.merge(merchantToken: api_key, hmacHash: signature(params)).to_json,
         headers: build_headers
