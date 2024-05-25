@@ -15,7 +15,7 @@ class PaymentServices::Transfera
 
       invoice.update!(deposit_id: response.dig('data', 'order_id'))
       PaymentServices::Base::Wallet.new(
-        address: response['card'],
+        address: response.dig('data', 'card'),
         name: nil
       )
     end
