@@ -264,6 +264,7 @@ class PaymentServices::Base::P2pBankResolver
       'income' => {
         'rub' => {
           'sberbank'   => 'Sber',
+          'raiffeisen' => 'Raif',
           ''           => 'Mastercard'
         }
       },

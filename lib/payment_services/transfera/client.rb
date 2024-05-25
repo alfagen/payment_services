@@ -2,7 +2,7 @@
 
 class PaymentServices::Transfera
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://adm.transfera.io/api/v1'
+    API_URL = 'https://api.transfera.io'
 
     def initialize(api_key:, secret_key:)
       @api_key = api_key
