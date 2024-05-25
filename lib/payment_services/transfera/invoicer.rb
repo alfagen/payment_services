@@ -6,13 +6,14 @@ require_relative 'client'
 class PaymentServices::Transfera
   class Invoicer < ::PaymentServices::Base::Invoicer
     SBP_PAYMENT_METHOD  = 'SBP'
+    Error = Class.new StandardError
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
       response = client.create_invoice(params: invoice_params)
-      raise "#{response}" unless response['order_id']
+      raise Error, "Can't create invoice" unless response.dig('data', 'order_id')
 
-      invoice.update!(deposit_id: response['order_id'])
+      invoice.update!(deposit_id: response.dig('data', 'order_id'))
       PaymentServices::Base::Wallet.new(
         address: response['card'],
         name: nil
