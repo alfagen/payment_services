@@ -2,8 +2,8 @@
 
 class PaymentServices::Transfera
   class Invoice < ::PaymentServices::Base::FiatInvoice
-    SUCCESS_PROVIDER_STATE  = 'PAID'
-    FAILED_PROVIDER_STATE   = 'CANCELLED'
+    SUCCESS_PROVIDER_STATE  = 'Success'
+    FAILED_PROVIDER_STATE   = 'Fail'
 
     self.table_name = 'transferas_invoices'
 

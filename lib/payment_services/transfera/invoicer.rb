@@ -47,7 +47,7 @@ class PaymentServices::Transfera
 
     def invoice_params
       {
-        amount: invoice.amount.to_i,
+        amount: invoice.amount.to_f,
         currency: invoice.amount_currency.to_s,
         payload: {
           id: order.public_id.to_s
