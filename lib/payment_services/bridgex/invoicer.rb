@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::Bridgex
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
-    PAYMENT_TIMEOUT_IN_SECONDS = 900
+    PAYMENT_TIMEOUT_IN_SECONDS = 1800
     UNUSED_BANK_PARAM = 'unused_param'
 
     def create_invoice(money)
