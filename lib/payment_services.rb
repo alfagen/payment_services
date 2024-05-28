@@ -57,6 +57,7 @@ module PaymentServices
   autoload :Tronscan, 'payment_services/tronscan'
   autoload :YourPayments, 'payment_services/your_payments'
   autoload :Bridgex, 'payment_services/bridgex'
+  autoload :JustPays, 'payment_services/just_pays'
 
   UnauthorizedPayout = Class.new StandardError
 
