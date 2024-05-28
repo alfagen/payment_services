@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PaymentServices::Bridgex
+class PaymentServices::JustPays
   class Client < ::PaymentServices::Base::Client
     API_URL = 'https://merchant-api.just-pays.com/api'
 
