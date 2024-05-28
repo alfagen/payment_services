@@ -58,6 +58,7 @@ module PaymentServices
   autoload :YourPayments, 'payment_services/your_payments'
   autoload :Bridgex, 'payment_services/bridgex'
   autoload :JustPays, 'payment_services/just_pays'
+  autoload :Transfera, 'payment_services/transfera'
 
   UnauthorizedPayout = Class.new StandardError
 
