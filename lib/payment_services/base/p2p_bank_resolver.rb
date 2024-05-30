@@ -259,6 +259,16 @@ class PaymentServices::Base::P2pBankResolver
         }
       },
       'outcome' => {}
+    },
+    'Transfera' => {
+      'income' => {
+        'rub' => {
+          'sberbank'   => 'Sber',
+          'raiffeisen' => 'Raif',
+          ''           => 'Mastercard'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 
