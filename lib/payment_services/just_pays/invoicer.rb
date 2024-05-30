@@ -47,6 +47,7 @@ class PaymentServices::JustPays
           email: order.user_email
         },
         currency_symbol: invoice.amount_currency.to_s,
+        region_code: 'RU',
         gross_amount: format('%.2f', invoice.amount.to_f),
         success_url: order.success_redirect,
         failed_url: order.failed_redirect,
