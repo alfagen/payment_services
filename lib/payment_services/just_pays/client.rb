@@ -22,8 +22,8 @@ class PaymentServices::JustPays
       safely_parse http_request(
         url: "#{API_URL}/order_history",
         method: :POST,
-        body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
+        body: {}.to_json,
+        headers: build_headers(signature: build_signature)
       )
     end
 
@@ -31,7 +31,7 @@ class PaymentServices::JustPays
 
     attr_reader :api_key, :secret_key
 
-    def build_signature(params)
+    def build_signature(params: {})
       OpenSSL::HMAC.hexdigest('SHA512', secret_key, params.to_json)
     end
 
