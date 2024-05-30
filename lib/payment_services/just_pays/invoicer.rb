@@ -42,7 +42,7 @@ class PaymentServices::JustPays
       {
         external_id: order.public_id.to_s,
         external_meta: {
-          uid: order.user_id,
+          uid: order.user_id.to_s,
           ip: order.remote_ip,
           email: order.user_email
         },
