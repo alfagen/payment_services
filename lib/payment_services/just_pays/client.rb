@@ -31,7 +31,7 @@ class PaymentServices::JustPays
 
     attr_reader :api_key, :secret_key
 
-    def build_signature(params: {})
+    def build_signature(params = {})
       OpenSSL::HMAC.hexdigest('SHA512', secret_key, params.to_json)
     end
 
