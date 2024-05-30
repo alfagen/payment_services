@@ -47,7 +47,7 @@ class PaymentServices::JustPays
           email: order.user_email
         },
         currency_symbol: invoice.amount_currency.to_s,
-        gross_amount: invoice.amount.to_f,
+        gross_amount: format('%.2f', invoice.amount.to_f),
         success_url: order.success_redirect,
         failed_url: order.failed_redirect
       }
