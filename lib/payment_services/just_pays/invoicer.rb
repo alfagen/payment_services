@@ -49,7 +49,8 @@ class PaymentServices::JustPays
         currency_symbol: invoice.amount_currency.to_s,
         gross_amount: format('%.2f', invoice.amount.to_f),
         success_url: order.success_redirect,
-        failed_url: order.failed_redirect
+        failed_url: order.failed_redirect,
+        callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout"
       }
     end
 
