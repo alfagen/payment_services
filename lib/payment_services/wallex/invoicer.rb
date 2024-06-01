@@ -47,14 +47,16 @@ class PaymentServices::Wallex
     end
 
     def invoice_p2p_params
-      {
+      params = {
         client: order.user.email,
         amount: invoice.amount.to_f.to_s,
         fiat_currency: invoice.amount_currency.to_s.downcase,
         uuid: order.public_id.to_s,
-        payment_method: sbp? ? SBP_PAYMENT_METHOD : CARD_PAYMENT_METHOD,
-        bank: sbp? ? sbp_bank : card_bank
+        payment_method: sbp? ? SBP_PAYMENT_METHOD : CARD_PAYMENT_METHOD
       }
+      params[:bank] = sbp_bank if sbp? && sbp_bank.present?
+      params[:bank] = card_bank unless sbp?
+      params
     end
 
     def bank_resolver

@@ -42,6 +42,7 @@ class PaymentServices::YourPayments
 
     private
 
+    delegate :card_bank, :sbp_bank, :sbp?, to: :resolver
     delegate :income_payment_system, :income_unk, to: :order
     delegate :currency, to: :income_payment_system
 
@@ -70,7 +71,7 @@ class PaymentServices::YourPayments
 
       payment_details = client.payment_details(invoice_id: invoice.deposit_id)
       number = payment_details['card']
-      number = prepare_phone_number(number) if sbp_payment?
+      number = prepare_phone_number(number) if sbp?
 
       [number, payment_details['holder'], payment_details['bank']]
     end
@@ -79,22 +80,20 @@ class PaymentServices::YourPayments
       PROVIDER_REQUEST_RETRIES.times do
         sleep 2
 
-        status = client.request_payment_details(params: { order_id: invoice.deposit_id, bank: provider_bank })
+        params = { order_id: invoice.deposit_id }
+        params[:bank] = sbp_bank if sbp? && sbp_bank.present?
+        params[:bank] = card_bank unless sbp?
+        status = client.request_payment_details(params: params)
         break status if status == PROVIDER_REQUISITES_FOUND_STATE
       end
     end
 
-    def provider_bank
-      resolver = PaymentServices::Base::P2pBankResolver.new(adapter: self)
-      sbp_payment? ? resolver.sbp_bank : resolver.card_bank
+    def resolver
+      @resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self)
     end
 
     def method_type
-      sbp_payment? ? SBP_METHOD_TYPE : CARD_METHOD_TYPE
-    end
-
-    def sbp_payment?
-      @sbp_payment ||= income_unk.present?
+      sbp? ? SBP_METHOD_TYPE : CARD_METHOD_TYPE
     end
 
     def prepare_phone_number(provider_phone_number)
