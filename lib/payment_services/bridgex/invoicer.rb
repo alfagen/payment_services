@@ -73,10 +73,6 @@ class PaymentServices::Bridgex
       sbp? ? 'no' : 'yes'
     end
 
-    def sbp_payment?
-      @sbp_payment ||= income_unk.present?
-    end
-
     def client
       @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
