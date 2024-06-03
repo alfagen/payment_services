@@ -40,6 +40,7 @@ class PaymentServices::Bridgex
 
     private
 
+    delegate :card_bank, :sbp_bank, :sbp?, to: :resolver
     delegate :require_income_card_verification, to: :income_payment_system
     delegate :income_unk, :income_payment_system, to: :order
 
@@ -55,13 +56,13 @@ class PaymentServices::Bridgex
         ttl: PAYMENT_TIMEOUT_IN_SECONDS
       }
       params[:category] = 17 if !require_income_card_verification
-      params[:bank] = provider_bank unless provider_bank == UNUSED_BANK_PARAM
+      params[:bank] = card_bank if !sbp? && card_bank != UNUSED_BANK_PARAM
+      params[:bank] = sbp_bank if sbp? && sbp_bank.present?
       params
     end
 
-    def provider_bank
-      resolver = PaymentServices::Base::P2pBankResolver.new(adapter: self)
-      sbp_payment? ? resolver.sbp_bank : resolver.card_bank
+    def resolver
+      @resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self)
     end
 
     def sbp?

@@ -364,7 +364,8 @@ class PaymentServices::Base::P2pBankResolver
   end
 
   def sbp_bank
-    PAYWAY_TO_SBP_BANK.dig(adapter_class_name, direction, sbp_client_field) || sbp_client_field
+    PAYWAY_TO_SBP_BANK.dig(adapter_class_name, direction, sbp_client_field) || 
+    PAYWAY_TO_SBP_BANK.dig(adapter_class_name, direction, sbp_client_field_new)
   end
 
   def sbp?
@@ -377,7 +378,7 @@ class PaymentServices::Base::P2pBankResolver
 
   delegate :income_sbp, to: :income_payment_system
   delegate :outcome_sbp, to: :outcome_payment_system
-  delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :income_unk, :outcome_unk, to: :order
+  delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :income_unk, :outcome_unk, :income_bank, :outcome_bank, to: :order
 
   def order
     @order ||= direction.inquiry.income? ? adapter.order : adapter.wallet_transfers.first.order_payout.order
@@ -393,6 +394,10 @@ class PaymentServices::Base::P2pBankResolver
 
   def sbp_client_field
     @sbp_client_field ||= send("#{direction}_unk")
+  end
+
+  def sbp_client_field_new
+    @sbp_client_field ||= send("#{direction}_bank")
   end
 
   def sbp_checkbox
