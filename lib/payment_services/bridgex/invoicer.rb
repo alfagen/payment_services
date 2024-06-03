@@ -50,8 +50,8 @@ class PaymentServices::Bridgex
         order: order.public_id.to_s,
         customer_ip: order.remote_ip,
         customer_ident: '1',
-        card: card?,
-        sbp: sbp?,
+        card: card_payment?,
+        sbp: sbp_payment?,
         qr: 'no',
         ttl: PAYMENT_TIMEOUT_IN_SECONDS
       }
@@ -65,12 +65,12 @@ class PaymentServices::Bridgex
       @resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self)
     end
 
-    def sbp?
-      sbp_payment? ? 'yes' : 'no'
+    def sbp_payment?
+      sbp? ? 'yes' : 'no'
     end
 
-    def card?
-      sbp_payment? ? 'no' : 'yes'
+    def card_payment?
+      sbp? ? 'no' : 'yes'
     end
 
     def sbp_payment?
