@@ -30,7 +30,7 @@ class PaymentServices::Transfera
 
     def update_invoice_state!
       transaction = client.transaction(transaction_id: invoice.deposit_id)
-      invoice.update_state_by_provider(transaction['status'])
+      invoice.update_state_by_provider(transaction.dig('data', 'status'))
     end
 
     def invoice
