@@ -32,7 +32,7 @@ class PaymentServices::Cryptomus
     attr_reader :api_key, :secret_key
 
     def build_signature(params = {})
-      Digest::MD5.hexdigest(Base64.encode64(params.to_json + secret_key).gsub(/\n/, ''))
+      Digest::MD5.hexdigest(Base64.encode64(params.to_json).gsub(/\n/, '') + secret_key)
     end
 
     def build_headers(signature:)
