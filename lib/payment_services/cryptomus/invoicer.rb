@@ -7,20 +7,20 @@ class PaymentServices::Cryptomus
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
 
-    def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
+      create_invoice!
       response = client.create_invoice(params: invoice_params)
-
       raise Error, "Can't create invoice: #{response['message']}" if response['message']
 
-      invoice.update!(
-        deposit_id: response.dig('result', 'uuid'),
-        pay_url: response.dig('result', 'url')
+      invoice.update!(deposit_id: response.dig('result', 'uuid'))
+      PaymentServices::Base::Wallet.new(
+        address: response.dig('result', 'address'),
+        name: nil
       )
     end
 
-    def pay_invoice_url
-      invoice.present? ? URI.parse(invoice.reload.pay_url) : ''
+    def create_invoice(money)
+      invoice
     end
 
     def async_invoice_state_updater?
@@ -39,6 +39,10 @@ class PaymentServices::Cryptomus
     end
 
     private
+
+    def create_invoice!
+      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+    end
 
     def invoice_params
       {
