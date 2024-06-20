@@ -44,8 +44,7 @@ class PaymentServices::Cryptomus
       {
         amount: format('%.2f', invoice.amount.to_f),
         currency: invoice.amount_currency.to_s,
-        order_id: order.public_id.to_s,
-        currencies: [invoice.amount_currency.to_s]
+        order_id: order.public_id.to_s
       }
     end
 

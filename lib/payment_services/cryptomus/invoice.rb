@@ -24,6 +24,10 @@ class PaymentServices::Cryptomus
       state :cancelled
     end
 
+    def transaction_created_at
+      nil
+    end
+
     private
 
     def provider_succeed?
