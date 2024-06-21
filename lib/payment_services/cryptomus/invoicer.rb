@@ -48,6 +48,7 @@ class PaymentServices::Cryptomus
       {
         amount: invoice.amount.to_f.to_s,
         currency: invoice.amount_currency.to_s,
+        network: invoice.amount_currency.to_s,
         order_id: order.public_id.to_s,
         lifetime: order.income_payment_timeout.to_i
       }
