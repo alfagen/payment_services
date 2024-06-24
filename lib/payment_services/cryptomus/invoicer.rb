@@ -28,7 +28,7 @@ class PaymentServices::Cryptomus
     end
 
     def update_invoice_state!
-      transaction = client.transaction(params: { uuid: invoice.deposit_id })
+      transaction = client.invoice(params: { uuid: invoice.deposit_id })
 
       invoice.update(transaction_id: transaction.dig('result', 'txid'))
       invoice.update_state_by_provider(transaction.dig('result', 'payment_status'))
