@@ -12,7 +12,7 @@ class PaymentServices::Paycraft
       response = client.create_invoice(params: invoice_params)
       raise Error, "Can't create invoice: #{response['description']}" if response['description'].present?
 
-      invoice.update!(deposit_id: response['external_id'])
+      invoice.update!(deposit_id: order.public_id.to_s)
       PaymentServices::Base::Wallet.new(
         address: response['address'],
         name: "#{response['surname']} #{response['first_name']}".presence,
@@ -39,7 +39,7 @@ class PaymentServices::Paycraft
 
     private
 
-    delegate :sbp_bank, :card_bank, :sbp?, to: :bank_resolver
+    delegate :card_bank, to: :bank_resolver
 
     def create_invoice!
       Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
@@ -49,7 +49,7 @@ class PaymentServices::Paycraft
       {
         external_id: order.public_id.to_s,
         amount: invoice.amount.to_i,
-        token_name: sbp? ? sbp_bank : card_bank
+        token_name: card_bank
       }
     end
 
