@@ -60,6 +60,7 @@ module PaymentServices
   autoload :JustPays, 'payment_services/just_pays'
   autoload :Transfera, 'payment_services/transfera'
   autoload :Cryptomus, 'payment_services/cryptomus'
+  autoload :Paycraft, 'payment_services/paycraft'
 
   UnauthorizedPayout = Class.new StandardError
 

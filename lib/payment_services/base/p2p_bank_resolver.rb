@@ -269,6 +269,16 @@ class PaymentServices::Base::P2pBankResolver
         }
       },
       'outcome' => {}
+    },
+    'Paycraft' => {
+      'income' => {
+        'rub' => {
+          'sberbank' => 'Сбербанк',
+          'tinkoff'  => 'Тинькофф',
+          ''         => 'Межбанк'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 
