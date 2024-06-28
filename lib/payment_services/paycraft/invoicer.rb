@@ -30,7 +30,7 @@ class PaymentServices::Paycraft
 
     def update_invoice_state!
       transaction = client.invoice(params: { clientUniqueId: invoice.deposit_id })
-      invoice.update_state_by_provider(transaction['status'])
+      invoice.update_state_by_provider(transaction['status']) if amount_valid?(transaction)
     end
 
     def invoice
@@ -51,6 +51,10 @@ class PaymentServices::Paycraft
         amount: invoice.amount.to_i,
         token_name: card_bank
       }
+    end
+
+    def amount_valid?(transaction)
+      transaction['amountPaid'] == transaction['amount'] || transaction['amountPaid'].zero?
     end
 
     def bank_resolver
