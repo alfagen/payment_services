@@ -15,7 +15,7 @@ class PaymentServices::Paycraft
       invoice.update!(deposit_id: response['external_id'])
       PaymentServices::Base::Wallet.new(
         address: response['address'],
-        name: nil,
+        name: "#{response['surname']} #{response['first_name']}".presence,
         memo: response['currency_name'].presence
       )
     end
