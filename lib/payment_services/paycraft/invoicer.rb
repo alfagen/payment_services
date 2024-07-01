@@ -49,7 +49,8 @@ class PaymentServices::Paycraft
       {
         external_id: order.public_id.to_s,
         amount: invoice.amount.to_i,
-        token_name: card_bank
+        token_name: card_bank,
+        currency: invoice.amount_currency.to_s
       }
     end
 
