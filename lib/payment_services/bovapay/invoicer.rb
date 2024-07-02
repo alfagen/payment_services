@@ -6,13 +6,13 @@ require_relative 'client'
 class PaymentServices::Bovapay
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
-    PAYEER_TYPE = 'trust'
+    PAYEER_TYPE = 'ftd'
 
     def create_invoice(money)
       Invoice.create!(amount: money, order_public_id: order.public_id)
       response = client.create_invoice(params: invoice_params)
 
-      raise Error, "Can't create invoice: #{response}" unless response['result_code'] == 'ok'
+      raise Error, "Can't create invoice: #{response['errors']}" if response['errors'].present?
 
       invoice.update!(
         deposit_id: response.dig('payload', 'id'),
