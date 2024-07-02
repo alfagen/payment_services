@@ -51,9 +51,10 @@ class PaymentServices::Bovapay
         payeer_type: PAYEER_TYPE,
         lifetime: order.income_payment_timeout.to_i,
         redirect_url: order.success_redirect,
+        callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout",
         payment_method: 'card',
         currency: invoice.amount_currency.to_s.downcase,
-        bank_name: card_bank
+        bank_name: card_bank,
       }
     end
 
