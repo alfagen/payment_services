@@ -279,6 +279,16 @@ class PaymentServices::Base::P2pBankResolver
         }
       },
       'outcome' => {}
+    },
+    'Bovapay' => {
+      'income' => {
+        'rub' => {
+          'sberbank'   => 'sberbank',
+          'raiffeisen' => 'raiffeisen',
+          ''           => 'sberbank'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 
