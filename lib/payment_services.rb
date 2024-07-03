@@ -61,6 +61,7 @@ module PaymentServices
   autoload :Transfera, 'payment_services/transfera'
   autoload :Cryptomus, 'payment_services/cryptomus'
   autoload :Paycraft, 'payment_services/paycraft'
+  autoload :Bovapay, 'payment_services/bovapay'
 
   UnauthorizedPayout = Class.new StandardError
 
