@@ -8,16 +8,22 @@ class PaymentServices::Bovapay
     Error = Class.new StandardError
     PAYEER_TYPE = 'ftd'
 
-    def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
+    def prepare_invoice_and_get_wallet!(currency:, token_network:)
+      create_invoice!
       response = client.create_invoice(params: invoice_params)
-
       raise Error, "Can't create invoice: #{response['errors']}" if response['errors'].present?
 
-      invoice.update!(
-        deposit_id: response.dig('payload', 'id'),
-        pay_url: response.dig('payload', 'form_url')
+      invoice.update!(deposit_id: response.dig('payload', 'id'))
+      card = response.dig('payload', 'resipient_card')
+      PaymentServices::Base::Wallet.new(
+        address: card['number'],
+        name: card['card_holder'],
+        memo: card['bank_full_name']
       )
+    end
+
+    def create_invoice(money)
+      invoice
     end
 
     def pay_invoice_url
@@ -40,6 +46,10 @@ class PaymentServices::Bovapay
     private
 
     delegate :card_bank, to: :bank_resolver
+
+    def create_invoice!
+      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+    end
 
     def invoice_params
       {
