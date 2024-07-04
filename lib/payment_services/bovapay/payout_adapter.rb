@@ -43,7 +43,7 @@ class PaymentServices::Bovapay
       params = {
         to_card: payout.destination_account,
         amount: payout.amount.to_i,
-        callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout",
+        callback_url: "#{Rails.application.routes.url_helpers.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout",
         merchant_id: "#{order.public_id}-#{payout.order_payout_id}",
         currency: payout.amount_currency.to_s.downcase,
         payment_method: sbp? ? 'sbp' : 'card',
