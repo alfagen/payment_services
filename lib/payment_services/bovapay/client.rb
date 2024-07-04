@@ -27,6 +27,24 @@ class PaymentServices::Bovapay
       )
     end
 
+    def create_payout(params:)
+      params.merge!(user_uuid: api_key)
+      safely_parse http_request(
+        url: "#{API_URL}/mass_transactions",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
+    def payout(withdrawal_id:)
+      safely_parse http_request(
+        url: "#{API_URL}/mass_transactions/#{withdrawal_id}",
+        method: :GET,
+        headers: {}
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key
