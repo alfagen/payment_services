@@ -372,6 +372,18 @@ class PaymentServices::Base::P2pBankResolver
         'Совкомбанк' => '100000000013',
         'Точка ФК Открытие' => '100000000065'
       }
+    },
+    'Bovapay' => {
+      'income' => {},
+      'outcome' => {
+        'Тинькофф Банк' => '100000000004',
+        'Сбер' => '100000000111',
+        'Банк ВТБ' => '100000000005',
+        'Газпромбанк' => '100000000001',
+        'АЛЬФА-БАНК' => '100000000008',
+        'Совкомбанк' => '100000000013',
+        'Банк ОТКРЫТИЕ' => '100000000015'
+      }
     }
   }.freeze
 
@@ -385,7 +397,7 @@ class PaymentServices::Base::P2pBankResolver
   end
 
   def sbp_bank
-    PAYWAY_TO_SBP_BANK.dig(adapter_class_name, direction, sbp_client_field) || 
+    PAYWAY_TO_SBP_BANK.dig(adapter_class_name, direction, sbp_client_field).presence || 
     PAYWAY_TO_SBP_BANK.dig(adapter_class_name, direction, sbp_client_field_new)
   end
 
@@ -399,7 +411,7 @@ class PaymentServices::Base::P2pBankResolver
 
   delegate :income_sbp, to: :income_payment_system
   delegate :outcome_sbp, to: :outcome_payment_system
-  delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :income_unk, :outcome_unk, :income_bank, :outcome_bank, to: :order
+  delegate :income_currency, :income_payment_system, :outcome_currency, :outcome_payment_system, :income_unk, :outcome_unk, :income_bank_name, :outcome_bank_name, to: :order
 
   def order
     @order ||= direction.inquiry.income? ? adapter.order : adapter.wallet_transfers.first.order_payout.order
@@ -418,7 +430,7 @@ class PaymentServices::Base::P2pBankResolver
   end
 
   def sbp_client_field_new
-    @sbp_client_field ||= send("#{direction}_bank")
+    @sbp_client_field_new ||= send("#{direction}_bank_name")
   end
 
   def sbp_checkbox
