@@ -430,7 +430,7 @@ class PaymentServices::Base::P2pBankResolver
   end
 
   def sbp_client_field_new
-    @sbp_client_field ||= send("#{direction}_bank_name")
+    @sbp_client_field_new ||= send("#{direction}_bank_name")
   end
 
   def sbp_checkbox
