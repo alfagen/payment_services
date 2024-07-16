@@ -31,7 +31,7 @@ class PaymentServices::Cryptomus
       transaction = client.invoice(params: { uuid: invoice.deposit_id })
 
       invoice.update(transaction_id: transaction.dig('result', 'txid'))
-      invoice.update_state_by_provider(transaction.dig('result', 'payment_status'))
+      invoice.update_state_by_provider(transaction.dig('result', 'payment_status')) if valid_transaction?(transaction)
     end
 
     def invoice
@@ -52,6 +52,10 @@ class PaymentServices::Cryptomus
         order_id: order.public_id.to_s,
         lifetime: order.income_payment_timeout.to_i
       }
+    end
+
+    def valid_transaction?(transaction)
+      transaction['payment_amount'].nil? || transaction['payment_amount'].to_f == invoice.amount.to_f
     end
 
     def client
