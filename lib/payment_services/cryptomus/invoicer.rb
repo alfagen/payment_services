@@ -55,7 +55,8 @@ class PaymentServices::Cryptomus
     end
 
     def valid_transaction?(transaction)
-      transaction['payment_amount'].nil? || transaction['payment_amount'].to_f == invoice.amount.to_f
+      amount = transaction.dig('result', 'payment_amount')
+      amount.nil? || amount.to_f == invoice.amount.to_f
     end
 
     def client
