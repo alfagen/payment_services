@@ -9,9 +9,8 @@ class PaymentServices::Paycraft
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
-      # response = client.create_invoice(params: invoice_params)
-
-      raise Error, "Can't create invoice"
+      response = client.create_invoice(params: invoice_params)
+      raise Error, "Can't create invoice: #{response['description']}" if response['description'].present?
 
       invoice.update!(deposit_id: order.public_id.to_s)
       PaymentServices::Base::Wallet.new(
