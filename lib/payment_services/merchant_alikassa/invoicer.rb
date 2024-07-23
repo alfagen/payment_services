@@ -6,6 +6,7 @@ require_relative 'client'
 class PaymentServices::MerchantAlikassa
   class Invoicer < ::PaymentServices::Base::Invoicer
     DEFAULT_USER_AGENT = 'Chrome/47.0.2526.111'
+    SBP_SERVICE = 'payment_card_sbp_rub_hpp'
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
@@ -40,6 +41,7 @@ class PaymentServices::MerchantAlikassa
 
     delegate :income_payment_system, to: :order
     delegate :currency, to: :income_payment_system
+    delegate :card_bank, :sbp_bank, :sbp?, to: :bank_resolver
 
     def create_invoice!
       Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
@@ -49,8 +51,8 @@ class PaymentServices::MerchantAlikassa
       {
         amount: invoice.amount.to_f.round(1),
         order_id: order.public_id.to_s,
-        service: "payment_card_number_#{currency.to_s.downcase}_card",
-        customer_code: provider_bank,
+        service: sbp? ? SBP_SERVICE : "payment_card_number_#{currency.to_s.downcase}_card",
+        customer_code: sbp? ? sbp_bank : provider_bank,
         customer_user_id: "#{Rails.env}_user_id_#{order.user_id}",
         customer_ip: order.remote_ip,
         customer_browser_user_agent: DEFAULT_USER_AGENT,
@@ -59,8 +61,8 @@ class PaymentServices::MerchantAlikassa
       }
     end
 
-    def provider_bank
-      @provider_bank ||= PaymentServices::Base::P2pBankResolver.new(adapter: self).card_bank
+    def bank_resolver
+      @bank_resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self)
     end
 
     def client
