@@ -52,7 +52,7 @@ class PaymentServices::MerchantAlikassa
         amount: invoice.amount.to_f.round(1),
         order_id: order.public_id.to_s,
         service: sbp? ? SBP_SERVICE : "payment_card_number_#{currency.to_s.downcase}_card",
-        customer_code: sbp? ? sbp_bank : provider_bank,
+        customer_code: sbp? ? sbp_bank : card_bank,
         customer_user_id: "#{Rails.env}_user_id_#{order.user_id}",
         customer_ip: order.remote_ip,
         customer_browser_user_agent: DEFAULT_USER_AGENT,
