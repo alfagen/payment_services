@@ -24,12 +24,7 @@ class PaymentServices::JustPays
     end
 
     def async_invoice_state_updater?
-      true
-    end
-
-    def update_invoice_state!
-      transaction = client.transactions.find { |t| t['id'] == invoice.deposit_id }
-      invoice.update_state_by_provider(transaction['status'])
+      false
     end
 
     def invoice
@@ -51,7 +46,7 @@ class PaymentServices::JustPays
         gross_amount: format('%.2f', invoice.amount.to_f),
         success_url: order.success_redirect,
         failed_url: order.failed_redirect,
-        callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/appex_money/confirm_payout"
+        callback_url: "#{routes_helper.public_public_callbacks_api_root_url}/v1/just_pays/receive_payment"
       }
     end
 
