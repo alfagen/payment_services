@@ -9,7 +9,7 @@ class PaymentServices::JustPays
 
     monetize :amount_cents, as: :amount
 
-    def can_be_confirmed?(income_money: income_money)
+    def can_be_confirmed?(income_money:)
       pending? && income_money == amount
     end
 
