@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::MerchantAlikassa
   class Invoicer < ::PaymentServices::Base::Invoicer
     DEFAULT_USER_AGENT = 'Chrome/47.0.2526.111'
-    SBP_SERVICE = 'payment_card_sbp_rub'
+    SBP_SERVICE = 'payment_card_sbp_rub_hpp'
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
