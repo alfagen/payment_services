@@ -10,7 +10,7 @@ class PaymentServices::BestApi
 
     def income_wallet(amount:, currency:)
       safely_parse(http_request(
-        url: "#{API_URL}/get_card/client/#{api_key}/amount/#{amount}/currency/#{currency}/niche/kassa",
+        url: "#{API_URL}/get_card/client/#{api_key}/amount/#{amount}/currency/#{currency}/niche/auto",
         method: :GET,
         headers: {}
       )).first
