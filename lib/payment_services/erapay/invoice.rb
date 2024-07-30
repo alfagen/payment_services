@@ -2,7 +2,7 @@
 
 class PaymentServices::Erapay
   class Invoice < ::PaymentServices::Base::FiatInvoice
-    SUCCESS_PROVIDER_STATE = 'success'
+    SUCCESS_PROVIDER_STATE = '0'
 
     self.table_name = 'erapay_invoices'
 
