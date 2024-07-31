@@ -39,7 +39,7 @@ class PaymentServices::Cryptomus
 
     def payout_params
       order = OrderPayout.find(payout.order_payout_id).order
-      {
+      params = {
         amount: payout.amount.to_f.to_s,
         currency: payout.amount_currency.to_s,
         order_id: order.public_id.to_s,
@@ -47,6 +47,8 @@ class PaymentServices::Cryptomus
         is_subtract: true,
         network: payout.amount_currency.to_s
       }
+      params[:memo] = order.outcome_fio if payout.amount_currency.to_s.downcase.inquiry.ton?
+      params
     end
 
     def client

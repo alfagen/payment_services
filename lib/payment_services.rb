@@ -62,6 +62,7 @@ module PaymentServices
   autoload :Cryptomus, 'payment_services/cryptomus'
   autoload :Paycraft, 'payment_services/paycraft'
   autoload :Bovapay, 'payment_services/bovapay'
+  autoload :Erapay, 'payment_services/erapay'
 
   UnauthorizedPayout = Class.new StandardError
 
