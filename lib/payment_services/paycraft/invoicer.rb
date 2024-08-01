@@ -30,6 +30,7 @@ class PaymentServices::Paycraft
 
     def update_invoice_state!
       transaction = client.invoice(params: { clientUniqueId: invoice.deposit_id })
+      invoice.update(rate: transaction['course'].to_f)
       invoice.update_state_by_provider(transaction['status']) if amount_valid?(transaction)
     end
 

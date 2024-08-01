@@ -10,7 +10,10 @@ class PaymentServices::XPayPro
       response = client.create_invoice(params: invoice_p2p_params)
       raise response['message'] if response['code']
 
-      invoice.update!(deposit_id: response.dig('tx', 'tx_id'))
+      invoice.update!(
+        deposit_id: response.dig('tx', 'tx_id'),
+        rate: response.dig('tx', 'rate').to_f
+      )
       PaymentServices::Base::Wallet.new(
         address: response.dig('tx', 'payment_requisite'),
         name: nil,
