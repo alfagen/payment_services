@@ -27,6 +27,24 @@ class PaymentServices::Paycraft
       )
     end
 
+    def create_payout(params:)
+      safely_parse http_request(
+        url: "#{API_URL}/create_payout",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
+    def payout(params:)
+      safely_parse http_request(
+        url: "#{API_URL}/payout_status",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key
