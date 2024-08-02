@@ -28,7 +28,7 @@ class PaymentServices::Paycraft
 
     private
 
-    delegate :sbp?, to: :bank_resolver
+    delegate :sbp?, :sbp_bank, to: :bank_resolver
 
     attr_reader :payout
 
