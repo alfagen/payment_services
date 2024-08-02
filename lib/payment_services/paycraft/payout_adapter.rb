@@ -52,7 +52,7 @@ class PaymentServices::Paycraft
         walletId: sbp? ? SBP_PAYWAY : CARD_PAYWAY,
         expiredTime: 30,
         expiredOfferTime: 600,
-        sbp_bank: ''
+        sbp_bank: sbp? ? sbp_bank : ''
       }
     end
 
