@@ -11,6 +11,7 @@ class PaymentServices::Paycraft
       create_invoice!
       response = client.create_invoice(params: invoice_params)
       raise Error, "Can't create invoice: #{response['description']}" if response['description'].present?
+      raise Error, "Can't create invoice: #{response['message']}" if response['message'].present?
 
       invoice.update!(deposit_id: order.public_id.to_s)
       PaymentServices::Base::Wallet.new(
