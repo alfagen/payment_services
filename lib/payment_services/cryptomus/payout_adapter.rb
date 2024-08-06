@@ -6,6 +6,14 @@ require_relative 'client'
 class PaymentServices::Cryptomus
   class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
     Error = Class.new StandardError
+    USDT_NETWORK_TO_CURRENCY = {
+      'trc20' => 'TRON',
+      'erc20' => 'ETH',
+      'ton'   => 'TON',
+      'sol'   => 'SOL',
+      'POLYGON' => 'POLYGON',
+      'bep20' => 'BSC'
+    }.freeze
 
     def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
       make_payout(
@@ -38,17 +46,28 @@ class PaymentServices::Cryptomus
     end
 
     def payout_params
-      order = OrderPayout.find(payout.order_payout_id).order
+      currency = payout.amount_currency.to_s.downcase.inquiry
+      currency = 'dash'.inquiry if currency.dsh?
       params = {
         amount: payout.amount.to_f.to_s,
-        currency: payout.amount_currency.to_s,
+        currency: currency.upcase,
         order_id: order.public_id.to_s,
         address: payout.destination_account,
-        is_subtract: true,
-        network: payout.amount_currency.to_s
+        is_subtract: true
       }
-      params[:memo] = order.outcome_fio if payout.amount_currency.to_s.downcase.inquiry.ton?
+      params[:memo] = order.outcome_fio if currency.ton?
+      params[:network] = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
       params
+    end
+
+    def network(currency)
+      return 'BSC' if currency.bnb?
+
+      USDT_NETWORK_TO_CURRENCY[order.outcome_payment_system.token_network] || 'USDT'
+    end
+
+    def order
+      @order ||= OrderPayout.find(payout.order_payout_id).order
     end
 
     def client
