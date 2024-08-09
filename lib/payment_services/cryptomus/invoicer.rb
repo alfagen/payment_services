@@ -6,6 +6,14 @@ require_relative 'client'
 class PaymentServices::Cryptomus
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
+    USDT_NETWORK_TO_CURRENCY = {
+      'trc20' => 'TRON',
+      'erc20' => 'ETH',
+      'ton'   => 'TON',
+      'sol'   => 'SOL',
+      'POLYGON' => 'POLYGON',
+      'bep20' => 'BSC'
+    }.freeze
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
@@ -45,13 +53,22 @@ class PaymentServices::Cryptomus
     end
 
     def invoice_params
-      {
+      currency = invoice.amount_currency.to_s.downcase.inquiry
+      currency = 'dash'.inquiry if currency.dsh?
+      params = {
         amount: invoice.amount.to_f.to_s,
-        currency: invoice.amount_currency.to_s,
-        network: invoice.amount_currency.to_s,
+        currency: currency.upcase,
         order_id: order.public_id.to_s,
         lifetime: order.income_payment_timeout.to_i
       }
+      params[:network] = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
+      params
+    end
+
+    def network(currency)
+      return 'BSC' if currency.bnb?
+
+      USDT_NETWORK_TO_CURRENCY[order.income_payment_system.token_network] || 'USDT'
     end
 
     def valid_transaction?(transaction)
