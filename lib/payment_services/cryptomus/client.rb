@@ -45,7 +45,7 @@ class PaymentServices::Cryptomus
       )
     end
 
-    def transfer_to_personal(amount:)
+    def transfer_to_personal(amount:, signature_key:)
       params = {
         amount: amount,
         currency: 'USDT'
@@ -54,7 +54,7 @@ class PaymentServices::Cryptomus
         url: "#{API_URL}/transfer/to-personal",
         method: :POST,
         body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
+        headers: build_headers(signature: build_signature(params, signature_key: signature_key))
       )
     end
 
@@ -71,7 +71,7 @@ class PaymentServices::Cryptomus
 
     attr_reader :api_key, :secret_key
 
-    def build_signature(params = {})
+    def build_signature(params = {}, signature_key: secret_key)
       Digest::MD5.hexdigest(Base64.encode64(params.to_json).gsub(/\n/, '') + secret_key)
     end
 
