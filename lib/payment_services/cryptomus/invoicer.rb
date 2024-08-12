@@ -76,8 +76,7 @@ class PaymentServices::Cryptomus
       return unless status.in?(Invoice::SUCCESS_PROVIDER_STATES)
 
       amount_in_usdt = transaction.dig('result', 'convert', 'amount')
-      response = client.transfer_to_personal(amount: amount_in_usdt, signature_key: api_keys.outcome_api_secret)
-      order.append_comment(response['message']) if response['message'].present?
+      client.transfer_to_personal(amount: amount_in_usdt, signature_key: api_keys.outcome_api_secret)
     end
 
     def network(currency)
