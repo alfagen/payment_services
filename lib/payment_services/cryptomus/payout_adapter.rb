@@ -69,13 +69,6 @@ class PaymentServices::Cryptomus
       params
     end
 
-    def transfer_to_business
-      currency = payout.amount_currency.to_s
-      currency = 'DASH' if currency == 'DSH'
-      response = client.transfer_to_business(params: { amount: payout.amount.to_f.to_s, currency: currency })
-      raise Error, "Can't create transfer: #{response['message']}" if response['message'].present?
-    end
-
     def network(currency)
       return 'BSC' if currency.bnb?
 
