@@ -63,7 +63,7 @@ class PaymentServices::Cryptomus
         url: "#{API_URL}/transfer/to-business",
         method: :POST,
         body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
+        headers: build_headers(signature: build_signature(params, signature_key: secret_key))
       )
     end
 
@@ -72,7 +72,7 @@ class PaymentServices::Cryptomus
     attr_reader :api_key, :secret_key
 
     def build_signature(params = {}, signature_key:)
-      Digest::MD5.hexdigest(Base64.encode64(params.to_json).gsub(/\n/, '') + secret_key)
+      Digest::MD5.hexdigest(Base64.encode64(params.to_json).gsub(/\n/, '') + signature_key)
     end
 
     def build_headers(signature:)
