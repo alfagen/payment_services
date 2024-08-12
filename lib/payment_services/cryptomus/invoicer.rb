@@ -40,9 +40,8 @@ class PaymentServices::Cryptomus
 
       invoice.update(transaction_id: transaction.dig('result', 'txid'))
       if valid_transaction?(transaction)
-        status = transaction.dig('result', 'payment_status')
         transfer_to_personal(transaction) if income_to_personal_account
-        invoice.update_state_by_provider(status)
+        invoice.update_state_by_provider(transaction.dig('result', 'payment_status'))
       end
     end
 
