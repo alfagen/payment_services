@@ -45,6 +45,28 @@ class PaymentServices::Cryptomus
       )
     end
 
+    def transfer_to_personal(amount:)
+      params = {
+        amount: amount,
+        currency: 'USDT'
+      }
+      safely_parse http_request(
+        url: "#{API_URL}/transfer/to-personal",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
+    def transfer_to_business(params:)
+      safely_parse http_request(
+        url: "#{API_URL}/transfer/to-business",
+        method: :POST,
+        body: params.to_json,
+        headers: build_headers(signature: build_signature(params))
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key
