@@ -42,7 +42,12 @@ class PaymentServices::Cryptomus
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
-      transfer_to_business if outcome_from_personal_account
+      if outcome_from_personal_account
+        currency = payout.amount_currency.to_s
+        currency = 'DASH' if currency == 'DSH'
+        response = client.transfer_to_business(params: { amount: payout.amount.to_f.to_s, currency: currency })
+        raise Error, "Can't create transfer: #{response['message']}" if response['message'].present?
+      end
       response = client.create_payout(params: payout_params)
       raise Error, "Can't create payout: #{response['message']}" if response['message']
 
@@ -68,7 +73,7 @@ class PaymentServices::Cryptomus
       currency = payout.amount_currency.to_s
       currency = 'DASH' if currency == 'DSH'
       response = client.transfer_to_business(params: { amount: payout.amount.to_f.to_s, currency: currency })
-      order.append_comment(response['message']) if response['message'].present?
+      raise Error, "Can't create transfer: #{response['message']}" if response['message'].present?
     end
 
     def network(currency)
