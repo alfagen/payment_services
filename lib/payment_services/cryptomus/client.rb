@@ -67,6 +67,15 @@ class PaymentServices::Cryptomus
       )
     end
 
+    def fee
+      safely_parse http_request(
+        url: "#{API_URL}/payout/services",
+        method: :POST,
+        body: {}.to_json,
+        headers: build_headers(signature: build_signature({}, signature_key: secret_key))
+      )
+    end
+
     private
 
     attr_reader :api_key, :secret_key

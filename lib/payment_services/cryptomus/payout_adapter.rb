@@ -79,6 +79,10 @@ class PaymentServices::Cryptomus
       @order ||= OrderPayout.find(payout.order_payout_id).order
     end
 
+    def fee
+      @fee = client.fee
+    end
+
     def client
       @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
