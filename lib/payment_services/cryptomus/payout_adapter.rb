@@ -46,7 +46,7 @@ class PaymentServices::Cryptomus
         currency = payout.amount_currency.to_s.downcase.inquiry
         currency = 'dash'.inquiry if currency.dsh?
         network = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
-        response = client.transfer_to_business(params: { amount: (payout.amount.to_f + fee_by(currency: currency.upcase, network: network)).to_s, currency: currency })
+        response = client.transfer_to_business(params: { amount: (payout.amount.to_f + fee_by(currency: currency.upcase, network: network)).to_d.to_s, currency: currency.upcase })
         raise Error, "Can't create transfer: #{response['message']}" if response['message'].present?
       end
       response = client.create_payout(params: payout_params)
@@ -60,7 +60,7 @@ class PaymentServices::Cryptomus
       currency = 'dash'.inquiry if currency.dsh?
       network = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
       params = {
-        amount: (payout.amount.to_f + fee_by(currency: currency.upcase, network: network)).to_s,
+        amount: (payout.amount.to_f + fee_by(currency: currency.upcase, network: network)).to_d.to_s,
         currency: currency.upcase,
         network: network,
         order_id: order.public_id.to_s,
