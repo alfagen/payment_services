@@ -82,7 +82,7 @@ class PaymentServices::Cryptomus
     end
 
     def fee
-      @fee ||= client.fee
+      @fee ||= client.fee['result']
     end
 
     def fee_by(currency:, network:)
