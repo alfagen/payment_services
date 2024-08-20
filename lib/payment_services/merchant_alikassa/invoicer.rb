@@ -50,7 +50,7 @@ class PaymentServices::MerchantAlikassa
 
     def invoice_params
       {
-        amount: invoice.amount.to_f.round(1),
+        amount: invoice.amount.to_i,
         order_id: order.public_id.to_s,
         service: sbp? ? SBP_SERVICE : "payment_card_number_#{currency.to_s.downcase}_card",
         customer_code: sbp? ? sbp_bank : card_bank,
