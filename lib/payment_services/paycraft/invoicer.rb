@@ -6,6 +6,7 @@ require_relative 'client'
 class PaymentServices::Paycraft
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
+    SBP_PAYWAY = 'СБП'
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
@@ -41,7 +42,7 @@ class PaymentServices::Paycraft
 
     private
 
-    delegate :card_bank, to: :bank_resolver
+    delegate :card_bank, :sbp?, to: :bank_resolver
 
     def create_invoice!
       Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
@@ -51,7 +52,7 @@ class PaymentServices::Paycraft
       {
         external_id: order.public_id.to_s,
         amount: invoice.amount.to_i,
-        token_name: card_bank,
+        token_name: sbp? ? SBP_PAYWAY : card_bank,
         currency: invoice.amount_currency.to_s
       }
     end
