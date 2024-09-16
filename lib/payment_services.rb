@@ -63,6 +63,7 @@ module PaymentServices
   autoload :Paycraft, 'payment_services/paycraft'
   autoload :Bovapay, 'payment_services/bovapay'
   autoload :Erapay, 'payment_services/erapay'
+  autoload :MerchantAlikassaVirtual, 'payment_services/merchant_alikassa_virtual'
 
   UnauthorizedPayout = Class.new StandardError
 
