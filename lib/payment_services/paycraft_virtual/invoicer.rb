@@ -6,7 +6,7 @@ require_relative 'client'
 class PaymentServices::PaycraftVirtual
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
-    PAYWAY = 'номер счета'
+    PAYWAY = 'Номер счета'
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
