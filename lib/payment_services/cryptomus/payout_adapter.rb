@@ -37,8 +37,18 @@ class PaymentServices::Cryptomus
 
     attr_reader :payout
 
+    delegate :outcome_from_personal_account, to: :outcome_payment_system
+    delegate :outcome_payment_system, to: :order
+
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
+      if outcome_from_personal_account
+        currency = payout.amount_currency.to_s.downcase.inquiry
+        currency = 'dash'.inquiry if currency.dsh?
+        network = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
+        response = client.transfer_to_business(params: { amount: (payout.amount.to_f + fee_by(currency: currency.upcase, network: network)).to_d.to_s, currency: currency.upcase })
+        raise Error, "Can't create transfer: #{response['message']}" if response['message'].present?
+      end
       response = client.create_payout(params: payout_params)
       raise Error, "Can't create payout: #{response['message']}" if response['message']
 
@@ -48,15 +58,16 @@ class PaymentServices::Cryptomus
     def payout_params
       currency = payout.amount_currency.to_s.downcase.inquiry
       currency = 'dash'.inquiry if currency.dsh?
+      network = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
       params = {
-        amount: payout.amount.to_f.to_s,
+        amount: (payout.amount.to_f + fee_by(currency: currency.upcase, network: network)).to_d.to_s,
         currency: currency.upcase,
+        network: network,
         order_id: order.public_id.to_s,
         address: payout.destination_account,
         is_subtract: true
       }
       params[:memo] = order.outcome_fio if currency.ton?
-      params[:network] = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
       params
     end
 
@@ -68,6 +79,14 @@ class PaymentServices::Cryptomus
 
     def order
       @order ||= OrderPayout.find(payout.order_payout_id).order
+    end
+
+    def fee
+      @fee ||= client.fee['result']
+    end
+
+    def fee_by(currency:, network:)
+      fee.find { |e| e['network'] == network && e['currency'] == currency }&.dig('commission', 'fee_amount').to_f
     end
 
     def client

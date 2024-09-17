@@ -37,9 +37,15 @@ class PaymentServices::Cryptomus
 
     def update_invoice_state!
       transaction = client.invoice(params: { uuid: invoice.deposit_id })
+      return if transaction.dig('result', 'payment_amount').nil?
 
       invoice.update(transaction_id: transaction.dig('result', 'txid'))
-      invoice.update_state_by_provider(transaction.dig('result', 'payment_status')) if valid_transaction?(transaction)
+      status = transaction.dig('result', 'payment_status')
+      if status.in?(Invoice::SUCCESS_PROVIDER_STATES)
+        recalculate_order(transaction) if recalculate_on_different_amount
+        transfer_to_personal(transaction) if income_to_personal_account
+      end
+      invoice.update_state_by_provider(status)
     end
 
     def invoice
@@ -47,6 +53,9 @@ class PaymentServices::Cryptomus
     end
 
     private
+
+    delegate :token_network, :income_to_personal_account, :recalculate_on_different_amount, to: :income_payment_system
+    delegate :income_payment_system, to: :order
 
     def create_invoice!
       Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
@@ -65,15 +74,19 @@ class PaymentServices::Cryptomus
       params
     end
 
+    def transfer_to_personal(transaction)
+      amount_in_usdt = transaction.dig('result', 'convert', 'amount')
+      client.transfer_to_personal(amount: amount_in_usdt, signature_key: api_keys.outcome_api_secret)
+    end
+
+    def recalculate_order(transaction)
+      order.operator_recalculate!(transaction.dig('result', 'payment_amount'))
+    end
+
     def network(currency)
       return 'BSC' if currency.bnb?
 
-      USDT_NETWORK_TO_CURRENCY[order.income_payment_system.token_network] || 'USDT'
-    end
-
-    def valid_transaction?(transaction)
-      amount = transaction.dig('result', 'payment_amount')
-      amount.nil? || amount.to_f == invoice.amount.to_f
+      USDT_NETWORK_TO_CURRENCY[token_network] || 'USDT'
     end
 
     def client
