@@ -48,15 +48,16 @@ class PaymentServices::Cryptomus
     def payout_params
       currency = payout.amount_currency.to_s.downcase.inquiry
       currency = 'dash'.inquiry if currency.dsh?
+      network = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
       params = {
-        amount: payout.amount.to_f.to_s,
+        amount: (payout.amount.to_f + fee_by(currency: currency.upcase, network: network)).to_d.to_s,
         currency: currency.upcase,
+        network: network,
         order_id: order.public_id.to_s,
         address: payout.destination_account,
         is_subtract: true
       }
       params[:memo] = order.outcome_fio if currency.ton?
-      params[:network] = currency.usdt? || currency.bnb? ? network(currency) : currency.upcase
       params
     end
 
@@ -68,6 +69,14 @@ class PaymentServices::Cryptomus
 
     def order
       @order ||= OrderPayout.find(payout.order_payout_id).order
+    end
+
+    def fee
+      @fee ||= client.fee['result']
+    end
+
+    def fee_by(currency:, network:)
+      fee.find { |e| e['network'] == network && e['currency'] == currency }&.dig('commission', 'fee_amount').to_f
     end
 
     def client
