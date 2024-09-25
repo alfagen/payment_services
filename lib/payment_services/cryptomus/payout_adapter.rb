@@ -76,7 +76,8 @@ class PaymentServices::Cryptomus
     end
 
     def fee_by(currency:, network:)
-      fee.find { |e| e['network'] == network && e['currency'] == currency }&.dig('commission', 'fee_amount').to_f
+      0
+      # fee.find { |e| e['network'] == network && e['currency'] == currency }&.dig('commission', 'fee_amount').to_f
     end
 
     def client
