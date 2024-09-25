@@ -40,9 +40,9 @@ class PaymentServices::Cryptomus
       return if transaction.dig('result', 'payment_amount').nil?
 
       status = transaction.dig('result', 'payment_status')
-      if status.in?(Invoice::SUCCESS_PROVIDER_STATES)
-        recalculate_order(transaction) if recalculate_on_different_amount
-      end
+#      if status.in?(Invoice::SUCCESS_PROVIDER_STATES)
+#        recalculate_order(transaction) if recalculate_on_different_amount
+#      end
       invoice.update_state_by_provider(status)
     end
 

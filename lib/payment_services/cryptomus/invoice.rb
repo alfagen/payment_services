@@ -2,8 +2,10 @@
 
 class PaymentServices::Cryptomus
   class Invoice < ::PaymentServices::Base::FiatInvoice
-    SUCCESS_PROVIDER_STATES = %w(paid paid_over wrong_amount_waiting wrong_amount)
-    FAILED_PROVIDER_STATES  = %w(fail cancel system_fail)
+    # SUCCESS_PROVIDER_STATES = %w(paid paid_over wrong_amount_waiting wrong_amount)
+    # FAILED_PROVIDER_STATES  = %w(fail cancel system_fail)
+    SUCCESS_PROVIDER_STATES = %w(paid paid_over)
+    FAILED_PROVIDER_STATES  = %w(fail cancel system_fail wrong_amount_waiting wrong_amount) 
 
     self.table_name = 'cryptomus_invoices'
 
