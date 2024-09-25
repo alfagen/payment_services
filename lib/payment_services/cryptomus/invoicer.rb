@@ -78,6 +78,10 @@ class PaymentServices::Cryptomus
       USDT_NETWORK_TO_CURRENCY[token_network] || 'USDT'
     end
 
+    def recalculate_order(transaction)
+      order.operator_recalculate!(transaction.dig('result', 'payment_amount'))
+    end
+
     def client
       @client ||= Client.new(api_key: api_key, secret_key: api_secret)
     end
