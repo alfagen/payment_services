@@ -290,6 +290,17 @@ class PaymentServices::Base::P2pBankResolver
         }
       },
       'outcome' => {}
+    },
+    'XPayProVirtual' => {
+      'income' => {
+        'rub' => {
+          'sberbank' => 'SBERBANK',
+          'tinkoff'  => 'TINKOFF',
+          'raiffeisen' => 'RAIFFEISENBANK',
+          ''         => 'BANK_ANY'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 
