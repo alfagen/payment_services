@@ -38,7 +38,7 @@ class PaymentServices::PayFinity
       {
         'Content-Type' => 'application/json',
         'Public-Key'   => "#{api_key}",
-        'Expires'      => (Time.now.utc + 300).to_i,
+        'Expires'      => (Time.now.utc + 300).to_i.to_s,
         'Signature'    => signature
       }
     end
