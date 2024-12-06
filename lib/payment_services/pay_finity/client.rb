@@ -45,6 +45,7 @@ class PaymentServices::PayFinity
 
     def build_signature(url, params)
       sign_string = "#{url}#{params}"
+      logger.info sign_string
       OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha512'), secret_key, sign_string)
     end
   end
