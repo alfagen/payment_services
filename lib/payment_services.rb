@@ -66,6 +66,7 @@ module PaymentServices
   autoload :MerchantAlikassaVirtual, 'payment_services/merchant_alikassa_virtual'
   autoload :PaycraftVirtual, 'payment_services/paycraft_virtual'
   autoload :XPayProVirtual, 'payment_services/x_pay_pro_virtual'
+  autoload :PayFinity, 'payment_services/pay_finity'
 
   UnauthorizedPayout = Class.new StandardError
 

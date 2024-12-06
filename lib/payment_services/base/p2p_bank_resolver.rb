@@ -301,6 +301,17 @@ class PaymentServices::Base::P2pBankResolver
         }
       },
       'outcome' => {}
+    },
+    'PayFinity' => {
+      'income' => {
+        'rub' => {
+          'sberbank'   => 'SBER',
+          'tinkoff'    => 'TINKOF',
+          'raiffeisen' => 'RAIFFEISEN',
+          ''           => 'ANY_BANK'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 
@@ -425,6 +436,25 @@ class PaymentServices::Base::P2pBankResolver
         'Совкомбанк' => 'Межбанк',
         'Точка ФК Открытие' => 'Межбанк'
       }
+    },
+    'PayFinity' => {
+      'income' => {
+        'rub' => {
+          'Тинькофф Банк' => 'TINKOF',
+          'Сбер' => 'SBER',
+          'Банк ВТБ' => 'ANY_BANK',
+          'АЛЬФА-БАНК' => 'ANY_BANK',
+          'Райффайзенбанк' => 'RAIF',
+          'Банк ОТКРЫТИЕ' => 'ANY_BANK',
+          'Газпромбанк' => 'ANY_BANK',
+          'Промсвязьбанк' => 'ANY_BANK',
+          'Хоум кредит' => 'ANY_BANK',
+          'Россельхозбанк' => 'ANY_BANK',
+          'Совкомбанк' => 'ANY_BANK',
+          'Точка ФК Открытие' => 'ANY_BANK'
+        }
+      },
+      'outcome' => {}
     }
   }.freeze
 
