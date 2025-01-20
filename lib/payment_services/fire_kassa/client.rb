@@ -21,7 +21,7 @@ class PaymentServices::FireKassa
       safely_parse http_request(
         url: "#{API_URL}/integrations/ru/transactions/new/",
         method: :POST,
-        body: params.merge(merchantToken: api_key, hmacHash: signature(params)).to_json,
+        body: params.to_json,
         headers: build_headers
       )
     end
