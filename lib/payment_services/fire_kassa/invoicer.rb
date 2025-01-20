@@ -47,9 +47,9 @@ class PaymentServices::FireKassa
 
     def invoice_params
       params = {
-        amount: invoice.amount.to_f.to_s,
-        site_account: sbp? ? sbp_bank : card_bank,
         order_id: order.public_id.to_s,
+        site_account: sbp? ? sbp_bank : card_bank,
+        amount: invoice.amount.to_f.to_s,
         comment: "Order ##{order.public_id.to_s}"
       }
       params[:bank_id] = sbp_bank if sbp?
