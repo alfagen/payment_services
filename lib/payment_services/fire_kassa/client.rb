@@ -19,7 +19,7 @@ class PaymentServices::FireKassa
 
     def create_sbp_invoice(params:)
       safely_parse http_request(
-        url: "#{API_URL}/integrations/ru/transactions/new/",
+        url: "#{API_URL}/deposit/sbp-a",
         method: :POST,
         body: params.to_json,
         headers: build_headers
