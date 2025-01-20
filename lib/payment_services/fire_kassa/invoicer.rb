@@ -15,8 +15,8 @@ class PaymentServices::FireKassa
       invoice.update!(deposit_id: response['id'])
       PaymentServices::Base::Wallet.new(
         address: response['card_number'],
-        name: [response['first_name'], response['last_name']].join(' '),
-        memo: response['bank']
+        name: [response['first_name'].capitalize, response['last_name'].capitalize].join(' '),
+        memo: response['bank'].capitalize
       )
     end
 
