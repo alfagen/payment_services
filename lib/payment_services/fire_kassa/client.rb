@@ -40,6 +40,7 @@ class PaymentServices::FireKassa
 
     def build_headers
       {
+        'Content-Type'  => 'application/json',
         'Authorization' => "Bearer #{api_key}"
       }
     end
