@@ -6,6 +6,7 @@ require_relative 'client'
 class PaymentServices::FireKassa
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
+    DEFAULT_CARD = 'sber'
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
@@ -48,7 +49,7 @@ class PaymentServices::FireKassa
     def invoice_params
       params = {
         order_id: order.public_id.to_s,
-        site_account: sbp? ? sbp_bank : card_bank,
+        site_account: sbp? ? DEFAULT_CARD : card_bank,
         amount: invoice.amount.to_f.to_s,
         comment: "Order ##{order.public_id.to_s}"
       }
