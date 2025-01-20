@@ -15,7 +15,7 @@ class PaymentServices::FireKassa
 
       invoice.update!(deposit_id: response['id'])
       PaymentServices::Base::Wallet.new(
-        address: response['card_number'],
+        address: response['card_number'] || format_phone_number(response['account']),
         name: [response['first_name'].capitalize, response['last_name'].capitalize].join(' '),
         memo: response['bank'].capitalize
       )
@@ -63,6 +63,10 @@ class PaymentServices::FireKassa
 
     def client
       @client ||= Client.new(api_key: api_key)
+    end
+
+    def format_phone_number(account)
+      "+7 (#{account[0..2]}) #{account[3..5]}-#{account[6..7]}-#{account[8..9]}"
     end
   end
 end
