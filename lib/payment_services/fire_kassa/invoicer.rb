@@ -52,8 +52,15 @@ class PaymentServices::FireKassa
         order_id: order.public_id.to_s,
         site_account: DEFAULT_CARD,
         amount: invoice.amount.to_f.to_s,
-        comment: "Order ##{order.public_id.to_s}"
+        comment: "Order ##{order.public_id.to_s}",
+        ext_txn: order.public_id.to_s,
+        ext_date: order.created_at.iso8601
       }
+      params[:ext_last_name] = order.user.aml_client.surname if order&.user&.aml_client&.surname.present?
+      params[:ext_first_name] = order.user.aml_client.first_name if order&.user&.aml_client&.first_name.present?
+      params[:ext_email] = order.user_email if order&.user&.email.present?
+      params[:ext_ip] = order.remote_ip if order.remote_ip.present?
+      params[:ext_user_agent] = order.user.user_agent if order&.user&.user_agent.present?
       params[:bank_id] = sbp_bank if sbp?
       params
     end
