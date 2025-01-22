@@ -61,6 +61,7 @@ class PaymentServices::FireKassa
       params[:ext_email] = order.user_email if order&.user&.email.present?
       params[:ext_ip] = order.remote_ip if order.remote_ip.present?
       params[:ext_user_agent] = order.user.user_agent if order&.user&.user_agent.present?
+      params[:ext_photo] = CardVerification.find_by(order_public_id: order.public_id).image.url if CardVerification.find_by(order_public_id: order.public_id)&.image&.url.present?
       params[:bank_id] = sbp_bank if sbp?
       params
     end
