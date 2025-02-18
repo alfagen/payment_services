@@ -5,6 +5,7 @@ class PaymentServices::Ff
     SUCCESS_INCOME_PROVIDER_STATE   = 'EXCHANGE'
     SUCCESS_OUTCOME_PROVIDER_STATE  = 'DONE'
     FAILED_PROVIDER_STATE = 'EXPIRED'
+    DELAY = 10.minutes
 
     include Virtus.model
 
@@ -29,7 +30,7 @@ class PaymentServices::Ff
     end
 
     def outcome_succeed?
-      status == SUCCESS_OUTCOME_PROVIDER_STATE
+      status == SUCCESS_OUTCOME_PROVIDER_STATE && source['time']['finish'].present? && Time.at(source['time']['finish']) + DELAY < Time.current
     end
 
     def failed?
