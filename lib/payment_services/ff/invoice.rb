@@ -16,5 +16,9 @@ class PaymentServices::Ff
       pay!(payload: transaction) if transaction.income_succeed?
       cancel! if transaction.failed?
     end
+
+    def transaction_created_at
+      nil
+    end
   end
 end
