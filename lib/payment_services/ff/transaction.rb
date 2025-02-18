@@ -25,7 +25,7 @@ class PaymentServices::Ff
     end
 
     def income_succeed?
-      status == SUCCESS_INCOME_PROVIDER_STATE
+      status == SUCCESS_INCOME_PROVIDER_STATE || status == SUCCESS_OUTCOME_PROVIDER_STATE
     end
 
     def outcome_succeed?

@@ -32,7 +32,7 @@ class PaymentServices::Ff
 
     def update_invoice_state!
       raw_transaction = client.transaction(params: { id: invoice.deposit_id, token: invoice.access_token })
-      transaction = PaymentServices::Ff::Transaction.build_from(raw_transaction['data'])
+      transaction = Transaction.build_from(raw_transaction['data'])
       invoice.update_state_by_transaction(transaction)
     end
 
