@@ -32,7 +32,7 @@ class PaymentServices::Ff
 
     def update_invoice_state!
       raw_transaction = client.transaction(params: { id: invoice.deposit_id, token: invoice.access_token })
-      transaction = Transaction.build_from(raw_transaction)
+      transaction = PaymentServices::Ff::Transaction.build_from(raw_transaction['data'])
       invoice.update_state_by_transaction(transaction)
     end
 
@@ -48,9 +48,11 @@ class PaymentServices::Ff
 
     def invoice_params
       type = order.exchange_rate_flexible_rate? && order.flexible_rate? ? 'float' : 'fixed'
+      from = order.income_currency.to_s
+      from = 'BSC' if from == 'BNB'
       params = {
         type: type,
-        fromCcy: order.income_currency.to_s,
+        fromCcy: from,
         toCcy: order.outcome_currency.to_s,
         direction: 'from',
         amount: invoice.amount.to_f,
