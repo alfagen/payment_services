@@ -56,6 +56,7 @@ class PaymentServices::Ff
         toAddress: order.outcome_account
       }
       params[:tag] = order.outcome_unk if order.outcome_unk.present?
+      params
     end
 
     def client
