@@ -20,7 +20,7 @@ class PaymentServices::Ff
       return if payout.pending?
 
       raw_transaction = client.transaction(params: { id: payout.withdrawal_id, token: payout.access_token })
-      transaction = Transaction.build_from(raw_transaction, direction: :to)
+      transaction = Transaction.build_from(raw_transaction['data'], direction: :to)
       payout.update_state_by_provider!(transaction)
 
       transaction
