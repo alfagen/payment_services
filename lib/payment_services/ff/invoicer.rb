@@ -16,8 +16,8 @@ class PaymentServices::Ff
 
       invoice.update!(deposit_id: response.dig('data', 'id'), access_token: response.dig('data', 'token'))
       PaymentServices::Base::Wallet.new(
-        address: response['from']['address'],
-        memo: response['from']['tag']
+        address: response['data']['from']['address'],
+        memo: response['data']['from']['tag'].presence
       )
     end
 
