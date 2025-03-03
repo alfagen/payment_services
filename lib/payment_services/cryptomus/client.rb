@@ -2,7 +2,7 @@
 
 class PaymentServices::Cryptomus
   class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://api.cryptomus.com/v1'
+    API_URL = 'https://api.heleket.com/v1'
 
     def initialize(api_key:, secret_key:)
       @api_key = api_key
