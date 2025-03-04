@@ -30,24 +30,14 @@ class PaymentServices::Capitalist
 
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
-      response = client.create_payout(params: payout_params)
+      response = client.create_payout(batch: batch)
       raise Error, response['message'] unless response['code'] == 0
 
       payout.pay!(withdrawal_id: response['data']['id'])
     end
 
-    def payout_params
-      order = OrderPayout.find(payout.order_payout_id).order
-      number = sbp? ? order.outcome_phone[1..-1] : payout.destination_account
-
-      params = {
-        amount: "%.2f" % payout.amount.to_f,
-        number: number,
-        order_id: order.public_id.to_s,
-        service: service
-      }
-      params[:customer_code] = sbp_bank if sbp?
-      params
+    def batch
+      "CAPITALIST;#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id}"
     end
 
     def client
