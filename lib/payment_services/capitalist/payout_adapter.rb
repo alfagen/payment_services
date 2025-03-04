@@ -37,6 +37,9 @@ class PaymentServices::Capitalist
     end
 
     def batch
+      currency = payout.amount_currency.to_s
+      currency = 'RUR' if currency == 'RUB'
+
       "CAPITALIST;#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id}"
     end
 
