@@ -20,7 +20,7 @@ class PaymentServices::Capitalist
         operation: 'import_batch_advanced',
         login: api_key,
         token: token,
-        encrypted_password: 'fake',
+        encrypted_password: encrypted_password(modulus_hex, exponent_hex),
         batch: batch,
         verification_type: 'SIGNATURE',
         verification_data: sign_batch(batch)
@@ -89,7 +89,7 @@ class PaymentServices::Capitalist
 
     def sign_batch(batch)
       private_key = OpenSSL::PKey::RSA.new(File.read(PAYMENTS_PRIVATE_KEY_FILE_PATH))
-      signature = private_key.sign(OpenSSL::Digest::SHA256.new, batch)
+      signature = private_key.sign(OpenSSL::Digest::SHA1.new, batch)
       Base64.strict_encode64(signature)
     end
   end
