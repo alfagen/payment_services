@@ -10,7 +10,7 @@ class PaymentServices::Capitalist
       @secret_key = secret_key
     end
 
-    def create_invoice(batch:)
+    def create_payout(batch:)
       token_response = otp_token
       token = token_response['data']['token']
       modulus_hex = token_response['data']['modulus']
