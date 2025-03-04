@@ -20,7 +20,7 @@ class PaymentServices::Capitalist
         operation: 'import_batch_advanced',
         login: api_key,
         token: token,
-        encrypted_password: encrypted_password(modulus_hex, exponent_hex),
+        encrypted_password: 'fake',
         batch: batch,
         verification_type: 'SIGNATURE',
         verification_data: sign_batch(batch)
