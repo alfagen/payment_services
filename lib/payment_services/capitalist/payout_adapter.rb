@@ -28,6 +28,12 @@ class PaymentServices::Capitalist
 
     attr_reader :payout
 
+    delegate :card_bank, :sbp_bank, :sbp?, to: :resolver
+
+    def resolver
+      @resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self)
+    end
+
     def make_payout(amount:, destination_account:, order_payout_id:)
       @payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
       response = client.create_payout(batch: batch)
@@ -39,9 +45,26 @@ class PaymentServices::Capitalist
     def batch
       currency = payout.amount_currency.to_s
       currency = 'RUR' if currency == 'RUB'
+      operation = sbp? ? 'SBP' : card_bank
       order = OrderPayout.find(payout.order_payout_id).order
 
-      "CAPITALIST;#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id}"
+      if sbp?
+        "#{operation};#{order.outcome_phone.delete_prefix('+')};#{payout.amount.to_f};#{currency};#{sbp_bank};;;#{order.user_email};#{order.public_id};Order: #{order.public_id}"
+      elsif currency == 'RUR'
+        last_name, first_name = order.outcome_fio.split(' ').first(2).map { |e| e.downcase.capitalize }
+        "#{operation};#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id};#{first_name};#{last_name}"
+      elsif currency == 'EUR' || currency == 'USD'
+        last_name, first_name = order.outcome_fio.split(' ').first(2).map { |e| e.downcase.capitalize }
+        mm, yyyy = order.payment_card_exp_date.split('/')
+        "#{operation};#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id};#{first_name};#{last_name};;;;;#{mm};#{yyyy}"
+      elsif currency == 'USDT'
+        operation = PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: order.outcome_payment_system.currency, token_network: order.outcome_payment_system.token_network).getblock_currency
+        "#{operation};#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id}"
+      elsif currency == 'USDC'
+        "USDCERC20;#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id}"
+      else
+        "#{operation};#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id}"
+      end
     end
 
     def client

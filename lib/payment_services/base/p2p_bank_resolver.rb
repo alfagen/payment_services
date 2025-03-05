@@ -311,6 +311,41 @@ class PaymentServices::Base::P2pBankResolver
         }
       },
       'outcome' => {}
+    },
+    'Capitalist' => {
+      'income' => {},
+      'outcome' => {
+        'rub' => {
+          'sberbank' => 'RUCARD',
+          'tinkoff'  => 'RUCARD',
+          'raiffeisen' => 'RUCARD',
+          ''  => 'RUCARD'
+        },
+        'uah' => {
+          ''  => 'UKRCARD'
+        },
+        'kzt' => {
+          '' => 'KZCARD'
+        },
+        'eur' => {
+          '' => 'WORLDCARDEUR'
+        },
+        'usd' => {
+          '' => 'WORLDCARDUSD'
+        },
+        'uzs' => {
+          '' => 'UZCARD'
+        },
+        'btc' => {
+          '' => 'BITCOIN'
+        },
+        'eth' => {
+          '' => 'ETH'
+        },
+        'usdt' => {
+          '' => 'USDT'
+        }
+      }
     }
   }.freeze
 
@@ -452,6 +487,21 @@ class PaymentServices::Base::P2pBankResolver
         'Точка ФК Открытие' => '100000000065'
       },
       'outcome' => {}
+    },
+    'Capitalist' => {
+      'income' => {},
+      'outcome' => {
+        'Тинькофф Банк' => 'Tinkoff',
+        'Сбер' => 'Sberbank',
+        'Банк ВТБ' => 'VTB',
+        'АЛЬФА-БАНК' => 'AlfaBank',
+        'Райффайзенбанк' => 'Raiffeisen',
+        'Банк ОТКРЫТИЕ' => 'OTK',
+        'Газпромбанк' => 'GBP',
+        'Промсвязьбанк' => 'PSB',
+        'Россельхозбанк' => 'RSHB',
+        'Совкомбанк' => 'RSHB'
+      }
     }
   }.freeze
 
