@@ -49,7 +49,7 @@ class PaymentServices::Capitalist
       order = OrderPayout.find(payout.order_payout_id).order
 
       if sbp?
-        "#{operation};#{order.outcome_phone.delete_prefix('+')};#{payout.amount.to_f};#{currency};#{sbp_bank};;;#{order.user_email};#{order.public_id};Order: #{order.public_id}"
+        "#{operation};#{payout.destination_account.delete_prefix('+')};#{payout.amount.to_f};#{currency};#{sbp_bank};;;#{order.user_email};#{order.public_id};Order: #{order.public_id}"
       elsif currency == 'RUR'
         last_name, first_name = order.outcome_fio.split(' ').first(2).map { |e| e.downcase.capitalize }
         "#{operation};#{payout.destination_account};#{payout.amount.to_f};#{currency};#{order.public_id};Order: #{order.public_id};#{first_name};#{last_name}"
