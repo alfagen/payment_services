@@ -67,6 +67,7 @@ module PaymentServices
   autoload :PaycraftVirtual, 'payment_services/paycraft_virtual'
   autoload :XPayProVirtual, 'payment_services/x_pay_pro_virtual'
   autoload :FireKassa, 'payment_services/fire_kassa'
+  autoload :Ff, 'payment_services/ff'
 
   UnauthorizedPayout = Class.new StandardError
 
