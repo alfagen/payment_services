@@ -8,6 +8,8 @@ class PaymentServices::Ff
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
     SUCCESS_REQUEST_STATUS_CODE = 0
+    FEE_IN_PERCENTS = 0.5
+    REF_CODE = 'jznep39b'
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
@@ -56,7 +58,9 @@ class PaymentServices::Ff
         toCcy: order.outcome_currency.to_s,
         direction: 'from',
         amount: invoice.amount.to_f,
-        toAddress: order.outcome_account
+        toAddress: order.outcome_account,
+        refcode: REF_CODE,
+        afftax: FEE_IN_PERCENTS
       }
       params[:tag] = order.outcome_unk if order.outcome_unk.present?
       params
