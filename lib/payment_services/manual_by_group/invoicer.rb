@@ -19,6 +19,10 @@ class PaymentServices::ManualByGroup
       false
     end
 
+    def invoice
+      nil
+    end
+
     private
 
     delegate :wallets_name_group, :wallets_available_for_transfers, to: :income_payment_system
