@@ -24,7 +24,7 @@ class PaymentServices::Rbk
       query_hash = {
         invoiceID: invoice.rbk_invoice_id,
         invoiceAccessToken: invoice.access_token,
-        name: I18n.t('payment_systems.default_company', order_id: order.public_id),
+        name: Settings.domain,
         description: I18n.t('payment_systems.default_product', order_id: order.public_id),
         bankCard: true,
         applePay: false,
