@@ -46,7 +46,7 @@ class PaymentServices::PandaPay
     def invoice_params
       {
         amount_rub: invoice.amount.to_f.round(2),
-        countries: ['KAZ'],
+        countries: ['KZT'],
         merchant_order_id: order.public_id.to_s,
         requisite_type: 'card',
         idempotency_key: order.public_id.to_s
