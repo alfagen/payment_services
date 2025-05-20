@@ -69,6 +69,7 @@ module PaymentServices
   autoload :FireKassa, 'payment_services/fire_kassa'
   autoload :Ff, 'payment_services/ff'
   autoload :ManualByGroup, 'payment_services/manual_by_group'
+  autoload :Panda_Pay, 'payment_services/panda_pay'
 
   UnauthorizedPayout = Class.new StandardError
 
