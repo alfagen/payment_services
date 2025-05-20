@@ -41,7 +41,7 @@ class PaymentServices::PandaPay
       {
         'X-API-Key'    => api_key,
         'X-Signature'  => signature,
-        'X-Timestamp'  => timestamp
+        'X-Timestamp'  => timestamp.to_s
       }
     end
 
