@@ -49,7 +49,7 @@ class PaymentServices::PandaPay
         countries: ['AZE'],
         merchant_order_id: order.public_id.to_s,
         requisite_type: 'card',
-        idempotency_key: order.public_id.to_s
+        idempotency_key: SecureRandom.uuid
       }
     end
 
