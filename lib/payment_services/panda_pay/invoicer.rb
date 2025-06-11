@@ -5,6 +5,12 @@ require_relative 'client'
 
 class PaymentServices::PandaPay
   class Invoicer < ::PaymentServices::Base::Invoicer
+    CURRENCY_TO_COUNTRY = {
+      'KZT' => 'KAZ',
+      'AZN' => 'AZE',
+      'TJS' => 'TJK'
+    }
+
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
       response = client.create_invoice(params: invoice_params)
@@ -46,8 +52,8 @@ class PaymentServices::PandaPay
     def invoice_params
       {
         amount_rub: invoice.amount.to_f.round(2),
-        countries: ['TJK'],
-        currency: 'TJS',
+        countries: [CURRENCY_TO_COUNTRY[invoice.amount_currency.to_s]],
+        currency: invoice.amount_currency.to_s,
         merchant_order_id: order.public_id.to_s,
         requisite_type: 'card',
         idempotency_key: SecureRandom.uuid
