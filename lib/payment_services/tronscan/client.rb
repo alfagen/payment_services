@@ -36,7 +36,7 @@ class PaymentServices::Tronscan
 
     def build_headers
       {
-        # 'TRON-PRO-API-KEY' => api_key
+        'TRON-PRO-API-KEY' => api_key
       }
     end
 
