@@ -2,7 +2,7 @@
 
 class PaymentServices::Liquid
   class Invoice < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'liquid_invoices'
 
     scope :ordered, -> { order(id: :desc) }

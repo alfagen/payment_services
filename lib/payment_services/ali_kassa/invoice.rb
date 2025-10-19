@@ -4,7 +4,7 @@
 
 class PaymentServices::AliKassa
   class Invoice < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'ali_kassa_invoices'
 
     scope :ordered, -> { order(id: :desc) }

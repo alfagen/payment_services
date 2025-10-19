@@ -2,7 +2,7 @@
 
 class PaymentServices::AppexMoney
   class Payout < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'appex_money_payouts'
 
     scope :ordered, -> { order(id: :desc) }

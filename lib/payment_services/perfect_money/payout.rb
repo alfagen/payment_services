@@ -2,7 +2,7 @@
 
 class PaymentServices::PerfectMoney
   class Payout < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'perfect_money_payouts'
 

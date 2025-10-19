@@ -2,7 +2,7 @@
 
 class PaymentServices::Exmo
   class Payout < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'exmo_payouts'
 

@@ -5,7 +5,7 @@ class PaymentServices::OkoOtc
     SUCCESS_PROVIDER_STATE  = 'Выплачена'
     FAILED_PROVIDER_STATE   = 'Отмененная'
 
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'oko_otc_payouts'
 

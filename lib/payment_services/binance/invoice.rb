@@ -2,7 +2,7 @@
 
 class PaymentServices::Binance
   class Invoice < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
 
     BINANCE_SUCCESS = [1, 6]
     BINANCE_FAILED  = 3

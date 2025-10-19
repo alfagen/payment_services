@@ -4,7 +4,7 @@
 
 class PaymentServices::AliKassaPeerToPeer
   class Invoice < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'ali_kassa_p2p_invoices'
 
     scope :ordered, -> { order(id: :desc) }

@@ -2,7 +2,7 @@
 
 class PaymentServices::Payeer
   class Payout < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'payeer_payouts'
 

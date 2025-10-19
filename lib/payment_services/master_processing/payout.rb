@@ -2,7 +2,7 @@
 
 class PaymentServices::MasterProcessing
   class Payout < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'master_processing_payouts'
 

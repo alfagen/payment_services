@@ -4,6 +4,8 @@
 
 require 'payment_services/version'
 require 'payment_services/configuration'
+require 'payment_services/auto_logger'
+require 'workflow-activerecord'
 
 module PaymentServices
   class << self

@@ -2,7 +2,7 @@
 
 class PaymentServices::Base
   class CryptoInvoice < ActiveRecord::Base
-    include Workflow
+    include WorkflowActiverecord
 
     scope :ordered, -> { order(id: :desc) }
 

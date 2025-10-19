@@ -2,7 +2,7 @@
 
 class PaymentServices::Obmenka
   class Invoice < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'obmenka_invoices'
 

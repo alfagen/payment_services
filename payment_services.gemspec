@@ -38,11 +38,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport'
   spec.add_dependency 'jwt'
   spec.add_dependency 'virtus'
-  spec.add_dependency 'workflow'
+  spec.add_dependency 'workflow-activerecord'
   spec.add_dependency 'block_io'
+  spec.add_dependency 'activerecord'
 
-  spec.add_development_dependency 'bundler', '~> 1.16'
-  spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '~> 0.61'
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec'
+  spec.add_development_dependency 'rubocop'
 end

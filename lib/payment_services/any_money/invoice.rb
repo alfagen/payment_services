@@ -4,7 +4,7 @@
 
 class PaymentServices::AnyMoney
   class Invoice < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'any_money_invoices'
 
     scope :ordered, -> { order(id: :desc) }

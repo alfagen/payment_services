@@ -2,7 +2,7 @@
 
 class PaymentServices::Base
   class CryptoPayout < ActiveRecord::Base
-    include Workflow
+    include WorkflowActiverecord
 
     scope :ordered, -> { order(id: :desc) }
 

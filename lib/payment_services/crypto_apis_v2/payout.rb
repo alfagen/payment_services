@@ -2,7 +2,7 @@
 
 class PaymentServices::CryptoApisV2
   class Payout < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'crypto_apis_payouts'
 
     scope :ordered, -> { order(id: :desc) }

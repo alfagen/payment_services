@@ -2,7 +2,7 @@
 
 class PaymentServices::Binance
   class Payout < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
 
     BINANCE_SUCCESS  = 6
     BINANCE_REJECTED = 3

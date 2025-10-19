@@ -4,7 +4,7 @@
 
 class PaymentServices::PerfectMoney
   class Invoice < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'perfect_money_invoices'
 
     scope :ordered, -> { order(id: :desc) }

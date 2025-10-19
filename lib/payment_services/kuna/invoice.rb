@@ -7,7 +7,7 @@ class PaymentServices::Kuna
     UAH_FEE_REGULAR = 5
     KOPECK_EPSILON = 1
 
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'kuna_invoices'
 

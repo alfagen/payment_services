@@ -5,7 +5,7 @@ class PaymentServices::Paylama
     SUCCESS_PROVIDER_STATE  = 'Succeed'
     FAILED_PROVIDER_STATE   = 'Failed'
 
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'paylama_invoices'
 

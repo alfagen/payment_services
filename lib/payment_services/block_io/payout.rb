@@ -2,7 +2,7 @@
 
 class PaymentServices::BlockIo
   class Payout < ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'block_io_payouts'
 
     scope :ordered, -> { order(id: :desc) }

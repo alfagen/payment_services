@@ -6,7 +6,7 @@ require_relative 'payment_client'
 
 class PaymentServices::Rbk
   class Payment < PaymentServices::ApplicationRecord
-    include Workflow
+    include WorkflowActiverecord
     self.table_name = 'rbk_money_payments'
 
     scope :ordered, -> { order(id: :desc) }
