@@ -1,14 +1,30 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 RSpec.describe PaymentServices::Rbk::Payout, type: :model do
+
   describe 'associations' do
     it { is_expected.to belong_to(:rbk_payout_destination) }
     it { is_expected.to belong_to(:rbk_wallet) }
   end
 
   describe '.create_from!' do
-    let(:destination) { double('PayoutDestination') }
-    let(:wallet) { double('Wallet') }
+    let(:identity) { PaymentServices::Rbk::Identity.create!(rbk_id: 'identity_123') }
+    let(:destination) do
+      PaymentServices::Rbk::PayoutDestination.create!(
+        rbk_identity: identity,
+        rbk_id: 'dest_456',
+        public_id: 'dest_123',
+        payment_token: 'token_123',
+        card_brand: 'visa',
+        card_bin: '411111',
+        card_suffix: '1111',
+        rbk_status: 'Authorized',
+        payload: { 'test' => 'data' }
+      )
+    end
+    let(:wallet) { PaymentServices::Rbk::Wallet.create!(rbk_identity: identity, rbk_id: 'wallet_123') }
     let(:payout_client) { double('PayoutClient') }
     let(:response) { { 'id' => 'payout_123', 'status' => 'processed' } }
 
@@ -19,7 +35,7 @@ RSpec.describe PaymentServices::Rbk::Payout, type: :model do
 
     it 'creates payout with response data' do
       payout = described_class.create_from!(
-        destinaion: destination,
+        destination: destination,
         wallet: wallet,
         amount_cents: 5000
       )
@@ -37,7 +53,7 @@ RSpec.describe PaymentServices::Rbk::Payout, type: :model do
 
       expect {
         described_class.create_from!(
-          destinaion: destination,
+          destination: destination,
           wallet: wallet,
           amount_cents: 5000
         )
@@ -46,7 +62,31 @@ RSpec.describe PaymentServices::Rbk::Payout, type: :model do
   end
 
   describe '#refresh_info!' do
-    let(:payout) { described_class.new(rbk_id: 'payout_123') }
+    let(:identity) { PaymentServices::Rbk::Identity.create!(rbk_id: 'identity_123') }
+    let(:destination) do
+      PaymentServices::Rbk::PayoutDestination.create!(
+        rbk_identity: identity,
+        rbk_id: 'dest_456',
+        public_id: 'dest_123',
+        payment_token: 'token_123',
+        card_brand: 'visa',
+        card_bin: '411111',
+        card_suffix: '1111',
+        rbk_status: 'Authorized',
+        payload: { 'test' => 'data' }
+      )
+    end
+    let(:wallet) { PaymentServices::Rbk::Wallet.create!(rbk_identity: identity, rbk_id: 'wallet_123') }
+    let(:payout) do
+      described_class.create!(
+        rbk_id: 'payout_123',
+        rbk_payout_destination: destination,
+        rbk_wallet: wallet,
+        amount_cents: 5000,
+        rbk_status: 'processed',
+        payload: { 'test' => 'data' }
+      )
+    end
     let(:payout_client) { double('PayoutClient') }
     let(:response) { { 'id' => 'payout_123', 'status' => 'completed' } }
 

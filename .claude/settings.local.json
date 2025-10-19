@@ -10,7 +10,9 @@
       "Bash(gem which:*)",
       "Read(//home/danil/.rbenv/versions/3.2.8/lib/ruby/gems/3.2.0/gems/money-rails-1.15.0/lib/**)",
       "Read(//home/danil/.rbenv/versions/3.2.8/lib/ruby/gems/3.2.0/gems/money-rails-1.15.0/**)",
-      "Read(//home/danil/.rbenv/versions/3.2.8/lib/ruby/gems/3.2.0/gems/**)"
+      "Read(//home/danil/.rbenv/versions/3.2.8/lib/ruby/gems/3.2.0/gems/**)",
+      "Bash(bundle:*)",
+      "Read(//home/danil/code/kassa-admin/db/**)"
     ],
     "deny": [],
     "ask": []

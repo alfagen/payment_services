@@ -1,0 +1,34 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+destination_1:
+  rbk_identity: identity_1
+  rbk_id: dest_456
+  public_id: dest_123
+  payment_token: token_123
+  card_brand: visa
+  card_bin: '411111'
+  card_suffix: '1111'
+  rbk_status: Authorized
+  payload: {"test": "data"}
+
+destination_2:
+  rbk_identity: identity_1
+  rbk_id: dest_789
+  public_id: dest_456
+  payment_token: token_456
+  card_brand: mastercard
+  card_bin: '555555'
+  card_suffix: '5555'
+  rbk_status: Pending
+  payload: {"test": "data2"}
+
+destination_3:
+  rbk_identity: identity_2
+  rbk_id: dest_999
+  public_id: dest_789
+  payment_token: token_789
+  card_brand: amex
+  card_bin: '378282'
+  card_suffix: '8282'
+  rbk_status: Completed
+  payload: {"test": "data3"}

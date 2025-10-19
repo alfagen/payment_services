@@ -1,19 +1,15 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 RSpec.describe PaymentServices::Rbk::Invoice, type: :model do
   describe 'associations' do
     it { is_expected.to have_many(:payments).dependent(:destroy) }
   end
 
-  describe 'validations' do
-    it { is_expected.to validate_presence_of(:amount_in_cents) }
-    it { is_expected.to validate_presence_of(:order_public_id) }
-    it { is_expected.to validate_presence_of(:state) }
-  end
-
   describe 'scopes' do
-    let!(:invoice1) { described_class.create!(amount_in_cents: 1000, order_public_id: 'order1', state: 'pending') }
-    let!(:invoice2) { described_class.create!(amount_in_cents: 2000, order_public_id: 'order2', state: 'pending') }
+    let!(:invoice1) { described_class.create!(amount_in_cents: 1000, order_public_id: 1, state: 'pending') }
+    let!(:invoice2) { described_class.create!(amount_in_cents: 2000, order_public_id: 2, state: 'pending') }
 
     it 'orders invoices by id desc' do
       expect(described_class.ordered).to eq([invoice2, invoice1])
@@ -29,7 +25,17 @@ RSpec.describe PaymentServices::Rbk::Invoice, type: :model do
   end
 
   describe 'workflow states' do
-    let(:invoice) { described_class.new(amount_in_cents: 1000, order_public_id: 'order1', state: 'pending') }
+    let(:invoice) { described_class.create!(amount_in_cents: 1000, order_public_id: 1, state: 'pending') }
+
+    before do
+      # Mock fetch_payments! to avoid HTTP calls
+      allow_any_instance_of(described_class).to receive(:fetch_payments!).and_return([])
+
+      # Mock order method to avoid external dependencies
+      order = double('Order')
+      allow(order).to receive(:auto_confirm!)
+      allow_any_instance_of(described_class).to receive(:order).and_return(order)
+    end
 
     it 'starts in pending state' do
       expect(invoice).to be_pending

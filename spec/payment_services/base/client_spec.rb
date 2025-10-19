@@ -14,6 +14,7 @@ RSpec.describe PaymentServices::Base::Client do
     before do
       allow(client).to receive(:http).with(uri).and_return(http)
       allow(client).to receive(:build_request).and_return(request)
+      allow(request).to receive(:body).and_return('test payload')
       allow(http).to receive(:request).and_return(response)
     end
 

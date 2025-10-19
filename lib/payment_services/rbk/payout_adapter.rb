@@ -28,7 +28,7 @@ class PaymentServices::Rbk
       end
 
       Payout.create_from!(
-        destinaion: payout_destination,
+        destination: payout_destination,
         wallet: identity.current_wallet,
         amount_cents: amount.cents
       )

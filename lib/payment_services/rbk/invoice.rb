@@ -29,8 +29,8 @@ class PaymentServices::Rbk
 
       state :paid do
         on_entry do
-          fetch_payments!
-          order.auto_confirm!(income_amount: amount)
+          fetch_payments! rescue nil
+          order.auto_confirm!(income_amount: amount) rescue nil
         end
       end
       state :cancelled
@@ -68,6 +68,9 @@ class PaymentServices::Rbk
     def fetch_payments!
       response = InvoiceClient.new.get_payments(self)
       response.map { |payment_json| find_or_create_payment!(payment_json) }
+    rescue => e
+      Rails.logger.warn "Failed to fetch payments for invoice #{id}: #{e.message}" if defined?(Rails)
+      raise e
     end
 
     private

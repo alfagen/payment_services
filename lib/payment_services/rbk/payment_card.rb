@@ -12,7 +12,10 @@ class PaymentServices::Rbk
 
     def masked_number
       # NOTE dup нужен, т.к. insert изменяет исходный объект
-      "#{bin.dup.insert(4, ' ')}** **** #{last_digits}"
+      return ' ** **** ' if bin.empty? && last_digits.empty?
+
+      bin_with_space = bin.dup.insert(4, ' ')
+      "#{bin_with_space}** **** #{last_digits}"
     end
   end
 end

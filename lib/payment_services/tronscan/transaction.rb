@@ -21,6 +21,7 @@ class PaymentServices::Tronscan
     end
 
     def successful?
+      return false if source.nil? || source.empty?
       source[:confirmed]
     end
   end

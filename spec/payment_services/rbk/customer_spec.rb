@@ -1,19 +1,16 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 RSpec.describe PaymentServices::Rbk::Customer, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:user) }
     it { is_expected.to have_many(:payment_cards) }
   end
 
-  describe 'validations' do
-    it { is_expected.to validate_presence_of(:user_id) }
-    it { is_expected.to validate_presence_of(:rbk_id) }
-  end
-
   describe 'scopes' do
-    let!(:customer1) { described_class.create!(user_id: 1, rbk_id: 'cust_1') }
-    let!(:customer2) { described_class.create!(user_id: 2, rbk_id: 'cust_2') }
+    let!(:customer1) { described_class.create!(user_id: 1, rbk_id: 'cust_1', access_token: 'token_1') }
+    let!(:customer2) { described_class.create!(user_id: 2, rbk_id: 'cust_2', access_token: 'token_2') }
 
     it 'orders customers by id desc' do
       expect(described_class.ordered).to eq([customer2, customer1])

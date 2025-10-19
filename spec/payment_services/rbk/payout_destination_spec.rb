@@ -1,21 +1,31 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 RSpec.describe PaymentServices::Rbk::PayoutDestination, type: :model do
+
   describe 'associations' do
     it { is_expected.to belong_to(:rbk_identity) }
   end
 
   describe '.find_or_create_from_card_details' do
-    let(:identity) { double('Identity', rbk_payout_destinations: double('PayoutDestinations')) }
+    let(:identity) { PaymentServices::Rbk::Identity.create!(rbk_id: 'identity_123') }
     let(:tokenized_card) { { 'token' => 'token_123', 'paymentSystem' => 'visa' } }
-    let(:existing_destination) { double('ExistingDestination') }
-
-    before do
-      allow(described_class).to receive(:tokenize_card!).and_return(tokenized_card)
-      allow(identity.rbk_payout_destinations).to receive(:find_by).with(payment_token: 'token_123').and_return(existing_destination)
-    end
 
     it 'returns existing destination if found' do
+      existing_destination = described_class.create!(
+        rbk_identity: identity,
+        rbk_id: 'dest_456',
+        payment_token: tokenized_card['token'],
+        public_id: 'existing_123',
+        card_brand: 'visa',
+        card_bin: '411111',
+        card_suffix: '1111',
+        rbk_status: 'Authorized',
+        payload: { 'test' => 'data' }
+      )
+      allow(described_class).to receive(:tokenize_card!).and_return(tokenized_card)
+
       result = described_class.find_or_create_from_card_details(
         number: '4111111111111111',
         name: 'John Doe',
@@ -27,29 +37,30 @@ RSpec.describe PaymentServices::Rbk::PayoutDestination, type: :model do
     end
 
     context 'when destination does not exist' do
-      before do
-        allow(identity.rbk_payout_destinations).to receive(:find_by).and_return(nil)
-        allow(described_class).to receive(:create_destination!).and_return(double('NewDestination'))
-      end
-
       it 'creates new destination' do
+        allow(described_class).to receive(:tokenize_card!).and_return(tokenized_card)
+        new_destination = double('NewDestination')
+        allow(described_class).to receive(:create_destination!).and_return(new_destination)
+
         expect(described_class).to receive(:create_destination!).with(
           identity: identity,
           tokenized_card: tokenized_card
         )
 
-        described_class.find_or_create_from_card_details(
+        result = described_class.find_or_create_from_card_details(
           number: '4111111111111111',
           name: 'John Doe',
           exp_date: '12/25',
           identity: identity
         )
+
+        expect(result).to eq(new_destination)
       end
     end
   end
 
   describe '.create_destination!' do
-    let(:identity) { double('Identity') }
+    let(:identity) { PaymentServices::Rbk::Identity.create!(rbk_id: 'identity_123') }
     let(:tokenized_card) do
       {
         'token' => 'token_123',
@@ -89,7 +100,7 @@ RSpec.describe PaymentServices::Rbk::PayoutDestination, type: :model do
 
       expect {
         described_class.create_destination!(identity: identity, tokenized_card: tokenized_card)
-      }.to raise_error(described_class::Error, 'Rbk failed to create destinaion: {"status"=>"error"}')
+      }.to raise_error(described_class::Error, 'Rbk failed to create destination: {"status"=>"error"}')
     end
   end
 
@@ -138,9 +149,22 @@ RSpec.describe PaymentServices::Rbk::PayoutDestination, type: :model do
   end
 
   describe '#refresh_info!' do
-    let(:destination) { described_class.new(rbk_id: 'dest_123') }
+    let(:identity) { PaymentServices::Rbk::Identity.create!(rbk_id: 'identity_123') }
+    let(:destination) do
+      described_class.create!(
+        rbk_identity: identity,
+        rbk_id: 'dest_123',
+        public_id: 'dest_123',
+        payment_token: 'token_123',
+        card_brand: 'visa',
+        card_bin: '411111',
+        card_suffix: '1111',
+        rbk_status: 'Authorized',
+        payload: { 'test' => 'data' }
+      )
+    end
     let(:client) { double('PayoutDestinationClient') }
-    let(:response) { { 'id' => 'dest_123', 'status' => 'completed' } }
+    let(:response) { { 'id' => 'dest_456', 'status' => 'completed' } }
 
     before do
       allow(PaymentServices::Rbk::PayoutDestinationClient).to receive(:new).and_return(client)

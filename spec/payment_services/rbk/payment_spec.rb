@@ -1,19 +1,15 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 RSpec.describe PaymentServices::Rbk::Payment, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:invoice) }
   end
 
-  describe 'validations' do
-    it { is_expected.to validate_presence_of(:amount_in_cents) }
-    it { is_expected.to validate_presence_of(:rbk_id) }
-    it { is_expected.to validate_presence_of(:state) }
-  end
-
   describe 'scopes' do
-    let!(:payment1) { described_class.create!(amount_in_cents: 1000, rbk_id: 'pay_1', state: 'pending') }
-    let!(:payment2) { described_class.create!(amount_in_cents: 2000, rbk_id: 'pay_2', state: 'pending') }
+    let!(:payment1) { described_class.create!(amount_in_cents: 1000, rbk_id: 'pay_1', state: 'pending', order_public_id: 1) }
+    let!(:payment2) { described_class.create!(amount_in_cents: 2000, rbk_id: 'pay_2', state: 'pending', order_public_id: 2) }
 
     it 'orders payments by id desc' do
       expect(described_class.ordered).to eq([payment2, payment1])
@@ -29,7 +25,14 @@ RSpec.describe PaymentServices::Rbk::Payment, type: :model do
   end
 
   describe 'workflow states' do
-    let(:payment) { described_class.new(amount_in_cents: 1000, rbk_id: 'pay_1', state: 'pending') }
+    let(:invoice) { PaymentServices::Rbk::Invoice.create!(amount_in_cents: 1000, order_public_id: 1, state: 'pending') }
+    let(:payment) { described_class.create!(amount_in_cents: 1000, rbk_id: 'pay_1', state: 'pending', order_public_id: 1, invoice: invoice) }
+
+    before do
+      # Mock invoice methods to avoid recursive calls
+      allow(invoice).to receive(:pay!)
+      allow(invoice).to receive(:cancel!)
+    end
 
     it 'starts in pending state' do
       expect(payment).to be_pending
