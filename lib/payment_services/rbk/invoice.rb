@@ -29,8 +29,8 @@ class PaymentServices::Rbk
 
       state :paid do
         on_entry do
-          fetch_payments! rescue nil
-          order.auto_confirm!(income_amount: amount) rescue nil
+          fetch_payments!
+          order.auto_confirm!(income_amount: amount)
         end
       end
       state :cancelled
