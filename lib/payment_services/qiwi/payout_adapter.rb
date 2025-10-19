@@ -18,7 +18,6 @@ class PaymentServices::QIWI
 
     private
 
-    # rubocop:disable Lint/UnusedMethodArgument
     def make_payout(amount:, payment_card_details:, transaction_id:, destination_account:)
       # rubocop:enable Lint/UnusedMethodArgument
 
