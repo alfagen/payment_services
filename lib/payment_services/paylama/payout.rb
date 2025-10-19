@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::Paylama
-  class Payout < ApplicationRecord
+  class Payout < PaymentServices::ApplicationRecord
     SUCCESS_PROVIDER_STATE  = 'Succeed'
     FAILED_PROVIDER_STATE   = 'Failed'
 

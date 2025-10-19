@@ -3,7 +3,7 @@
 # Copyright (c) 2020 FINFEX https://github.com/finfex
 
 class PaymentServices::CryptoApis
-  class Invoice < ApplicationRecord
+  class Invoice < PaymentServices::ApplicationRecord
     CONFIRMATIONS_FOR_COMPLETE = 1
     include WorkflowActiverecord
     self.table_name = 'crypto_apis_invoices'

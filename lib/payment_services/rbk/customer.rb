@@ -3,7 +3,6 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 require_relative 'customer_client'
-require_relative 'payment_card'
 require 'jwt'
 
 class PaymentServices::Rbk

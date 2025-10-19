@@ -9,7 +9,7 @@
 require_relative 'payment_order_support'
 
 class PaymentServices::QIWI
-  class Payment < ApplicationRecord
+  class Payment < PaymentServices::ApplicationRecord
     include AutoLogger
     include PaymentOrderSupport
 

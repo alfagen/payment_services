@@ -2,7 +2,6 @@
 
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
-require_relative 'payment'
 require_relative 'invoice_client'
 
 class PaymentServices::Rbk
@@ -77,12 +76,12 @@ class PaymentServices::Rbk
       payment = payments.find_by(rbk_id: payment_json['id'])
       return payment if payment.present?
 
-      Payment.create!(
+      PaymentServices::Rbk::Payment.create!(
         rbk_id: payment_json['id'],
         invoice: self,
         order_public_id: order_public_id,
         amount_in_cents: payment_json['amount'],
-        state: Payment.rbk_state_to_state(payment_json['status']),
+        state: PaymentServices::Rbk::Payment.rbk_state_to_state(payment_json['status']),
         payload: payment_json
       )
     end

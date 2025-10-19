@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::OkoOtc
-  class Payout < ApplicationRecord
+  class Payout < PaymentServices::ApplicationRecord
     SUCCESS_PROVIDER_STATE  = 'Выплачена'
     FAILED_PROVIDER_STATE   = 'Отмененная'
 

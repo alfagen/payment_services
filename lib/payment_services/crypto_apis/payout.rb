@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::CryptoApis
-  class Payout < ApplicationRecord
+  class Payout < PaymentServices::ApplicationRecord
     CONFIRMATIONS_FOR_COMPLETE = 1
     include WorkflowActiverecord
     self.table_name = 'crypto_apis_payouts'

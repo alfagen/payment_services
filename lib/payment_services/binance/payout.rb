@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::Binance
-  class Payout < ApplicationRecord
+  class Payout < PaymentServices::ApplicationRecord
     include WorkflowActiverecord
 
     BINANCE_SUCCESS  = 6

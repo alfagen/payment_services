@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::AnyMoney
-  class Payout < ApplicationRecord
+  class Payout < PaymentServices::ApplicationRecord
     include WorkflowActiverecord
     self.table_name = 'any_money_payouts'
 

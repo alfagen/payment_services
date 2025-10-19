@@ -3,7 +3,7 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 class PaymentServices::AliKassaPeerToPeer
-  class Invoice < ApplicationRecord
+  class Invoice < PaymentServices::ApplicationRecord
     include WorkflowActiverecord
     self.table_name = 'ali_kassa_p2p_invoices'
 

@@ -3,7 +3,14 @@
     "allow": [
       "Bash(find:*)",
       "Bash(bundle exec rspec:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(rspec:*)",
+      "Bash(bundle install:*)",
+      "Bash(ruby:*)",
+      "Bash(gem which:*)",
+      "Read(//home/danil/.rbenv/versions/3.2.8/lib/ruby/gems/3.2.0/gems/money-rails-1.15.0/lib/**)",
+      "Read(//home/danil/.rbenv/versions/3.2.8/lib/ruby/gems/3.2.0/gems/money-rails-1.15.0/**)",
+      "Read(//home/danil/.rbenv/versions/3.2.8/lib/ruby/gems/3.2.0/gems/**)"
     ],
     "deny": [],
     "ask": []

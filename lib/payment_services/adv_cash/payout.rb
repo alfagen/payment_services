@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::AdvCash
-  class Payout < ApplicationRecord
+  class Payout < PaymentServices::ApplicationRecord
     include WorkflowActiverecord
 
     self.table_name = 'advcash_payouts'

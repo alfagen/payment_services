@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::Base
-  class FiatInvoice < ActiveRecord::Base
+  class FiatInvoice < PaymentServices::ApplicationRecord
     self.abstract_class = true
 
     include WorkflowActiverecord

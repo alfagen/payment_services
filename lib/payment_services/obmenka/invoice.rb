@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentServices::Obmenka
-  class Invoice < ApplicationRecord
+  class Invoice < PaymentServices::ApplicationRecord
     include WorkflowActiverecord
 
     self.table_name = 'obmenka_invoices'

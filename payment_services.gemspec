@@ -41,6 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'workflow-activerecord'
   spec.add_dependency 'block_io'
   spec.add_dependency 'activerecord'
+  spec.add_dependency 'money-rails'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
