@@ -7,7 +7,7 @@ require_relative 'payment_card'
 require 'jwt'
 
 class PaymentServices::Rbk
-  class Customer < ApplicationRecord
+  class Customer < PaymentServices::ApplicationRecord
     self.table_name = 'rbk_money_customers'
 
     belongs_to :user

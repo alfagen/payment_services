@@ -11,6 +11,7 @@ module PaymentServices
   end
 
   require 'payment_services/base'
+  require 'payment_services/application_record'
   require 'payment_services/base/invoicer'
   require 'payment_services/base/payout_adapter'
   require 'payment_services/base/client'

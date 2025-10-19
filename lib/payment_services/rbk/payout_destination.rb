@@ -5,7 +5,7 @@
 require_relative 'payout_destination_client'
 
 class PaymentServices::Rbk
-  class PayoutDestination < ApplicationRecord
+  class PayoutDestination < PaymentServices::ApplicationRecord
     self.table_name = 'rbk_payout_destinations'
     Error = Class.new StandardError
 

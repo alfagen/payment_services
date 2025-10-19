@@ -5,7 +5,7 @@
 require_relative 'identity_client'
 
 class PaymentServices::Rbk
-  class Identity < ApplicationRecord
+  class Identity < PaymentServices::ApplicationRecord
     self.table_name = 'rbk_identities'
 
     has_many :rbk_wallets,

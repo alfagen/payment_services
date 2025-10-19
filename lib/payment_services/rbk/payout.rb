@@ -5,7 +5,7 @@
 require_relative 'payout_client'
 
 class PaymentServices::Rbk
-  class Payout < ApplicationRecord
+  class Payout < PaymentServices::ApplicationRecord
     self.table_name = 'rbk_payouts'
     Error = Class.new StandardError
 

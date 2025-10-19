@@ -11,7 +11,6 @@ require_relative 'payment_order_support'
 class PaymentServices::QIWI
   class Payment < ApplicationRecord
     include AutoLogger
-    extend Enumerize
     include PaymentOrderSupport
 
     self.table_name = :qiwi_payments
@@ -22,10 +21,10 @@ class PaymentServices::QIWI
     monetize :total_cents, as: :total
 
     enum status: %i[UNKNOWN WAITING SUCCESS ERROR]
-    enumerize :direction_type, in: %w[IN OUT], predicates: { prefix: true }
+    enum direction_type: { in: 'IN', out: 'OUT' }
 
     def success_in?
-      SUCCESS? && direction_type_IN?
+      SUCCESS? && in?
     end
   end
 end

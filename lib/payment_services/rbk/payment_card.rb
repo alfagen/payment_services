@@ -3,7 +3,7 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 class PaymentServices::Rbk
-  class PaymentCard < ApplicationRecord
+  class PaymentCard < PaymentServices::ApplicationRecord
     self.table_name = 'rbk_payment_cards'
 
     enum card_type: %i[bank_card applepay googlepay], _prefix: :card_type

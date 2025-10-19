@@ -6,7 +6,7 @@ require_relative 'payment'
 require_relative 'invoice_client'
 
 class PaymentServices::Rbk
-  class Invoice < ApplicationRecord
+  class Invoice < PaymentServices::ApplicationRecord
     include Workflow
     self.table_name = 'rbk_money_invoices'
 
