@@ -20,8 +20,8 @@ class PaymentServices::QIWI
     scope :ordered, -> { order 'id desc, date desc' }
     monetize :total_cents, as: :total
 
-    enum status: %i[UNKNOWN WAITING SUCCESS ERROR]
-    enum direction_type: { in: 'IN', out: 'OUT' }
+    enum :status, %i[UNKNOWN WAITING SUCCESS ERROR]
+    enum :direction_type, { in: 'IN', out: 'OUT' }
 
     def success_in?
       SUCCESS? && in?
