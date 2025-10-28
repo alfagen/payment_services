@@ -2,6 +2,8 @@
 
 class PaymentServices::Base
   class CryptoInvoice < PaymentServices::ApplicationRecord
+    self.abstract_class = true
+
     include WorkflowActiverecord
 
     scope :ordered, -> { order(id: :desc) }
