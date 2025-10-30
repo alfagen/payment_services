@@ -5,8 +5,8 @@
 require_relative 'payment_client'
 
 class PaymentServices::Rbk
-  class Payment < ApplicationRecord
-    include Workflow
+  class Payment < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
     self.table_name = 'rbk_money_payments'
 
     scope :ordered, -> { order(id: :desc) }
@@ -50,7 +50,7 @@ class PaymentServices::Rbk
       elsif PaymentClient::PENDING_STATES.include?(rbk_state)
         :pending
       elsif PaymentClient::REFUND_STATES.include?(rbk_state)
-        :fefunded
+        :refunded
       else
         raise("Такого статуса не существует: #{rbk_state}")
       end

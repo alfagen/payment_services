@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::AnyMoney
-  class Payout < ApplicationRecord
-    include Workflow
+  class Payout < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
     self.table_name = 'any_money_payouts'
 
     scope :ordered, -> { order(id: :desc) }

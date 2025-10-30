@@ -5,7 +5,7 @@
 require_relative 'payout_client'
 
 class PaymentServices::Rbk
-  class Payout < ApplicationRecord
+  class Payout < PaymentServices::ApplicationRecord
     self.table_name = 'rbk_payouts'
     Error = Class.new StandardError
 
@@ -17,9 +17,11 @@ class PaymentServices::Rbk
                class_name: 'PaymentServices::Rbk::Wallet',
                foreign_key: :rbk_wallet_id
 
-    def self.create_from!(destinaion:, wallet:, amount_cents:)
+    validates :rbk_id, :rbk_payout_destination, :rbk_wallet, :amount_cents, :rbk_status, presence: true, on: :create
+
+    def self.create_from!(destination:, wallet:, amount_cents:)
       response = PayoutClient.new.make_payout(
-        payout_destination: destinaion,
+        payout_destination: destination,
         wallet: wallet,
         amount_cents: amount_cents
       )
@@ -27,7 +29,7 @@ class PaymentServices::Rbk
 
       create!(
         rbk_id: response['id'],
-        rbk_payout_destination: destinaion,
+        rbk_payout_destination: destination,
         rbk_wallet: wallet,
         amount_cents: amount_cents,
         payload: response,

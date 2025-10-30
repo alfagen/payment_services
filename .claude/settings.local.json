@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(bundle exec rspec:*)",
+      "Bash(mkdir:*)",
+      "Bash(rspec:*)",
+      "Bash(bundle install:*)",
+      "Bash(ruby:*)",
+      "Bash(gem which:*)",
+      "Bash(bundle:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

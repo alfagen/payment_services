@@ -2,12 +2,11 @@
 
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
-require_relative 'payment'
 require_relative 'invoice_client'
 
 class PaymentServices::Rbk
-  class Invoice < ApplicationRecord
-    include Workflow
+  class Invoice < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
     self.table_name = 'rbk_money_invoices'
 
     scope :ordered, -> { order(id: :desc) }
@@ -69,6 +68,9 @@ class PaymentServices::Rbk
     def fetch_payments!
       response = InvoiceClient.new.get_payments(self)
       response.map { |payment_json| find_or_create_payment!(payment_json) }
+    rescue => e
+      Rails.logger.warn "Failed to fetch payments for invoice #{id}: #{e.message}" if defined?(Rails)
+      raise e
     end
 
     private
@@ -77,12 +79,12 @@ class PaymentServices::Rbk
       payment = payments.find_by(rbk_id: payment_json['id'])
       return payment if payment.present?
 
-      Payment.create!(
+      PaymentServices::Rbk::Payment.create!(
         rbk_id: payment_json['id'],
         invoice: self,
         order_public_id: order_public_id,
         amount_in_cents: payment_json['amount'],
-        state: Payment.rbk_state_to_state(payment_json['status']),
+        state: PaymentServices::Rbk::Payment.rbk_state_to_state(payment_json['status']),
         payload: payment_json
       )
     end

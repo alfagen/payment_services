@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::Kuna
-  class Payout < ApplicationRecord
-    include Workflow
+  class Payout < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
 
     self.table_name = 'kuna_payouts'
 

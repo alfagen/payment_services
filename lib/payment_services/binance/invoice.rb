@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::Binance
-  class Invoice < ApplicationRecord
-    include Workflow
+  class Invoice < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
 
     BINANCE_SUCCESS = [1, 6]
     BINANCE_FAILED  = 3

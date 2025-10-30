@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::Exmo
-  class Invoice < ApplicationRecord
-    include Workflow
+  class Invoice < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
 
     self.table_name = 'exmo_invoices'
 

@@ -2,15 +2,14 @@
 
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
-require_relative 'invoice'
 require_relative 'invoice_client'
-require_relative 'customer'
+require_relative 'customer_client'
 
 class PaymentServices::Rbk
   class Invoicer < ::PaymentServices::Base::Invoicer
     def create_invoice(money)
       response = InvoiceClient.new.create_invoice(order_id: order.public_id, amount: money.cents)
-      Invoice.create!(
+      PaymentServices::Rbk::Invoice.create!(
         amount: money.to_f,
         order_public_id: order.public_id,
         rbk_invoice_id: response['invoice']['id'],

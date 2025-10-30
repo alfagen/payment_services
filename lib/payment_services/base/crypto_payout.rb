@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::Base
-  class CryptoPayout < ActiveRecord::Base
-    include Workflow
+  class CryptoPayout < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
 
     scope :ordered, -> { order(id: :desc) }
 

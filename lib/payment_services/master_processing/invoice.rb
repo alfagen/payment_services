@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::MasterProcessing
-  class Invoice < ApplicationRecord
-    include Workflow
+  class Invoice < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
 
     self.table_name = 'master_processing_invoices'
 

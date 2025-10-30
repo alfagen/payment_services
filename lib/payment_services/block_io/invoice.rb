@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::BlockIo
-  class Invoice < ApplicationRecord
-    include Workflow
+  class Invoice < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
     self.table_name = 'block_io_invoices'
 
     scope :ordered, -> { order(id: :desc) }

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class PaymentServices::Base
-  class FiatPayout < ActiveRecord::Base
+  class FiatPayout < PaymentServices::ApplicationRecord
     self.abstract_class = true
 
-    include Workflow
+    include WorkflowActiverecord
 
     scope :ordered, -> { order(id: :desc) }
 

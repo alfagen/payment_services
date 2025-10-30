@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class PaymentServices::Kuna
-  class Invoice < ApplicationRecord
+  class Invoice < PaymentServices::ApplicationRecord
     FEE_PERCENT = 0.5
     UAH_FEE_PERCENT = 1.0
     UAH_FEE_REGULAR = 5
     KOPECK_EPSILON = 1
 
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'kuna_invoices'
 

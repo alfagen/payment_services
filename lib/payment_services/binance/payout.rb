@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::Binance
-  class Payout < ApplicationRecord
-    include Workflow
+  class Payout < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
 
     BINANCE_SUCCESS  = 6
     BINANCE_REJECTED = 3

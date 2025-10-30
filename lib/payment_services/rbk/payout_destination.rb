@@ -5,11 +5,13 @@
 require_relative 'payout_destination_client'
 
 class PaymentServices::Rbk
-  class PayoutDestination < ApplicationRecord
+  class PayoutDestination < PaymentServices::ApplicationRecord
     self.table_name = 'rbk_payout_destinations'
     Error = Class.new StandardError
 
     belongs_to :rbk_identity, class_name: 'PaymentServices::Rbk::Identity', foreign_key: :rbk_identity_id
+
+    validates :rbk_id, :public_id, :card_brand, :card_bin, :card_suffix, :payment_token, :rbk_status, :rbk_identity, presence: true, on: :create
 
     def self.find_or_create_from_card_details(number:, name:, exp_date:, identity:)
       tokenized_card = tokenize_card!(number: number, name: name, exp_date: exp_date)
@@ -29,7 +31,7 @@ class PaymentServices::Rbk
         payment_token: tokenized_card['token'],
         destination_public_id: public_id
       )
-      raise Error, "Rbk failed to create destinaion: #{response}" unless response['id']
+      raise Error, "Rbk failed to create destination: #{response}" unless response['id']
 
       create!(
         rbk_identity: identity,

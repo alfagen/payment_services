@@ -5,7 +5,7 @@
 require_relative 'wallet_client'
 
 class PaymentServices::Rbk
-  class Wallet < ApplicationRecord
+  class Wallet < PaymentServices::ApplicationRecord
     self.table_name = 'rbk_wallets'
 
     belongs_to :rbk_identity, class_name: 'PaymentServices::Rbk::Identity', foreign_key: :rbk_identity_id

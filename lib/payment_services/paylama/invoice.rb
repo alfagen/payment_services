@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 class PaymentServices::Paylama
-  class Invoice < ApplicationRecord
+  class Invoice < PaymentServices::ApplicationRecord
     SUCCESS_PROVIDER_STATE  = 'Succeed'
     FAILED_PROVIDER_STATE   = 'Failed'
 
-    include Workflow
+    include WorkflowActiverecord
 
     self.table_name = 'paylama_invoices'
 

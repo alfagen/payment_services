@@ -3,8 +3,8 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 class PaymentServices::AliKassaPeerToPeer
-  class Invoice < ApplicationRecord
-    include Workflow
+  class Invoice < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
     self.table_name = 'ali_kassa_p2p_invoices'
 
     scope :ordered, -> { order(id: :desc) }

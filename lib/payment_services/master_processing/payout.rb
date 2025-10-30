@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::MasterProcessing
-  class Payout < ApplicationRecord
-    include Workflow
+  class Payout < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
 
     self.table_name = 'master_processing_payouts'
 

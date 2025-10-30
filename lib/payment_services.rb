@@ -4,13 +4,20 @@
 
 require 'payment_services/version'
 require 'payment_services/configuration'
+require 'payment_services/auto_logger'
+require 'workflow-activerecord'
+require 'money'
 
 module PaymentServices
   class << self
     attr_reader :configuration
   end
 
+  # Set explicit rounding mode to avoid deprecation warning
+  Money.rounding_mode = BigDecimal::ROUND_HALF_UP
+
   require 'payment_services/base'
+  require 'payment_services/application_record'
   require 'payment_services/base/invoicer'
   require 'payment_services/base/payout_adapter'
   require 'payment_services/base/client'

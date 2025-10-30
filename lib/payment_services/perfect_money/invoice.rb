@@ -3,8 +3,8 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 class PaymentServices::PerfectMoney
-  class Invoice < ApplicationRecord
-    include Workflow
+  class Invoice < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
     self.table_name = 'perfect_money_invoices'
 
     scope :ordered, -> { order(id: :desc) }

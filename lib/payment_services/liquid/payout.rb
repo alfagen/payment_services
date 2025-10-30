@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentServices::Liquid
-  class Payout < ApplicationRecord
-    include Workflow
+  class Payout < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
     self.table_name = 'liquid_payouts'
 
     SUCCESS_PAYOUT_STATE = 'processed'

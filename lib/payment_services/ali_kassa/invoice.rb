@@ -3,8 +3,8 @@
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
 class PaymentServices::AliKassa
-  class Invoice < ApplicationRecord
-    include Workflow
+  class Invoice < PaymentServices::ApplicationRecord
+    include WorkflowActiverecord
     self.table_name = 'ali_kassa_invoices'
 
     scope :ordered, -> { order(id: :desc) }
