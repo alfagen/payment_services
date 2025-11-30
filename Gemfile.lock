@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    payment_services (0.1.0)
+    payment_services (0.2.0)
       activerecord
       activesupport
       auto_logger (~> 0.1.4)
