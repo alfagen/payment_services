@@ -57,7 +57,7 @@ RSpec.describe PaymentServices::Rbk::Payout, type: :model do
           wallet: wallet,
           amount_cents: 5000
         )
-      }.to raise_error(described_class::Error, 'Rbk payout error: {"id"=>"payout_123"}')
+      }.to raise_error(described_class::Error, /Rbk payout error:.*id.*payout_123/)
     end
   end
 

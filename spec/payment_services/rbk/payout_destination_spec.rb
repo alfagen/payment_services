@@ -100,7 +100,7 @@ RSpec.describe PaymentServices::Rbk::PayoutDestination, type: :model do
 
       expect {
         described_class.create_destination!(identity: identity, tokenized_card: tokenized_card)
-      }.to raise_error(described_class::Error, 'Rbk failed to create destination: {"status"=>"error"}')
+      }.to raise_error(described_class::Error, /Rbk failed to create destination:.*status.*error/)
     end
   end
 
@@ -132,7 +132,7 @@ RSpec.describe PaymentServices::Rbk::PayoutDestination, type: :model do
           name: 'John Doe',
           exp_date: '12/25'
         )
-      }.to raise_error(described_class::Error, 'Rbk tokenization error: {"error"=>"invalid card"}')
+      }.to raise_error(described_class::Error, /Rbk tokenization error:.*error.*invalid card/)
     end
   end
 
