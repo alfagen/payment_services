@@ -26,12 +26,12 @@ RSpec.describe PaymentServices::Rbk::Payment, type: :model do
 
   describe 'workflow states' do
     let(:invoice) { PaymentServices::Rbk::Invoice.create!(amount_in_cents: 1000, order_public_id: 1, state: 'pending') }
-    let(:payment) { described_class.create!(amount_in_cents: 1000, rbk_id: 'pay_1', state: 'pending', order_public_id: 1, invoice: invoice) }
+    let(:payment) { described_class.create!(amount_in_cents: 1000, rbk_id: 'pay_1', state: 'pending', order_public_id: 1, rbk_money_invoice_id: invoice.id) }
 
     before do
       # Mock invoice methods to avoid recursive calls
-      allow(invoice).to receive(:pay!)
-      allow(invoice).to receive(:cancel!)
+      allow_any_instance_of(PaymentServices::Rbk::Invoice).to receive(:pay!)
+      allow_any_instance_of(PaymentServices::Rbk::Invoice).to receive(:cancel!)
     end
 
     it 'starts in pending state' do
@@ -59,14 +59,14 @@ RSpec.describe PaymentServices::Rbk::Payment, type: :model do
       allow(payment_client).to receive(:const_get).and_return([])
     end
 
-    it 'converts success states to :success' do
+    it 'converts success states to :succeed' do
       allow(PaymentServices::Rbk::PaymentClient).to receive(:const_get).with('SUCCESS_STATES').and_return(['processed'])
-      expect(described_class.rbk_state_to_state('processed')).to eq(:success)
+      expect(described_class.rbk_state_to_state('processed')).to eq(:succeed)
     end
 
-    it 'converts fail states to :fail' do
+    it 'converts fail states to :failed' do
       allow(PaymentServices::Rbk::PaymentClient).to receive(:const_get).with('FAIL_STATES').and_return(['failed'])
-      expect(described_class.rbk_state_to_state('failed')).to eq(:fail)
+      expect(described_class.rbk_state_to_state('failed')).to eq(:failed)
     end
 
     it 'raises error for unknown state' do

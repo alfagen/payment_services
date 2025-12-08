@@ -10,19 +10,7 @@ module PaymentServices
       # Declare attribute type so enums work in tests without database schema loaded
       attribute :card_type, :integer
 
-      begin
-        enum({ card_type: %i[bank_card applepay googlepay] }, _prefix: :card_type)
-      rescue StandardError
-        # Fallback for environments where attributes/schema are not available (e.g. isolated unit tests).
-        # Provide minimal API expected by specs: `card_types` class method.
-        def self.card_types
-          {
-            'bank_card' => 0,
-            'applepay' => 1,
-            'googlepay' => 2
-          }
-        end
-      end
+      enum({ card_type: %i[bank_card applepay googlepay] }, _prefix: :card_type)
 
       belongs_to :rbk_customer, class_name: 'PaymentServices::Rbk::Customer', foreign_key: :rbk_customer_id
 
