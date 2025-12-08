@@ -1,72 +1,75 @@
 # frozen_string_literal: true
 
-class PaymentServices::Binance
-  class Payout < ApplicationRecord
-    include Workflow
 
-    BINANCE_SUCCESS  = 6
-    BINANCE_REJECTED = 3
-    BINANCE_FAILURE  = 5
+module PaymentServices
+  class Binance
+    class Payout < ApplicationRecord
+      include Workflow
 
-    self.table_name = 'binance_payouts'
+      BINANCE_SUCCESS  = 6
+      BINANCE_REJECTED = 3
+      BINANCE_FAILURE  = 5
 
-    scope :ordered, -> { order(id: :desc) }
+      self.table_name = 'binance_payouts'
 
-    monetize :amount_cents, as: :amount
-    validates :amount_cents, :destination_account, :state, presence: true
+      scope :ordered, -> { order(id: :desc) }
 
-    workflow_column :state
-    workflow do
-      state :pending do
-        event :pay, transitions_to: :paid
+      monetize :amount_cents, as: :amount
+      validates :amount_cents, :destination_account, :state, presence: true
+
+      workflow_column :state
+      workflow do
+        state :pending do
+          event :pay, transitions_to: :paid
+        end
+        state :paid do
+          event :confirm, transitions_to: :completed
+          event :fail, transitions_to: :failed
+        end
+        state :completed
+        state :failed
       end
-      state :paid do
-        event :confirm, transitions_to: :completed
-        event :fail, transitions_to: :failed
+
+      def pay(withdraw_id:)
+        update(withdraw_id: withdraw_id)
       end
-      state :completed
-      state :failed
-    end
 
-    def pay(withdraw_id:)
-      update(withdraw_id: withdraw_id)
-    end
+      def update_state_by_provider(state)
+        update!(provider_state: state)
 
-    def update_state_by_provider(state)
-      update!(provider_state: state)
+        confirm!  if success?
+        fail!     if status_failed?
+      end
 
-      confirm!  if success?
-      fail!     if status_failed?
-    end
+      def additional_info
+        order.outcome_fio.presence || order.outcome_unk.presence
+      end
 
-    def additional_info
-      order.outcome_fio.presence || order.outcome_unk.presence
-    end
+      def has_additional_info?
+        !additional_info.nil?
+      end
 
-    def has_additional_info?
-      !additional_info.nil?
-    end
+      def token_address
+        order.outcome_payment_system.token_address.presence
+      end
 
-    def token_address
-      order.outcome_payment_system.token_address.presence
-    end
+      private
 
-    private
+      def order
+        @order ||= order_payout.order
+      end
 
-    def order
-      @order ||= order_payout.order
-    end
+      def order_payout
+        @order_payout ||= OrderPayout.find(order_payout_id)
+      end
 
-    def order_payout
-      @order_payout ||= OrderPayout.find(order_payout_id)
-    end
+      def success?
+        provider_state == BINANCE_SUCCESS
+      end
 
-    def success?
-      provider_state == BINANCE_SUCCESS
-    end
-
-    def status_failed?
-      provider_state == BINANCE_REJECTED || provider_state == BINANCE_FAILURE
+      def status_failed?
+        provider_state == BINANCE_REJECTED || provider_state == BINANCE_FAILURE
+      end
     end
   end
 end

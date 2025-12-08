@@ -3,62 +3,65 @@
 require_relative 'invoice'
 require_relative 'client'
 
-class PaymentServices::Exmo
-  class Invoicer < ::PaymentServices::Base::Invoicer
-    TRANSACTION_TIME_THRESHOLD = 30.minutes
-    WalletOperationsRequestFailed = Class.new StandardError
 
-    def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
-    end
+module PaymentServices
+  class Exmo
+    class Invoicer < ::PaymentServices::Base::Invoicer
+      TRANSACTION_TIME_THRESHOLD = 30.minutes
+      WalletOperationsRequestFailed = Class.new StandardError
 
-    def async_invoice_state_updater?
-      true
-    end
+      def create_invoice(money)
+        Invoice.create!(amount: money, order_public_id: order.public_id)
+      end
 
-    def update_invoice_state!
-      response = client.wallet_operations(currency: invoice.amount_currency, type: 'deposit')
-      raise WalletOperationsRequestFailed, "Can't get wallet operations" unless response['items']
+      def async_invoice_state_updater?
+        true
+      end
 
-      transaction = find_transaction(transactions: response['items'])
-      return if transaction.nil?
+      def update_invoice_state!
+        response = client.wallet_operations(currency: invoice.amount_currency, type: 'deposit')
+        raise WalletOperationsRequestFailed, "Can't get wallet operations" unless response['items']
 
-      invoice.update!(
-        transaction_created_at: DateTime.strptime(transaction['created'].to_s,'%s').utc,
-        transaction_id: transaction.dig('extra', 'txid')
-      )
-      invoice.update_state_by_provider(transaction['status'])
-    end
+        transaction = find_transaction(transactions: response['items'])
+        return if transaction.nil?
 
-    def invoice
-      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
-    end
+        invoice.update!(
+          transaction_created_at: DateTime.strptime(transaction['created'].to_s,'%s').utc,
+          transaction_id: transaction.dig('extra', 'txid')
+        )
+        invoice.update_state_by_provider(transaction['status'])
+      end
 
-    private
+      def invoice
+        @invoice ||= Invoice.find_by(order_public_id: order.public_id)
+      end
 
-    def find_transaction(transactions:)
-      transactions.find { |transaction| matches_amount_and_timing?(transaction) }
-    end
+      private
 
-    def matches_amount_and_timing?(transaction)
-      transaction['amount'].to_d == invoice.amount.to_d && match_time_interval?(transaction)
-    end
+      def find_transaction(transactions:)
+        transactions.find { |transaction| matches_amount_and_timing?(transaction) }
+      end
 
-    def match_time_interval?(transaction)
-      transaction_created_at_utc = DateTime.strptime(transaction['created'].to_s,'%s').utc
-      invoice_created_at_utc = invoice.created_at.utc
+      def matches_amount_and_timing?(transaction)
+        transaction['amount'].to_d == invoice.amount.to_d && match_time_interval?(transaction)
+      end
 
-      invoice_created_at_utc < transaction_created_at_utc && created_in_valid_interval?(transaction_created_at_utc, invoice_created_at_utc)
-    end
+      def match_time_interval?(transaction)
+        transaction_created_at_utc = DateTime.strptime(transaction['created'].to_s,'%s').utc
+        invoice_created_at_utc = invoice.created_at.utc
 
-    def created_in_valid_interval?(transaction_time, invoice_time)
-      interval = (transaction_time - invoice_time)
-      interval_in_minutes = (interval / 1.minute).round.minutes
-      interval_in_minutes < TRANSACTION_TIME_THRESHOLD
-    end
+        invoice_created_at_utc < transaction_created_at_utc && created_in_valid_interval?(transaction_created_at_utc, invoice_created_at_utc)
+      end
 
-    def client
-      @client ||= Client.new(public_key: api_key, secret_key: api_secret)
+      def created_in_valid_interval?(transaction_time, invoice_time)
+        interval = (transaction_time - invoice_time)
+        interval_in_minutes = (interval / 1.minute).round.minutes
+        interval_in_minutes < TRANSACTION_TIME_THRESHOLD
+      end
+
+      def client
+        @client ||= Client.new(public_key: api_key, secret_key: api_secret)
+      end
     end
   end
 end

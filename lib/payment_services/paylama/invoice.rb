@@ -1,54 +1,57 @@
 # frozen_string_literal: true
 
-class PaymentServices::Paylama
-  class Invoice < ApplicationRecord
-    SUCCESS_PROVIDER_STATE  = 'Succeed'
-    FAILED_PROVIDER_STATE   = 'Failed'
 
-    include Workflow
+module PaymentServices
+  class Paylama
+    class Invoice < ApplicationRecord
+      SUCCESS_PROVIDER_STATE  = 'Succeed'
+      FAILED_PROVIDER_STATE   = 'Failed'
 
-    self.table_name = 'paylama_invoices'
+      include Workflow
 
-    scope :ordered, -> { order(id: :desc) }
+      self.table_name = 'paylama_invoices'
 
-    monetize :amount_cents, as: :amount
+      scope :ordered, -> { order(id: :desc) }
 
-    validates :amount_cents, :order_public_id, :state, presence: true
+      monetize :amount_cents, as: :amount
 
-    workflow_column :state
-    workflow do
-      state :pending do
-        event :pay, transitions_to: :paid
-        event :cancel, transitions_to: :cancelled
-      end
+      validates :amount_cents, :order_public_id, :state, presence: true
 
-      state :paid do
-        on_entry do
-          order.auto_confirm!(income_amount: amount, hash: deposit_id)
+      workflow_column :state
+      workflow do
+        state :pending do
+          event :pay, transitions_to: :paid
+          event :cancel, transitions_to: :cancelled
         end
+
+        state :paid do
+          on_entry do
+            order.auto_confirm!(income_amount: amount, hash: deposit_id)
+          end
+        end
+        state :cancelled
       end
-      state :cancelled
-    end
 
-    def update_state_by_provider(state)
-      update!(provider_state: state)
+      def update_state_by_provider(state)
+        update!(provider_state: state)
 
-      pay! if provider_succeed?
-      cancel! if provider_failed?
-    end
+        pay! if provider_succeed?
+        cancel! if provider_failed?
+      end
 
-    def order
-      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
-    end
+      def order
+        Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
+      end
 
-    private
+      private
 
-    def provider_succeed?
-      provider_state == SUCCESS_PROVIDER_STATE
-    end
+      def provider_succeed?
+        provider_state == SUCCESS_PROVIDER_STATE
+      end
 
-    def provider_failed?
-      provider_state == FAILED_PROVIDER_STATE
+      def provider_failed?
+        provider_state == FAILED_PROVIDER_STATE
+      end
     end
   end
 end

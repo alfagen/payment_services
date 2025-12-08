@@ -1,20 +1,23 @@
 # frozen_string_literal: true
 
-class PaymentServices::Blockchair
-  class Invoice < ::PaymentServices::Base::CryptoInvoice
-    self.table_name = 'blockchair_invoices'
 
-    monetize :amount_cents, as: :amount
+module PaymentServices
+  class Blockchair
+    class Invoice < ::PaymentServices::Base::CryptoInvoice
+      self.table_name = 'blockchair_invoices'
 
-    def memo
-      @memo ||= order.income_wallet.memo
-    end
+      monetize :amount_cents, as: :amount
 
-    def update_invoice_details(transaction:)
-      bind_transaction! if pending?
-      update!(transaction_created_at: transaction.created_at, transaction_id: transaction.id)
+      def memo
+        @memo ||= order.income_wallet.memo
+      end
 
-      pay!(payload: transaction) if transaction.successful?
+      def update_invoice_details(transaction:)
+        bind_transaction! if pending?
+        update!(transaction_created_at: transaction.created_at, transaction_id: transaction.id)
+
+        pay!(payload: transaction) if transaction.successful?
+      end
     end
   end
 end

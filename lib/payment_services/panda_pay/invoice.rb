@@ -1,22 +1,25 @@
 # frozen_string_literal: true
 
-class PaymentServices::PandaPay
-  class Invoice < ::PaymentServices::Base::FiatInvoice
-    SUCCESS_PROVIDER_STATE  = 'completed'
-    FAILED_PROVIDER_STATES  = %w(traderNotFound timeout canceled)
 
-    self.table_name = 'panda_pay_invoices'
+module PaymentServices
+  class PandaPay
+    class Invoice < ::PaymentServices::Base::FiatInvoice
+      SUCCESS_PROVIDER_STATE  = 'completed'
+      FAILED_PROVIDER_STATES  = %w(traderNotFound timeout canceled)
 
-    monetize :amount_cents, as: :amount
+      self.table_name = 'panda_pay_invoices'
 
-    private
+      monetize :amount_cents, as: :amount
 
-    def provider_succeed?
-      provider_state == SUCCESS_PROVIDER_STATE
-    end
+      private
 
-    def provider_failed?
-      provider_state.in? FAILED_PROVIDER_STATES
+      def provider_succeed?
+        provider_state == SUCCESS_PROVIDER_STATE
+      end
+
+      def provider_failed?
+        provider_state.in? FAILED_PROVIDER_STATES
+      end
     end
   end
 end

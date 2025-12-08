@@ -1,22 +1,25 @@
 # frozen_string_literal: true
 
-class PaymentServices::PaylamaSbp
-  class Invoice < ::PaymentServices::Base::FiatInvoice
-    SUCCESS_PROVIDER_STATE  = 'Succeed'
-    FAILED_PROVIDER_STATE   = 'Failed'
 
-    self.table_name = 'paylama_sbp_invoices'
+module PaymentServices
+  class PaylamaSbp
+    class Invoice < ::PaymentServices::Base::FiatInvoice
+      SUCCESS_PROVIDER_STATE  = 'Succeed'
+      FAILED_PROVIDER_STATE   = 'Failed'
 
-    monetize :amount_cents, as: :amount
+      self.table_name = 'paylama_sbp_invoices'
 
-    private
+      monetize :amount_cents, as: :amount
 
-    def provider_succeed?
-      provider_state == SUCCESS_PROVIDER_STATE
-    end
+      private
 
-    def provider_failed?
-      provider_state == FAILED_PROVIDER_STATE
+      def provider_succeed?
+        provider_state == SUCCESS_PROVIDER_STATE
+      end
+
+      def provider_failed?
+        provider_state == FAILED_PROVIDER_STATE
+      end
     end
   end
 end

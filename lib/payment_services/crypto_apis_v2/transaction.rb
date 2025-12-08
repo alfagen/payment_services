@@ -1,67 +1,70 @@
 # frozen_string_literal: true
 
-class PaymentServices::CryptoApisV2
-  class Transaction
-    SUCCESS_XRP_STATUS = 'tesSUCCESS'
 
-    include Virtus.model
+module PaymentServices
+  class CryptoApisV2
+    class Transaction
+      SUCCESS_XRP_STATUS = 'tesSUCCESS'
 
-    attribute :id, String
-    attribute :created_at, DateTime
-    attribute :currency, String
-    attribute :source, Hash
+      include Virtus.model
 
-    def self.build_from(transaction_hash:, created_at:, currency:, source:)
-      new(
-        id: transaction_hash,
-        created_at: created_at,
-        currency: currency,
-        source: source
-      )
-    end
+      attribute :id, String
+      attribute :created_at, DateTime
+      attribute :currency, String
+      attribute :source, Hash
 
-    def to_s
-      source.to_s
-    end
+      def self.build_from(transaction_hash:, created_at:, currency:, source:)
+        new(
+          id: transaction_hash,
+          created_at: created_at,
+          currency: currency,
+          source: source
+        )
+      end
 
-    def confirmed?
-      send("#{currency}_transaction_confirmed?")
-    end
+      def to_s
+        source.to_s
+      end
 
-    def fee
-      source.dig('fee', 'amount') || 0
-    end
+      def confirmed?
+        send("#{currency}_transaction_confirmed?")
+      end
 
-    private
+      def fee
+        source.dig('fee', 'amount') || 0
+      end
 
-    def method_missing(method_name)
-      super unless method_name.end_with?('_transaction_confirmed?')
+      private
 
-      generic_transaction_confirmed?
-    end
+      def method_missing(method_name)
+        super unless method_name.end_with?('_transaction_confirmed?')
 
-    def generic_transaction_confirmed?
-      source['minedInBlockHeight'] > 0
-    end
+        generic_transaction_confirmed?
+      end
 
-    def btc_transaction_confirmed?
-      source['isConfirmed']
-    end
+      def generic_transaction_confirmed?
+        source['minedInBlockHeight'] > 0
+      end
 
-    def xrp_transaction_confirmed?
-      status == SUCCESS_XRP_STATUS
-    end
+      def btc_transaction_confirmed?
+        source['isConfirmed']
+      end
 
-    def bnb_transaction_confirmed?
-      source['isConfirmed']
-    end
+      def xrp_transaction_confirmed?
+        status == SUCCESS_XRP_STATUS
+      end
 
-    def usdt_transaction_confirmed?
-      source['isConfirmed']
-    end
+      def bnb_transaction_confirmed?
+        source['isConfirmed']
+      end
 
-    def status
-      source['status'].inquiry
+      def usdt_transaction_confirmed?
+        source['isConfirmed']
+      end
+
+      def status
+        source['status'].inquiry
+      end
     end
   end
 end

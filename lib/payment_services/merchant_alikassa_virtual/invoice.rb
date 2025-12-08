@@ -1,22 +1,25 @@
 # frozen_string_literal: true
 
-class PaymentServices::MerchantAlikassaVirtual
-  class Invoice < ::PaymentServices::Base::FiatInvoice
-    SUCCESS_PROVIDER_STATE  = 'paid'
-    FAILED_PROVIDER_STATES  = %w(cancel fail)
 
-    self.table_name = 'merchant_alikassa_virtual_invoices'
+module PaymentServices
+  class MerchantAlikassaVirtual
+    class Invoice < ::PaymentServices::Base::FiatInvoice
+      SUCCESS_PROVIDER_STATE  = 'paid'
+      FAILED_PROVIDER_STATES  = %w(cancel fail)
 
-    monetize :amount_cents, as: :amount
+      self.table_name = 'merchant_alikassa_virtual_invoices'
 
-    private
+      monetize :amount_cents, as: :amount
 
-    def provider_succeed?
-      provider_state == SUCCESS_PROVIDER_STATE
-    end
+      private
 
-    def provider_failed?
-      provider_state.in? FAILED_PROVIDER_STATES
+      def provider_succeed?
+        provider_state == SUCCESS_PROVIDER_STATE
+      end
+
+      def provider_failed?
+        provider_state.in? FAILED_PROVIDER_STATES
+      end
     end
   end
 end

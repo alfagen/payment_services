@@ -1,44 +1,47 @@
 # frozen_string_literal: true
 
-class PaymentServices::OneCrypto
-  class Transaction
-    SUCCESS_PROVIDER_STATE  = 'SUCCESS'
-    FAILED_PROVIDER_STATE   = 'ERROR'
 
-    include Virtus.model
+module PaymentServices
+  class OneCrypto
+    class Transaction
+      SUCCESS_PROVIDER_STATE  = 'SUCCESS'
+      FAILED_PROVIDER_STATE   = 'ERROR'
 
-    attribute :amount, Float
-    attribute :currency, String
-    attribute :status, String
-    attribute :transaction_id, String
-    attribute :fee, Float
-    attribute :source, Hash
+      include Virtus.model
 
-    def self.build_from(raw_transaction)
-      new(
-        amount: raw_transaction['amount'].to_f,
-        currency: raw_transaction['token'],
-        status: raw_transaction['status'],
-        transaction_id: raw_transaction['hash'],
-        fee: raw_transaction['transaction_commission'].to_f,
-        source: raw_transaction
-      )
-    end
+      attribute :amount, Float
+      attribute :currency, String
+      attribute :status, String
+      attribute :transaction_id, String
+      attribute :fee, Float
+      attribute :source, Hash
 
-    def to_s
-      source.to_s
-    end
+      def self.build_from(raw_transaction)
+        new(
+          amount: raw_transaction['amount'].to_f,
+          currency: raw_transaction['token'],
+          status: raw_transaction['status'],
+          transaction_id: raw_transaction['hash'],
+          fee: raw_transaction['transaction_commission'].to_f,
+          source: raw_transaction
+        )
+      end
 
-    def valid_amount?(payout_amount, payout_currency)
-      (amount.zero? || amount == payout_amount) && currency == payout_currency
-    end
+      def to_s
+        source.to_s
+      end
 
-    def succeed?
-      status == SUCCESS_PROVIDER_STATE
-    end
+      def valid_amount?(payout_amount, payout_currency)
+        (amount.zero? || amount == payout_amount) && currency == payout_currency
+      end
 
-    def failed?
-      status == FAILED_PROVIDER_STATE
+      def succeed?
+        status == SUCCESS_PROVIDER_STATE
+      end
+
+      def failed?
+        status == FAILED_PROVIDER_STATE
+      end
     end
   end
 end

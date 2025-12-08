@@ -8,24 +8,27 @@
 
 require_relative 'payment_order_support'
 
-class PaymentServices::QIWI
-  class Payment < ApplicationRecord
-    include AutoLogger
-    extend Enumerize
-    include PaymentOrderSupport
 
-    self.table_name = :qiwi_payments
+module PaymentServices
+  class QIWI
+    class Payment < ApplicationRecord
+      include AutoLogger
+      extend Enumerize
+      include PaymentOrderSupport
 
-    has_many :income_links, as: :external_payment
+      self.table_name = :qiwi_payments
 
-    scope :ordered, -> { order 'id desc, date desc' }
-    monetize :total_cents, as: :total
+      has_many :income_links, as: :external_payment
 
-    enum status: %i[UNKNOWN WAITING SUCCESS ERROR]
-    enumerize :direction_type, in: %w[IN OUT], predicates: { prefix: true }
+      scope :ordered, -> { order 'id desc, date desc' }
+      monetize :total_cents, as: :total
 
-    def success_in?
-      SUCCESS? && direction_type_IN?
+      enum status: %i[UNKNOWN WAITING SUCCESS ERROR]
+      enumerize :direction_type, in: %w[IN OUT], predicates: { prefix: true }
+
+      def success_in?
+        SUCCESS? && direction_type_IN?
+      end
     end
   end
 end

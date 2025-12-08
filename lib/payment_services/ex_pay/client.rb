@@ -1,61 +1,64 @@
 # frozen_string_literal: true
 
-class PaymentServices::ExPay
-  class Client < ::PaymentServices::Base::Client
-    API_URL = 'https://apiv2.expay.cash/api/transaction'
 
-    def initialize(api_key:, secret_key:)
-      @api_key    = api_key
-      @secret_key = secret_key
-    end
+module PaymentServices
+  class ExPay
+    class Client < ::PaymentServices::Base::Client
+      API_URL = 'https://apiv2.expay.cash/api/transaction'
 
-    def create_invoice(params:)
-      safely_parse http_request(
-        url: "#{API_URL}/create/in",
-        method: :POST,
-        body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
-      )
-    end
+      def initialize(api_key:, secret_key:)
+        @api_key    = api_key
+        @secret_key = secret_key
+      end
 
-    def create_payout(params:)
-      safely_parse http_request(
-        url: "#{API_URL}/create/out",
-        method: :POST,
-        body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
-      )
-    end
+      def create_invoice(params:)
+        safely_parse http_request(
+          url: "#{API_URL}/create/in",
+          method: :POST,
+          body: params.to_json,
+          headers: build_headers(signature: build_signature(params))
+        )
+      end
 
-    def transaction(tracker_id:)
-      params = { tracker_id: tracker_id }
-      safely_parse(http_request(
-        url: "#{API_URL}/get",
-        method: :POST,
-        body: params.to_json,
-        headers: build_headers(signature: build_signature(params))
-      ))['transaction']
-    end
+      def create_payout(params:)
+        safely_parse http_request(
+          url: "#{API_URL}/create/out",
+          method: :POST,
+          body: params.to_json,
+          headers: build_headers(signature: build_signature(params))
+        )
+      end
 
-    private
+      def transaction(tracker_id:)
+        params = { tracker_id: tracker_id }
+        safely_parse(http_request(
+          url: "#{API_URL}/get",
+          method: :POST,
+          body: params.to_json,
+          headers: build_headers(signature: build_signature(params))
+        ))['transaction']
+      end
 
-    attr_reader :api_key, :secret_key
+      private
 
-    def build_headers(signature:)
-      {
-        'Content-Type'  => 'application/json',
-        'ApiPublic'     => api_key,
-        'TimeStamp'     => timestamp_string,
-        'Signature'     => signature
-      }
-    end
+      attr_reader :api_key, :secret_key
 
-    def build_signature(params)
-      OpenSSL::HMAC.hexdigest('SHA512', secret_key, timestamp_string + params.to_json)
-    end
+      def build_headers(signature:)
+        {
+          'Content-Type'  => 'application/json',
+          'ApiPublic'     => api_key,
+          'TimeStamp'     => timestamp_string,
+          'Signature'     => signature
+        }
+      end
 
-    def timestamp_string
-      @timestamp_string ||= Time.now.to_i.to_s
+      def build_signature(params)
+        OpenSSL::HMAC.hexdigest('SHA512', secret_key, timestamp_string + params.to_json)
+      end
+
+      def timestamp_string
+        @timestamp_string ||= Time.now.to_i.to_s
+      end
     end
   end
 end

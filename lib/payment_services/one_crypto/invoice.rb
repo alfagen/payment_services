@@ -1,40 +1,43 @@
 # frozen_string_literal: true
 
-class PaymentServices::OneCrypto
-  class Invoice < ::PaymentServices::Base::CryptoInvoice
-    INITIAL_PROVIDER_STATE  = 'ACCEPTED'
 
-    self.table_name = 'one_crypto_invoices'
+module PaymentServices
+  class OneCrypto
+    class Invoice < ::PaymentServices::Base::CryptoInvoice
+      INITIAL_PROVIDER_STATE  = 'ACCEPTED'
 
-    monetize :amount_cents, as: :amount
+      self.table_name = 'one_crypto_invoices'
 
-    def update_state_by_transaction!(transaction)
-      validate_transaction_amount!(transaction: transaction)
+      monetize :amount_cents, as: :amount
 
-      bind_transaction! if pending?
-      update!(
-        provider_state: transaction.status,
-        transaction_id: transaction.transaction_id
-      )
-      pay!(payload: transaction) if transaction.succeed?
-      cancel! if transaction.failed?
-    end
+      def update_state_by_transaction!(transaction)
+        validate_transaction_amount!(transaction: transaction)
 
-    def transaction_created_at
-      nil
-    end
+        bind_transaction! if pending?
+        update!(
+          provider_state: transaction.status,
+          transaction_id: transaction.transaction_id
+        )
+        pay!(payload: transaction) if transaction.succeed?
+        cancel! if transaction.failed?
+      end
 
-    private
+      def transaction_created_at
+        nil
+      end
 
-    delegate :income_payment_system, to: :order
-    delegate :token_network, to: :income_payment_system
+      private
 
-    def amount_provider_currency
-      @amount_provider_currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: amount_currency, token_network: token_network).provider_crypto_currency
-    end
+      delegate :income_payment_system, to: :order
+      delegate :token_network, to: :income_payment_system
 
-    def validate_transaction_amount!(transaction:)
-      raise "#{amount.to_f} #{amount_provider_currency} is needed. But #{transaction.amount} #{transaction.currency} has come." unless transaction.valid_amount?(amount.to_f, amount_provider_currency)
+      def amount_provider_currency
+        @amount_provider_currency ||= PaymentServices::Paylama::CurrencyRepository.build_from(kassa_currency: amount_currency, token_network: token_network).provider_crypto_currency
+      end
+
+      def validate_transaction_amount!(transaction:)
+        raise "#{amount.to_f} #{amount_provider_currency} is needed. But #{transaction.amount} #{transaction.currency} has come." unless transaction.valid_amount?(amount.to_f, amount_provider_currency)
+      end
     end
   end
 end

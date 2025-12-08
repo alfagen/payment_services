@@ -3,62 +3,65 @@
 require_relative 'payout'
 require_relative 'client'
 
-class PaymentServices::AnyMoney
-  class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
-      make_payout(
-        amount: amount,
-        destination_account: destination_account,
-        order_payout_id: order_payout_id
-      )
-    end
 
-    def refresh_status!(payout_id)
-      @payout_id = payout_id
-      return if payout.pending?
+module PaymentServices
+  class AnyMoney
+    class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+      def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
+        make_payout(
+          amount: amount,
+          destination_account: destination_account,
+          order_payout_id: order_payout_id
+        )
+      end
 
-      params = {
-        externalid: payout.externalid.to_s
-      }
+      def refresh_status!(payout_id)
+        @payout_id = payout_id
+        return if payout.pending?
 
-      response = client.get(params: params)
-      raise "Can't get order details: #{response[:error][:message]}" if response.dig(:error)
+        params = {
+          externalid: payout.externalid.to_s
+        }
 
-      result = response[:result]
-      payout.update!(status: result[:status]) if result[:status]
-      payout.confirm! if payout.success?
-      payout.fail! if payout.status_failed?
+        response = client.get(params: params)
+        raise "Can't get order details: #{response[:error][:message]}" if response.dig(:error)
 
-      result
-    end
+        result = response[:result]
+        payout.update!(status: result[:status]) if result[:status]
+        payout.confirm! if payout.success?
+        payout.fail! if payout.status_failed?
 
-    def payout
-      @payout ||= Payout.find_by(id: payout_id)
-    end
+        result
+      end
 
-    private
+      def payout
+        @payout ||= Payout.find_by(id: payout_id)
+      end
 
-    attr_accessor :payout_id
+      private
 
-    def make_payout(amount:, destination_account:, order_payout_id:)
-      @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
+      attr_accessor :payout_id
 
-      params = {
-        amount: amount.to_s,
-        externalid: @payout_id.to_s,
-        out_curr: wallet.currency.to_s.upcase,
-        payway: wallet.payment_system.payway,
-        payee: destination_account
-      }
-      response = client.create(params: params)
-      raise "Can't process payout: #{response[:error][:message]}" if response.dig(:error)
+      def make_payout(amount:, destination_account:, order_payout_id:)
+        @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
 
-      result = response[:result]
-      payout.pay!(externalid: result[:externalid]) if result[:externalid]
-    end
+        params = {
+          amount: amount.to_s,
+          externalid: @payout_id.to_s,
+          out_curr: wallet.currency.to_s.upcase,
+          payway: wallet.payment_system.payway,
+          payee: destination_account
+        }
+        response = client.create(params: params)
+        raise "Can't process payout: #{response[:error][:message]}" if response.dig(:error)
 
-    def client
-      @client ||= Client.new(merchant_id: wallet.merchant_id, api_key: api_key)
+        result = response[:result]
+        payout.pay!(externalid: result[:externalid]) if result[:externalid]
+      end
+
+      def client
+        @client ||= Client.new(merchant_id: wallet.merchant_id, api_key: api_key)
+      end
     end
   end
 end

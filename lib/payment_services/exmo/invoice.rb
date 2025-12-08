@@ -1,51 +1,54 @@
 # frozen_string_literal: true
 
-class PaymentServices::Exmo
-  class Invoice < ApplicationRecord
-    include Workflow
 
-    self.table_name = 'exmo_invoices'
+module PaymentServices
+  class Exmo
+    class Invoice < ApplicationRecord
+      include Workflow
 
-    scope :ordered, -> { order(id: :desc) }
+      self.table_name = 'exmo_invoices'
 
-    monetize :amount_cents, as: :amount
+      scope :ordered, -> { order(id: :desc) }
 
-    validates :amount_cents, :order_public_id, :state, presence: true
+      monetize :amount_cents, as: :amount
 
-    workflow_column :state
-    workflow do
-      state :pending do
-        event :pay, transitions_to: :paid
-        event :cancel, transitions_to: :cancelled
-      end
+      validates :amount_cents, :order_public_id, :state, presence: true
 
-      state :paid do
-        on_entry do
-          order.auto_confirm!(income_amount: amount, hash: transaction_id)
+      workflow_column :state
+      workflow do
+        state :pending do
+          event :pay, transitions_to: :paid
+          event :cancel, transitions_to: :cancelled
         end
+
+        state :paid do
+          on_entry do
+            order.auto_confirm!(income_amount: amount, hash: transaction_id)
+          end
+        end
+        state :cancelled
       end
-      state :cancelled
-    end
 
-    def update_state_by_provider(state)
-      update!(provider_state: state)
+      def update_state_by_provider(state)
+        update!(provider_state: state)
 
-      pay!    if success?
-      cancel! if failed?
-    end
+        pay!    if success?
+        cancel! if failed?
+      end
 
-    def order
-      Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
-    end
+      def order
+        Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)
+      end
 
-    private
+      private
 
-    def success?
-      transaction_id.present?
-    end
+      def success?
+        transaction_id.present?
+      end
 
-    def failed?
-      provider_state == 'Cancelled' || provider_state == 'Error'
+      def failed?
+        provider_state == 'Cancelled' || provider_state == 'Error'
+      end
     end
   end
 end

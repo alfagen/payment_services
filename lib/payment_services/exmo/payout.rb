@@ -1,57 +1,60 @@
 # frozen_string_literal: true
 
-class PaymentServices::Exmo
-  class Payout < ApplicationRecord
-    include Workflow
 
-    self.table_name = 'exmo_payouts'
+module PaymentServices
+  class Exmo
+    class Payout < ApplicationRecord
+      include Workflow
 
-    scope :ordered, -> { order(id: :desc) }
+      self.table_name = 'exmo_payouts'
 
-    monetize :amount_cents, as: :amount
-    validates :amount_cents, :destination_account, :state, presence: true
+      scope :ordered, -> { order(id: :desc) }
 
-    alias_attribute :txid, :transaction_id
+      monetize :amount_cents, as: :amount
+      validates :amount_cents, :destination_account, :state, presence: true
 
-    delegate :order, to: :order_payout
-    delegate :outcome_payment_system, to: :order
-    delegate :token_network, to: :outcome_payment_system
+      alias_attribute :txid, :transaction_id
 
-    workflow_column :state
-    workflow do
-      state :pending do
-        event :pay, transitions_to: :paid
+      delegate :order, to: :order_payout
+      delegate :outcome_payment_system, to: :order
+      delegate :token_network, to: :outcome_payment_system
+
+      workflow_column :state
+      workflow do
+        state :pending do
+          event :pay, transitions_to: :paid
+        end
+        state :paid do
+          event :confirm, transitions_to: :completed
+          event :fail, transitions_to: :failed
+        end
+        state :completed
+        state :failed
       end
-      state :paid do
-        event :confirm, transitions_to: :completed
-        event :fail, transitions_to: :failed
+
+      def pay(task_id:)
+        update(task_id: task_id)
       end
-      state :completed
-      state :failed
-    end
 
-    def pay(task_id:)
-      update(task_id: task_id)
-    end
+      def order_fio
+        order_payout.order.outcome_fio.presence || order_payout.order.outcome_unk
+      end
 
-    def order_fio
-      order_payout.order.outcome_fio.presence || order_payout.order.outcome_unk
-    end
+      def update_payout_details!(transaction:)
+        update!(
+          provider_state: transaction.provider_state,
+          transaction_id: transaction.id
+        )
 
-    def update_payout_details!(transaction:)
-      update!(
-        provider_state: transaction.provider_state,
-        transaction_id: transaction.id
-      )
+        confirm!  if transaction.successful?
+        fail!     if transaction.failed?
+      end
 
-      confirm!  if transaction.successful?
-      fail!     if transaction.failed?
-    end
+      private
 
-    private
-
-    def order_payout
-      @order_payout ||= OrderPayout.find(order_payout_id)
+      def order_payout
+        @order_payout ||= OrderPayout.find(order_payout_id)
+      end
     end
   end
 end

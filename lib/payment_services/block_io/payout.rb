@@ -1,43 +1,46 @@
 # frozen_string_literal: true
 
-class PaymentServices::BlockIo
-  class Payout < ApplicationRecord
-    include Workflow
-    self.table_name = 'block_io_payouts'
 
-    scope :ordered, -> { order(id: :desc) }
+module PaymentServices
+  class BlockIo
+    class Payout < ApplicationRecord
+      include Workflow
+      self.table_name = 'block_io_payouts'
 
-    monetize :amount_cents, as: :amount
-    validates :amount_cents, :address, :fee, :state, presence: true
+      scope :ordered, -> { order(id: :desc) }
 
-    alias_attribute :txid, :transaction_id
+      monetize :amount_cents, as: :amount
+      validates :amount_cents, :address, :fee, :state, presence: true
 
-    workflow_column :state
-    workflow do
-      state :pending do
-        event :pay, transitions_to: :paid
+      alias_attribute :txid, :transaction_id
+
+      workflow_column :state
+      workflow do
+        state :pending do
+          event :pay, transitions_to: :paid
+        end
+        state :paid do
+          event :confirm, transitions_to: :completed
+        end
+        state :completed
+        state :failed
       end
-      state :paid do
-        event :confirm, transitions_to: :completed
+
+      def pay(transaction_id:)
+        update(transaction_id: transaction_id)
       end
-      state :completed
-      state :failed
-    end
 
-    def pay(transaction_id:)
-      update(transaction_id: transaction_id)
-    end
+      def order_payout
+        @order_payout ||= OrderPayout.find(order_payout_id)
+      end
 
-    def order_payout
-      @order_payout ||= OrderPayout.find(order_payout_id)
-    end
-
-    def update_payout_details!(transaction:)
-      update!(
-        transaction_created_at: transaction.created_at,
-        fee: transaction.total_spend - amount.to_f
-      )
-      confirm! if transaction.successful?
+      def update_payout_details!(transaction:)
+        update!(
+          transaction_created_at: transaction.created_at,
+          fee: transaction.total_spend - amount.to_f
+        )
+        confirm! if transaction.successful?
+      end
     end
   end
 end

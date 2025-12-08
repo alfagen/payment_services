@@ -1,24 +1,27 @@
 # frozen_string_literal: true
 
-class PaymentServices::Ff
-  class Invoice < ::PaymentServices::Base::CryptoInvoice
-    self.table_name = 'ff_invoices'
 
-    monetize :amount_cents, as: :amount
+module PaymentServices
+  class Ff
+    class Invoice < ::PaymentServices::Base::CryptoInvoice
+      self.table_name = 'ff_invoices'
 
-    def update_state_by_transaction(transaction)
-      bind_transaction! if pending?
-      update!(
-        transaction_id: transaction.id,
-        provider_state: transaction.status
-      )
+      monetize :amount_cents, as: :amount
 
-      pay!(payload: transaction) if transaction.income_succeed?
-      cancel! if transaction.failed?
-    end
+      def update_state_by_transaction(transaction)
+        bind_transaction! if pending?
+        update!(
+          transaction_id: transaction.id,
+          provider_state: transaction.status
+        )
 
-    def transaction_created_at
-      nil
+        pay!(payload: transaction) if transaction.income_succeed?
+        cancel! if transaction.failed?
+      end
+
+      def transaction_created_at
+        nil
+      end
     end
   end
 end

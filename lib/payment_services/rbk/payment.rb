@@ -4,86 +4,89 @@
 
 require_relative 'payment_client'
 
-class PaymentServices::Rbk
-  class Payment < ApplicationRecord
-    include Workflow
-    self.table_name = 'rbk_money_payments'
 
-    scope :ordered, -> { order(id: :desc) }
+module PaymentServices
+  class Rbk
+    class Payment < ApplicationRecord
+      include Workflow
+      self.table_name = 'rbk_money_payments'
 
-    register_currency :rub
-    monetize :amount_in_cents, as: :amount, with_currency: :rub
-    validates :amount_in_cents, :rbk_id, :state, presence: true
+      scope :ordered, -> { order(id: :desc) }
 
-    belongs_to :invoice,
-               class_name: 'PaymentServices::Rbk::Invoice',
-               foreign_key: :rbk_money_invoice_id
-    delegate :access_token, to: :invoice
+      register_currency :rub
+      monetize :amount_in_cents, as: :amount, with_currency: :rub
+      validates :amount_in_cents, :rbk_id, :state, presence: true
 
-    workflow_column :state
-    workflow do
-      state :pending do
-        event :success, transitions_to: :succeed
-        event :fail, transitions_to: :failed
-        event :refund, transitions_to: :refunded
-      end
+      belongs_to :invoice,
+                 class_name: 'PaymentServices::Rbk::Invoice',
+                 foreign_key: :rbk_money_invoice_id
+      delegate :access_token, to: :invoice
 
-      state :succeed do
-        on_entry do
-          invoice.pay!
+      workflow_column :state
+      workflow do
+        state :pending do
+          event :success, transitions_to: :succeed
+          event :fail, transitions_to: :failed
+          event :refund, transitions_to: :refunded
         end
-        event :refund, transitions_to: :refunded
+
+        state :succeed do
+          on_entry do
+            invoice.pay!
+          end
+          event :refund, transitions_to: :refunded
+        end
+        state :failed do
+          on_entry do
+            invoice.cancel!
+          end
+        end
+        state :refunded
       end
-      state :failed do
-        on_entry do
-          invoice.cancel!
+
+      def self.rbk_state_to_state(rbk_state)
+        if PaymentClient::SUCCESS_STATES.include?(rbk_state)
+          :success
+        elsif PaymentClient::FAIL_STATES.include?(rbk_state)
+          :fail
+        elsif PaymentClient::PENDING_STATES.include?(rbk_state)
+          :pending
+        elsif PaymentClient::REFUND_STATES.include?(rbk_state)
+          :fefunded
+        else
+          raise("Такого статуса не существует: #{rbk_state}")
         end
       end
-      state :refunded
-    end
 
-    def self.rbk_state_to_state(rbk_state)
-      if PaymentClient::SUCCESS_STATES.include?(rbk_state)
-        :success
-      elsif PaymentClient::FAIL_STATES.include?(rbk_state)
-        :fail
-      elsif PaymentClient::PENDING_STATES.include?(rbk_state)
-        :pending
-      elsif PaymentClient::REFUND_STATES.include?(rbk_state)
-        :fefunded
-      else
-        raise("Такого статуса не существует: #{rbk_state}")
+      def make_refund!
+        response = PaymentClient.new.refund(self)
+        return unless response.present?
+
+        update!(refund_payload: response)
+        refund!
+        refund_payload
       end
-    end
 
-    def make_refund!
-      response = PaymentClient.new.refund(self)
-      return unless response.present?
+      def refresh_info!
+        response = PaymentClient.new.info(self)
+        return unless response.present?
 
-      update!(refund_payload: response)
-      refund!
-      refund_payload
-    end
+        update!(
+          state: self.class.rbk_state_to_state(response['status']),
+          payload: response
+        )
+      end
 
-    def refresh_info!
-      response = PaymentClient.new.info(self)
-      return unless response.present?
+      def fetch_refunds!
+        response = PaymentClient.new.refunds(self)
+        # FIXME: обрабатывать данные всегда как массив или всегда как хеш
+        response = response.first if response.is_a?(Array)
+        update!(refund_payload: response)
+      end
 
-      update!(
-        state: self.class.rbk_state_to_state(response['status']),
-        payload: response
-      )
-    end
-
-    def fetch_refunds!
-      response = PaymentClient.new.refunds(self)
-      # FIXME: обрабатывать данные всегда как массив или всегда как хеш
-      response = response.first if response.is_a?(Array)
-      update!(refund_payload: response)
-    end
-
-    def payment_tool_info
-      payload.dig('payer', 'paymentToolDetails', 'cardNumberMask')
+      def payment_tool_info
+        payload.dig('payer', 'paymentToolDetails', 'cardNumberMask')
+      end
     end
   end
 end

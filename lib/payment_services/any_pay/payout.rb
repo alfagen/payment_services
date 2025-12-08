@@ -1,22 +1,25 @@
 # frozen_string_literal: true
 
-class PaymentServices::AnyPay
-  class Payout < ::PaymentServices::Base::FiatPayout
-    SUCCESS_PROVIDER_STATE  = 'paid'
-    FAILED_PROVIDER_STATES   = %w(canceled blocked)
 
-    self.table_name = 'any_pay_payouts'
+module PaymentServices
+  class AnyPay
+    class Payout < ::PaymentServices::Base::FiatPayout
+      SUCCESS_PROVIDER_STATE  = 'paid'
+      FAILED_PROVIDER_STATES   = %w(canceled blocked)
 
-    monetize :amount_cents, as: :amount
+      self.table_name = 'any_pay_payouts'
 
-    private
+      monetize :amount_cents, as: :amount
 
-    def provider_succeed?
-      provider_state == SUCCESS_PROVIDER_STATE
-    end
+      private
 
-    def provider_failed?
-      provider_state.in? FAILED_PROVIDER_STATES
+      def provider_succeed?
+        provider_state == SUCCESS_PROVIDER_STATE
+      end
+
+      def provider_failed?
+        provider_state.in? FAILED_PROVIDER_STATES
+      end
     end
   end
 end

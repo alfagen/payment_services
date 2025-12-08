@@ -1,41 +1,44 @@
 # frozen_string_literal: true
 
-class PaymentServices::PerfectMoney
-  class Payout < ApplicationRecord
-    include Workflow
 
-    self.table_name = 'perfect_money_payouts'
+module PaymentServices
+  class PerfectMoney
+    class Payout < ApplicationRecord
+      include Workflow
 
-    scope :ordered, -> { order(id: :desc) }
+      self.table_name = 'perfect_money_payouts'
 
-    monetize :amount_cents, as: :amount
-    validates :amount_cents, :destination_account, :state, presence: true
+      scope :ordered, -> { order(id: :desc) }
 
-    workflow_column :state
-    workflow do
-      state :pending do
-        event :pay, transitions_to: :paid
+      monetize :amount_cents, as: :amount
+      validates :amount_cents, :destination_account, :state, presence: true
+
+      workflow_column :state
+      workflow do
+        state :pending do
+          event :pay, transitions_to: :paid
+        end
+        state :paid do
+          event :confirm, transitions_to: :completed
+          event :fail, transitions_to: :failed
+        end
+        state :completed
+        state :failed
       end
-      state :paid do
-        event :confirm, transitions_to: :completed
-        event :fail, transitions_to: :failed
+
+      def pay(payment_batch_number:)
+        update(payment_batch_number: payment_batch_number)
       end
-      state :completed
-      state :failed
-    end
 
-    def pay(payment_batch_number:)
-      update(payment_batch_number: payment_batch_number)
-    end
+      def build_payment_id
+        "#{order_payout.order.public_id}-#{order_payout.id}"
+      end
 
-    def build_payment_id
-      "#{order_payout.order.public_id}-#{order_payout.id}"
-    end
+      private
 
-    private
-
-    def order_payout
-      @order_payout ||= OrderPayout.find(order_payout_id)
+      def order_payout
+        @order_payout ||= OrderPayout.find(order_payout_id)
+      end
     end
   end
 end

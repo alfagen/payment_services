@@ -1,40 +1,43 @@
 # frozen_string_literal: true
 
-class PaymentServices::CoinPaymentsHub
-  class Transaction
-    SUCCESS_PROVIDER_STATE  = 'success'
-    FAILED_PROVIDER_STATE   = 'cancel'
 
-    include Virtus.model
+module PaymentServices
+  class CoinPaymentsHub
+    class Transaction
+      SUCCESS_PROVIDER_STATE  = 'success'
+      FAILED_PROVIDER_STATE   = 'cancel'
 
-    attribute :amount, Float
-    attribute :currency, String
-    attribute :status, String
-    attribute :source, Hash
+      include Virtus.model
 
-    def self.build_from(raw_transaction)
-      new(
-        amount: raw_transaction['paid_amount'].to_f,
-        currency: raw_transaction['currency_symbol'],
-        status: raw_transaction['status'],
-        source: raw_transaction
-      )
-    end
+      attribute :amount, Float
+      attribute :currency, String
+      attribute :status, String
+      attribute :source, Hash
 
-    def to_s
-      source.to_s
-    end
+      def self.build_from(raw_transaction)
+        new(
+          amount: raw_transaction['paid_amount'].to_f,
+          currency: raw_transaction['currency_symbol'],
+          status: raw_transaction['status'],
+          source: raw_transaction
+        )
+      end
 
-    def valid_amount?(payout_amount, payout_currency)
-      (amount.zero? || amount == payout_amount) && currency == payout_currency
-    end
+      def to_s
+        source.to_s
+      end
 
-    def succeed?
-      status == SUCCESS_PROVIDER_STATE
-    end
+      def valid_amount?(payout_amount, payout_currency)
+        (amount.zero? || amount == payout_amount) && currency == payout_currency
+      end
 
-    def failed?
-      status == FAILED_PROVIDER_STATE
+      def succeed?
+        status == SUCCESS_PROVIDER_STATE
+      end
+
+      def failed?
+        status == FAILED_PROVIDER_STATE
+      end
     end
   end
 end

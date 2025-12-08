@@ -1,111 +1,114 @@
 # frozen_string_literal: true
 
-class PaymentServices::Blockchair
-  class Transaction
-    include Virtus.model
 
-    attribute :id, String
-    attribute :created_at, DateTime
-    attribute :blockchain, String
-    attribute :source, Hash
+module PaymentServices
+  class Blockchair
+    class Transaction
+      include Virtus.model
 
-    RIPPLE_SUCCESS_STATUS = 'tesSUCCESS'
+      attribute :id, String
+      attribute :created_at, DateTime
+      attribute :blockchain, String
+      attribute :source, Hash
 
-    def self.build_from(raw_transaction:)
-      new(
-        id: raw_transaction[:transaction_hash],
-        created_at: raw_transaction[:created_at],
-        blockchain: raw_transaction[:blockchain].name,
-        source: raw_transaction[:source].deep_symbolize_keys
-      )
-    end
+      RIPPLE_SUCCESS_STATUS = 'tesSUCCESS'
 
-    def to_s
-      source.to_s
-    end
+      def self.build_from(raw_transaction:)
+        new(
+          id: raw_transaction[:transaction_hash],
+          created_at: raw_transaction[:created_at],
+          blockchain: raw_transaction[:blockchain].name,
+          source: raw_transaction[:source].deep_symbolize_keys
+        )
+      end
 
-    def successful?
-      send("#{blockchain}_transaction_succeed?")
-    end
+      def to_s
+        source.to_s
+      end
 
-    def sender_address
-      send("#{blockchain}_sender_address")
-    end
+      def successful?
+        send("#{blockchain}_transaction_succeed?")
+      end
 
-    private
+      def sender_address
+        send("#{blockchain}_sender_address")
+      end
 
-    def method_missing(method_name)
-      super unless method_name.end_with?('_transaction_succeed?')
+      private
 
-      generic_transaction_succeed?
-    end
+      def method_missing(method_name)
+        super unless method_name.end_with?('_transaction_succeed?')
 
-    def generic_transaction_succeed?
-      source.key?(:block_id) && source[:block_id].positive?
-    end
+        generic_transaction_succeed?
+      end
 
-    def cardano_transaction_succeed?
-      source.key?(:ctbFees)
-    end
+      def generic_transaction_succeed?
+        source.key?(:block_id) && source[:block_id].positive?
+      end
 
-    def ripple_transaction_succeed?
-      source.dig(:meta, :TransactionResult) == RIPPLE_SUCCESS_STATUS
-    end
+      def cardano_transaction_succeed?
+        source.key?(:ctbFees)
+      end
 
-    def stellar_transaction_succeed?
-      source[:transaction_successful]
-    end
+      def ripple_transaction_succeed?
+        source.dig(:meta, :TransactionResult) == RIPPLE_SUCCESS_STATUS
+      end
 
-    def eos_transaction_succeed?
-      source.key?(:block_num) && source[:block_num].positive?
-    end
+      def stellar_transaction_succeed?
+        source[:transaction_successful]
+      end
 
-    def bitcoin_sender_address
-      source.dig(:input, :recipient)
-    end
+      def eos_transaction_succeed?
+        source.key?(:block_num) && source[:block_num].positive?
+      end
 
-    def bitcoin_cash_sender_address
-      source.dig(:input, :recipient)
-    end
+      def bitcoin_sender_address
+        source.dig(:input, :recipient)
+      end
 
-    def litecoin_sender_address
-      source.dig(:input, :recipient)
-    end
+      def bitcoin_cash_sender_address
+        source.dig(:input, :recipient)
+      end
 
-    def dogecoin_sender_address
-      source.dig(:input, :recipient)
-    end
+      def litecoin_sender_address
+        source.dig(:input, :recipient)
+      end
 
-    def dash_sender_address
-      source.dig(:input, :recipient)
-    end
+      def dogecoin_sender_address
+        source.dig(:input, :recipient)
+      end
 
-    def zcash_sender_address
-      source.dig(:input, :recipient)
-    end
+      def dash_sender_address
+        source.dig(:input, :recipient)
+      end
 
-    def ethereum_sender_address
-      source[:sender]
-    end
+      def zcash_sender_address
+        source.dig(:input, :recipient)
+      end
 
-    def cardano_sender_address
-      source.dig(:input, :ctaAddress, :unCAddress)
-    end
+      def ethereum_sender_address
+        source[:sender]
+      end
 
-    def stellar_sender_address
-      source[:from]
-    end
+      def cardano_sender_address
+        source.dig(:input, :ctaAddress, :unCAddress)
+      end
 
-    def ripple_sender_address
-      source.dig(:TakerGets, :issuer)
-    end
+      def stellar_sender_address
+        source[:from]
+      end
 
-    def eos_sender_address
-      source[:from]
-    end
+      def ripple_sender_address
+        source.dig(:TakerGets, :issuer)
+      end
 
-    def erc_20_sender_address
-      source[:sender]
+      def eos_sender_address
+        source[:from]
+      end
+
+      def erc_20_sender_address
+        source[:sender]
+      end
     end
   end
 end

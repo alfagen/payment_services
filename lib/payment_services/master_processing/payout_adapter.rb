@@ -3,67 +3,70 @@
 require_relative 'payout'
 require_relative 'client'
 
-class PaymentServices::MasterProcessing
-  class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
-    PAYOUT_ACCEPTED_RESPONSE = 'Accepted'
 
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
-      make_payout(
-        amount: amount,
-        destination_account: destination_account,
-        order_payout_id: order_payout_id
-      )
-    end
+module PaymentServices
+  class MasterProcessing
+    class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+      PAYOUT_ACCEPTED_RESPONSE = 'Accepted'
 
-    def refresh_status!(payout_id)
-      @payout_id = payout_id
-      return if payout.pending?
+      def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
+        make_payout(
+          amount: amount,
+          destination_account: destination_account,
+          order_payout_id: order_payout_id
+        )
+      end
 
-      response = client.payout_status(params: { externalID: payout.withdrawal_id })
+      def refresh_status!(payout_id)
+        @payout_id = payout_id
+        return if payout.pending?
 
-      raise "Can't get withdrawal details" unless response['statusName']
+        response = client.payout_status(params: { externalID: payout.withdrawal_id })
 
-      payout.update!(provider_state: response['statusName'])
-      payout.confirm! if payout.success?
-      payout.fail! if payout.status_failed?
+        raise "Can't get withdrawal details" unless response['statusName']
 
-      response
-    end
+        payout.update!(provider_state: response['statusName'])
+        payout.confirm! if payout.success?
+        payout.fail! if payout.status_failed?
 
-    def payout
-      @payout ||= Payout.find_by(id: payout_id)
-    end
+        response
+      end
 
-    private
+      def payout
+        @payout ||= Payout.find_by(id: payout_id)
+      end
 
-    attr_accessor :payout_id
+      private
 
-    def make_payout(amount:, destination_account:, order_payout_id:)
-      @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
+      attr_accessor :payout_id
 
-      params = {
-        amount: amount.to_i,
-        recipient: destination_account,
-        uid: order_payout_id.to_s,
-        callbackURL: wallet.payment_system.callback_url
-      }
-      response = client.process_payout(endpoint: endpoint, params: params)
-      raise "Can't process payout: #{response}" unless response['status'] == PAYOUT_ACCEPTED_RESPONSE
+      def make_payout(amount:, destination_account:, order_payout_id:)
+        @payout_id = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id).id
 
-      payout.pay!(withdrawal_id: response['externalID'])
-    end
+        params = {
+          amount: amount.to_i,
+          recipient: destination_account,
+          uid: order_payout_id.to_s,
+          callbackURL: wallet.payment_system.callback_url
+        }
+        response = client.process_payout(endpoint: endpoint, params: params)
+        raise "Can't process payout: #{response}" unless response['status'] == PAYOUT_ACCEPTED_RESPONSE
 
-    def client
-      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
-    end
+        payout.pay!(withdrawal_id: response['externalID'])
+      end
 
-    def endpoint
-      {
-        'visamc'  => 'withdraw_to_card_v2',
-        'cardh2h' => 'withdraw_to_card_v2',
-        'qiwi'    => 'withdraw_to_qiwi_v2',
-        'qiwih2h' => 'withdraw_to_qiwi_v2'
-      }[wallet.payment_system.payway]
+      def client
+        @client ||= Client.new(api_key: api_key, secret_key: api_secret)
+      end
+
+      def endpoint
+        {
+          'visamc'  => 'withdraw_to_card_v2',
+          'cardh2h' => 'withdraw_to_card_v2',
+          'qiwi'    => 'withdraw_to_qiwi_v2',
+          'qiwih2h' => 'withdraw_to_qiwi_v2'
+        }[wallet.payment_system.payway]
+      end
     end
   end
 end

@@ -2,7 +2,10 @@
 
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
-class PaymentServices::QIWI
-  class Invoice
+
+module PaymentServices
+  class QIWI
+    class Invoice
+    end
   end
 end
