@@ -4,9 +4,13 @@
 
 module PaymentServices
   class QIWI < Base
-    autoload :PayoutAdapter, 'payment_services/qiwi/payout_adapter'
+    autoload :Client, 'payment_services/qiwi/client'
     autoload :Importer, 'payment_services/qiwi/importer'
+    autoload :Invoice, 'payment_services/qiwi/invoice'
     autoload :Invoicer, 'payment_services/qiwi/invoicer'
+    autoload :Payment, 'payment_services/qiwi/payment'
+    autoload :PaymentOrderSupport, 'payment_services/qiwi/payment_order_support'
+    autoload :PayoutAdapter, 'payment_services/qiwi/payout_adapter'
 
     register :payout_adapter, PayoutAdapter
     register :importer, Importer

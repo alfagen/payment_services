@@ -4,8 +4,12 @@
 
 module PaymentServices
   class BlockIo < Base
-    autoload :PayoutAdapter, 'payment_services/block_io/payout_adapter'
+    autoload :Client, 'payment_services/block_io/client'
+    autoload :Invoice, 'payment_services/block_io/invoice'
     autoload :Invoicer, 'payment_services/block_io/invoicer'
+    autoload :Payout, 'payment_services/block_io/payout'
+    autoload :PayoutAdapter, 'payment_services/block_io/payout_adapter'
+    autoload :Transaction, 'payment_services/block_io/transaction'
     register :payout_adapter, PayoutAdapter
     register :invoicer, Invoicer
 
