@@ -7,7 +7,7 @@ module PaymentServices
     class PaymentCard < ApplicationRecord
       self.table_name = 'rbk_payment_cards'
 
-      enum card_type: %i[bank_card applepay googlepay], _prefix: :card_type
+      enum({ card_type: %i[bank_card applepay googlepay] }, _prefix: :card_type)
 
       belongs_to :rbk_customer, class_name: 'PaymentServices::Rbk::Customer', foreign_key: :rbk_customer_id
 
