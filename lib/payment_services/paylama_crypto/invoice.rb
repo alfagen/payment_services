@@ -30,9 +30,9 @@ module PaymentServices
       delegate :token_network, to: :income_payment_system
 
       def validate_transaction_amount(transaction:)
-        unless transaction.valid_amount?(amount.to_f, amount_provider_currency)
-          raise "#{amount.to_f} #{amount_provider_currency} is needed. But #{transaction.amount} #{transaction.currency} has come."
-        end
+        return if transaction.valid_amount?(amount.to_f, amount_provider_currency)
+
+        raise "#{amount.to_f} #{amount_provider_currency} is needed. But #{transaction.amount} #{transaction.currency} has come."
       end
 
       def amount_provider_currency

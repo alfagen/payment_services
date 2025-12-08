@@ -21,7 +21,6 @@ module PaymentServices
       private
 
       def make_payout(amount:, payment_card_details:, transaction_id:, destination_account:)
-
         client.create_payout(
           id: transaction_id,
           amount: amount.to_f,
