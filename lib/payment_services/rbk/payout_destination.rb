@@ -30,7 +30,7 @@ module PaymentServices
           payment_token: tokenized_card['token'],
           destination_public_id: public_id
         )
-        raise Error, "Rbk failed to create destinaion: #{response}" unless response['id']
+        raise Error, "Rbk failed to create destination: #{response}" unless response['id']
 
         create!(
           rbk_identity: identity,

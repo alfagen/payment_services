@@ -45,13 +45,13 @@ module PaymentServices
 
       def self.rbk_state_to_state(rbk_state)
         if PaymentClient::SUCCESS_STATES.include?(rbk_state)
-          :success
+          :succeed
         elsif PaymentClient::FAIL_STATES.include?(rbk_state)
-          :fail
+          :failed
         elsif PaymentClient::PENDING_STATES.include?(rbk_state)
           :pending
         elsif PaymentClient::REFUND_STATES.include?(rbk_state)
-          :fefunded
+          :refunded
         else
           raise("Такого статуса не существует: #{rbk_state}")
         end

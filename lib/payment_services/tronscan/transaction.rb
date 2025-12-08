@@ -22,7 +22,7 @@ module PaymentServices
       end
 
       def successful?
-        source[:confirmed]
+        !!(source && source[:confirmed])
       end
     end
   end
