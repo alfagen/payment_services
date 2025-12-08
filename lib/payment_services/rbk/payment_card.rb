@@ -13,7 +13,9 @@ module PaymentServices
 
       def masked_number
         # NOTE dup нужен, т.к. insert изменяет исходный объект
-        "#{bin.dup.insert(4, ' ')}** **** #{last_digits}"
+        bin_copy = bin.to_s.dup
+        bin_formatted = bin_copy.length >= 4 ? bin_copy.insert(4, ' ') : "#{bin_copy} "
+        "#{bin_formatted}** **** #{last_digits}"
       end
     end
   end

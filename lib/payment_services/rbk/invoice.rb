@@ -39,6 +39,11 @@ module PaymentServices
         state :refunded
       end
 
+      def persist_workflow_state(new_value)
+        self[:state] = new_value
+        save!
+      end
+
       # FIXME: в приложение
       def order
         Order.find_by(public_id: order_public_id) || PreliminaryOrder.find_by(public_id: order_public_id)

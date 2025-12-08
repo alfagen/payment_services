@@ -43,6 +43,11 @@ module PaymentServices
         state :refunded
       end
 
+      def persist_workflow_state(new_value)
+        self[:state] = new_value
+        save!
+      end
+
       def self.rbk_state_to_state(rbk_state)
         if PaymentClient::SUCCESS_STATES.include?(rbk_state)
           :succeed
