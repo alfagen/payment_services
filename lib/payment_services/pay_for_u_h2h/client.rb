@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class PayForUH2h
     class Client < ::PaymentServices::PayForU::Client

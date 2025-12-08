@@ -8,7 +8,6 @@
 
 require_relative 'payment_order_support'
 
-
 module PaymentServices
   class QIWI
     class Payment < ApplicationRecord

@@ -2,7 +2,6 @@
 
 require_relative 'blockchain'
 
-
 module PaymentServices
   class Blockchair
     class Client < ::PaymentServices::Base::Client

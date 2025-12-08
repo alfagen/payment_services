@@ -4,7 +4,6 @@ require_relative 'invoice'
 require_relative 'client'
 require_relative 'transaction_repository'
 
-
 module PaymentServices
   class CryptoApisV2
     class Invoicer < ::PaymentServices::Base::Invoicer

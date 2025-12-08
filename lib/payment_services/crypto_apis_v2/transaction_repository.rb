@@ -3,7 +3,6 @@
 require_relative 'transaction'
 require_relative 'blockchain'
 
-
 module PaymentServices
   class CryptoApisV2
     class TransactionRepository

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class Obmenka
     class Invoice < ApplicationRecord

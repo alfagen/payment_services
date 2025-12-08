@@ -6,7 +6,6 @@ require_relative 'invoice'
 require_relative 'invoice_client'
 require_relative 'customer'
 
-
 module PaymentServices
   class Rbk
     class Invoicer < ::PaymentServices::Base::Invoicer

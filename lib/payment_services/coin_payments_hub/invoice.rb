@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class CoinPaymentsHub
     class Invoice < ::PaymentServices::Base::CryptoInvoice

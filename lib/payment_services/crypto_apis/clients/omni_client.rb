@@ -2,7 +2,6 @@
 
 require_relative 'base_client'
 
-
 module PaymentServices
   class CryptoApis
     module Clients

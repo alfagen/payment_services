@@ -3,7 +3,6 @@
 require_relative 'invoice'
 require_relative 'client'
 
-
 module PaymentServices
   class Cryptomus
     class Invoicer < ::PaymentServices::Base::Invoicer

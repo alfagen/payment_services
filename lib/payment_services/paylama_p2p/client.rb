@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class PaylamaP2p
     class Client < ::PaymentServices::Paylama::Client

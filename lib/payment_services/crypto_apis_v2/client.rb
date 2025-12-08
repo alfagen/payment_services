@@ -2,7 +2,6 @@
 
 require_relative 'blockchain'
 
-
 module PaymentServices
   class CryptoApisV2
     class Client < ::PaymentServices::Base::Client

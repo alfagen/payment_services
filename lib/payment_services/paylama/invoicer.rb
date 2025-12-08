@@ -4,7 +4,6 @@ require_relative 'invoice'
 require_relative 'client'
 require_relative 'currency_repository'
 
-
 module PaymentServices
   class Paylama
     class Invoicer < ::PaymentServices::Base::Invoicer

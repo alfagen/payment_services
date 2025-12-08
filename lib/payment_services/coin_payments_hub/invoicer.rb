@@ -5,7 +5,6 @@ require_relative 'client'
 require_relative 'transaction'
 require_relative 'currency_repository'
 
-
 module PaymentServices
   class CoinPaymentsHub
     class Invoicer < ::PaymentServices::Base::Invoicer

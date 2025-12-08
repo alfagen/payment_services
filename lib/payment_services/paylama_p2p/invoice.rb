@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class PaylamaP2p
     class Invoice < ::PaymentServices::PaylamaSbp::Invoice

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class PaylamaCrypto
     class Invoice < ::PaymentServices::Base::CryptoInvoice

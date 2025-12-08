@@ -4,7 +4,6 @@
 
 require_relative 'client'
 
-
 module PaymentServices
   class Rbk
     class PayoutClient < PaymentServices::Rbk::Client

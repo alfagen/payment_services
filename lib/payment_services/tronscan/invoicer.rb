@@ -4,7 +4,6 @@ require_relative 'invoice'
 require_relative 'client'
 require_relative 'transaction_matcher'
 
-
 module PaymentServices
   class Tronscan
     class Invoicer < ::PaymentServices::Base::Invoicer

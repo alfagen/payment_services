@@ -5,7 +5,6 @@ require_relative 'client'
 require_relative 'blockchain'
 require_relative 'transaction_matcher'
 
-
 module PaymentServices
   class Blockchair
     class Invoicer < ::PaymentServices::Base::Invoicer

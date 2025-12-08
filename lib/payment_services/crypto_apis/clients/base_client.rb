@@ -2,7 +2,6 @@
 
 # Copyright (c) 2020 FINFEX https://github.com/finfex
 
-
 module PaymentServices
   class CryptoApis
     module Clients

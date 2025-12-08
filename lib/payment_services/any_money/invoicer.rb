@@ -4,7 +4,6 @@
 
 require_relative 'invoice'
 
-
 module PaymentServices
   class AnyMoney
     class Invoicer < ::PaymentServices::Base::Invoicer

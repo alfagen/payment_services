@@ -4,7 +4,6 @@
 
 require_relative 'payout_client'
 
-
 module PaymentServices
   class Rbk
     class Payout < ApplicationRecord

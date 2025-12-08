@@ -2,7 +2,6 @@
 
 require_relative '../clients/ethereum_client'
 
-
 module PaymentServices
   class CryptoApis
     module PayoutClients

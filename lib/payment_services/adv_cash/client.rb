@@ -2,7 +2,6 @@
 
 require 'savon'
 
-
 module PaymentServices
   class AdvCash
     class Client

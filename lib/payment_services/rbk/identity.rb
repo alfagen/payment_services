@@ -4,7 +4,6 @@
 
 require_relative 'identity_client'
 
-
 module PaymentServices
   class Rbk
     class Identity < ApplicationRecord

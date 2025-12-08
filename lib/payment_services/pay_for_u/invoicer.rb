@@ -3,7 +3,6 @@
 require_relative 'invoice'
 require_relative 'client'
 
-
 module PaymentServices
   class PayForU
     class Invoicer < ::PaymentServices::Base::Invoicer

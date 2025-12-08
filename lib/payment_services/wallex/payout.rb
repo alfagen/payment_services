@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class Wallex
     class Payout < ::PaymentServices::Base::FiatPayout

@@ -4,7 +4,6 @@ require_relative 'payout'
 require_relative 'client'
 require_relative 'currency_repository'
 
-
 module PaymentServices
   class Paylama
     class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter

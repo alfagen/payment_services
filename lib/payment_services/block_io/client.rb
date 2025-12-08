@@ -4,7 +4,6 @@
 
 require 'block_io'
 
-
 module PaymentServices
   class BlockIo
     class Client < ::PaymentServices::Base::Client

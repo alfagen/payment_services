@@ -6,7 +6,6 @@ require_relative 'customer_client'
 require_relative 'payment_card'
 require 'jwt'
 
-
 module PaymentServices
   class Rbk
     class Customer < ApplicationRecord

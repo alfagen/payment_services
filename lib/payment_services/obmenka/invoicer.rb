@@ -3,7 +3,6 @@
 require_relative 'invoice'
 require_relative 'client'
 
-
 module PaymentServices
   class Obmenka
     class Invoicer < ::PaymentServices::Base::Invoicer

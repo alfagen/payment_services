@@ -2,7 +2,6 @@
 
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
-
 module PaymentServices
   class Rbk
     class PaymentCard < ApplicationRecord

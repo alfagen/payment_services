@@ -5,7 +5,6 @@
 require_relative 'payment'
 require_relative 'client'
 
-
 module PaymentServices
   class QIWI
     class Importer

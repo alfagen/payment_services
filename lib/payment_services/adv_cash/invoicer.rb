@@ -5,7 +5,6 @@
 require_relative 'invoice'
 require_relative 'client'
 
-
 module PaymentServices
   class AdvCash
     class Invoicer < ::PaymentServices::Base::Invoicer

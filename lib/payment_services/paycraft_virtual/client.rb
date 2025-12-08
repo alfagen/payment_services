@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class PaycraftVirtual
     class Client < ::PaymentServices::Base::Client

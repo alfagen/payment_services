@@ -3,7 +3,6 @@
 require_relative 'invoice'
 require_relative 'transaction'
 
-
 module PaymentServices
   class PaylamaCrypto
     class Invoicer < ::PaymentServices::Base::Invoicer

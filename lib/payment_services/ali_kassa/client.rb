@@ -2,7 +2,6 @@
 
 # Copyright (c) 2019 FINFEX https://github.com/finfex
 
-
 module PaymentServices
   class AliKassa
     class Client

@@ -3,7 +3,6 @@
 require_relative 'payout'
 require_relative 'client'
 
-
 module PaymentServices
   class OkoOtc
     class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter

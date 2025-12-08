@@ -4,7 +4,6 @@
 
 require_relative 'wallet_client'
 
-
 module PaymentServices
   class Rbk
     class Wallet < ApplicationRecord

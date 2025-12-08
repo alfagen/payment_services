@@ -2,7 +2,6 @@
 
 require_relative 'transaction'
 
-
 module PaymentServices
   class Tronscan
     class TransactionMatcher

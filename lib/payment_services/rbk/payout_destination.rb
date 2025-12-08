@@ -4,7 +4,6 @@
 
 require_relative 'payout_destination_client'
 
-
 module PaymentServices
   class Rbk
     class PayoutDestination < ApplicationRecord

@@ -3,7 +3,6 @@
 require 'digest'
 require 'base64'
 
-
 module PaymentServices
   class Obmenka
     class Client

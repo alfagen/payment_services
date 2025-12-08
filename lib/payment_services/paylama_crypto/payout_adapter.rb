@@ -3,7 +3,6 @@
 require_relative 'payout'
 require_relative 'transaction'
 
-
 module PaymentServices
   class PaylamaCrypto
     class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter

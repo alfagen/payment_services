@@ -4,7 +4,6 @@ require_relative 'invoice'
 require_relative 'client'
 require_relative 'transaction'
 
-
 module PaymentServices
   class OneCrypto
     class Invoicer < ::PaymentServices::Base::Invoicer

@@ -3,7 +3,6 @@
 require 'digest'
 require 'securerandom'
 
-
 module PaymentServices
   class AppexMoney
     class Client

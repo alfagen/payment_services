@@ -4,7 +4,6 @@ require 'openssl'
 require 'digest'
 require 'base64'
 
-
 module PaymentServices
   class CoinPaymentsHub
     class Client < ::PaymentServices::Base::Client

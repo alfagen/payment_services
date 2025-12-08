@@ -5,7 +5,6 @@
 require_relative 'payment'
 require_relative 'invoice_client'
 
-
 module PaymentServices
   class Rbk
     class Invoice < ApplicationRecord

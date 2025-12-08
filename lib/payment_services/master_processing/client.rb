@@ -2,7 +2,6 @@
 
 require 'base64'
 
-
 module PaymentServices
   class MasterProcessing
     class Client < ::PaymentServices::Base::Client

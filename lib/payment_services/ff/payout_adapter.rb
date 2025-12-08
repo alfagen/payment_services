@@ -5,7 +5,6 @@ require_relative 'payout'
 require_relative 'invoice'
 require_relative 'transaction'
 
-
 module PaymentServices
   class Ff
     class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter

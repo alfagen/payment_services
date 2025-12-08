@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module PaymentServices
   class XPayPro
     class Invoice < ::PaymentServices::Base::FiatInvoice

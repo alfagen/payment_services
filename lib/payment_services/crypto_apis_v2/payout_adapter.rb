@@ -4,7 +4,6 @@ require_relative 'payout'
 require_relative 'client'
 require_relative 'transaction'
 
-
 module PaymentServices
   class CryptoApisV2
     class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter

@@ -3,7 +3,6 @@
 require 'nokogiri'
 require 'csv'
 
-
 module PaymentServices
   class PerfectMoney
     class Client
