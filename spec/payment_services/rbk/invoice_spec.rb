@@ -33,7 +33,7 @@ RSpec.describe PaymentServices::Rbk::Invoice, type: :model do
 
       # Mock order method to avoid external dependencies
       order = double('Order')
-      allow(order).to receive(:auto_confirm!)
+      allow(order).to receive(:auto_confirm!).and_return(true)
       allow_any_instance_of(described_class).to receive(:order).and_return(order)
     end
 

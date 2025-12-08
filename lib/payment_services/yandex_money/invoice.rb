@@ -2,7 +2,9 @@
 
 # Copyright (c) 2018 FINFEX https://github.com/finfex
 
-class PaymentServices::YandexMoney
-  class Invoice
+module PaymentServices
+  class YandexMoney
+    class Invoice
+    end
   end
 end

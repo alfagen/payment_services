@@ -3,55 +3,57 @@
 require_relative 'payout'
 require_relative 'client'
 
-class PaymentServices::Payeer
-  class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
+module PaymentServices
+  class Payeer
+    class PayoutAdapter < ::PaymentServices::Base::PayoutAdapter
 
-    def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
-      make_payout(
-        amount: amount,
-        destination_account: destination_account,
-        order_payout_id: order_payout_id
-      )
-    end
-
-    def refresh_status!(payout_id)
-      payout = Payout.find(payout_id)
-      return if payout.pending?
-
-      response = client.payments(params: { account: wallet.num_ps })
-
-      raise "Can't get withdrawal details: #{response['errors']}" if response['errors'].any?
-
-      payment = response['history'].values.find do |payment|
-        payment['referenceId'] == payout.reference_id
+      def make_payout!(amount:, payment_card_details:, transaction_id:, destination_account:, order_payout_id:)
+        make_payout(
+          amount: amount,
+          destination_account: destination_account,
+          order_payout_id: order_payout_id
+        )
       end
 
-      payout.update_provider_state(payment['status']) if payment
+      def refresh_status!(payout_id)
+        payout = Payout.find(payout_id)
+        return if payout.pending?
 
-      payment
-    end
+        response = client.payments(params: { account: wallet.num_ps })
 
-    private
+        raise "Can't get withdrawal details: #{response['errors']}" if response['errors'].any?
 
-    def make_payout(amount:, destination_account:, order_payout_id:)
-      payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
+        payment = response['history'].values.find do |payment|
+          payment['referenceId'] == payout.reference_id
+        end
 
-      params = {
-        account: wallet.num_ps,
-        sumOut: amount.to_d,
-        to: destination_account,
-        comment: "Перевод по заявке №#{payout.order_payout.order.public_id} на сайте Kassa.cc",
-        referenceId: payout.build_reference_id
-      }
-      response = client.create_payout(params: params)
+        payout.update_provider_state(payment['status']) if payment
 
-      raise "Can't process payout: #{response['errors']}" if response['errors'].is_a? Array
+        payment
+      end
 
-      payout.pay!
-    end
+      private
 
-    def client
-      @client ||= Client.new(api_id: wallet.merchant_id, api_key: api_key, currency: wallet.currency.to_s, account: wallet.num_ps, secret_key: api_secret)
+      def make_payout(amount:, destination_account:, order_payout_id:)
+        payout = Payout.create!(amount: amount, destination_account: destination_account, order_payout_id: order_payout_id)
+
+        params = {
+          account: wallet.num_ps,
+          sumOut: amount.to_d,
+          to: destination_account,
+          comment: "Перевод по заявке №#{payout.order_payout.order.public_id} на сайте Kassa.cc",
+          referenceId: payout.build_reference_id
+        }
+        response = client.create_payout(params: params)
+
+        raise "Can't process payout: #{response['errors']}" if response['errors'].is_a? Array
+
+        payout.pay!
+      end
+
+      def client
+        @client ||= Client.new(api_id: wallet.merchant_id, api_key: api_key, currency: wallet.currency.to_s, account: wallet.num_ps, secret_key: api_secret)
+      end
     end
   end
 end

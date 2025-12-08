@@ -1,19 +1,21 @@
 # frozen_string_literal: true
 
-class PaymentServices::Cryptomus
-  class Payout < ::PaymentServices::Base::FiatPayout
-    self.table_name = 'cryptomus_payouts'
+module PaymentServices
+  class Cryptomus
+    class Payout < ::PaymentServices::Base::FiatPayout
+      self.table_name = 'cryptomus_payouts'
 
-    monetize :amount_cents, as: :amount
+      monetize :amount_cents, as: :amount
 
-    private
+      private
 
-    def provider_succeed?
-      provider_state.in? Invoice::SUCCESS_PROVIDER_STATES
-    end
+      def provider_succeed?
+        provider_state.in? Invoice::SUCCESS_PROVIDER_STATES
+      end
 
-    def provider_failed?
-      provider_state.in? Invoice::FAILED_PROVIDER_STATES
+      def provider_failed?
+        provider_state.in? Invoice::FAILED_PROVIDER_STATES
+      end
     end
   end
 end

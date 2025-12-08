@@ -4,20 +4,22 @@
 
 require_relative 'client'
 
-class PaymentServices::Rbk
-  class WalletClient < PaymentServices::Rbk::Client
-    URL = 'https://api.rbk.money/wallet/v0/wallets'
+module PaymentServices
+  class Rbk
+    class WalletClient < PaymentServices::Rbk::Client
+      URL = 'https://api.rbk.money/wallet/v0/wallets'
 
-    def create_wallet(identity:)
-      safely_parse http_request(
-        url: URL,
-        method: :POST,
-        body: {
-          name: 'Kassa.cc payouts wallet',
-          identity: identity.rbk_id,
-          currency: 'RUB'
-        }
-      )
+      def create_wallet(identity:)
+        safely_parse http_request(
+          url: URL,
+          method: :POST,
+          body: {
+            name: 'Kassa.cc payouts wallet',
+            identity: identity.rbk_id,
+            currency: 'RUB'
+          }
+        )
+      end
     end
   end
 end
