@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+identity_1:
+  rbk_id: identity_123
+  current: false
+
+identity_2:
+  rbk_id: identity_456
+  current: true
+
+identity_3:
+  rbk_id: identity_789
+  current: false

@@ -1,0 +1,16 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+wallet_1:
+  rbk_id: wallet_123
+  rbk_identity: identity_1
+  current: false
+
+wallet_2:
+  rbk_id: wallet_456
+  rbk_identity: identity_1
+  current: true
+
+wallet_3:
+  rbk_id: wallet_789
+  rbk_identity: identity_2
+  current: false

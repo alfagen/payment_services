@@ -6,8 +6,18 @@ require 'bundler/setup'
 Bundler.require(:development, :test)
 require 'active_support/core_ext/module'
 require 'virtus'
+require 'database_cleaner-active_record'
 
 require 'payment_services'
+
+# Load shoulda-matchers
+require 'shoulda/matchers'
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :active_record
+  end
+end
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

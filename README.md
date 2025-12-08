@@ -1,7 +1,6 @@
 # PaymentServices
 
-[![Build
-Status](https://travis-ci.org/finfex/payment_services.svg?branch=master)](https://travis-ci.org/finfex/payment_services)
+[![CI](https://github.com/alfagen/payment_services/actions/workflows/ci.yml/badge.svg)](https://github.com/alfagen/payment_services/actions/workflows/ci.yml)
 
 На данный момент поддерживаемые сервисы:
 

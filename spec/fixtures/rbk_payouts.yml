@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+payout_1:
+  rbk_payout_destination: destination_1
+  rbk_wallet: wallet_1
+  rbk_id: payout_123
+  amount_cents: 5000
+  rbk_status: processed
+  payload: {"test": "data"}
+
+payout_2:
+  rbk_payout_destination: destination_2
+  rbk_wallet: wallet_2
+  rbk_id: payout_456
+  amount_cents: 10000
+  rbk_status: pending
+  payload: {"test": "data2"}
+
+payout_3:
+  rbk_payout_destination: destination_3
+  rbk_wallet: wallet_3
+  rbk_id: payout_789
+  amount_cents: 7500
+  rbk_status: completed
+  payload: {"test": "data3"}
