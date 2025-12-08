@@ -20,9 +20,7 @@ module PaymentServices
 
       private
 
-      # rubocop:disable Lint/UnusedMethodArgument
       def make_payout(amount:, payment_card_details:, transaction_id:, destination_account:)
-        # rubocop:enable Lint/UnusedMethodArgument
 
         client.create_payout(
           id: transaction_id,
