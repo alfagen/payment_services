@@ -29,9 +29,9 @@ RSpec.describe PaymentServices::Rbk::Payment, type: :model do
     let(:payment) { described_class.create!(amount_in_cents: 1000, rbk_id: 'pay_1', state: 'pending', order_public_id: 1, rbk_money_invoice_id: invoice.id) }
 
     before do
-      # Mock invoice methods to avoid recursive calls
-      allow_any_instance_of(PaymentServices::Rbk::Invoice).to receive(:pay!)
-      allow_any_instance_of(PaymentServices::Rbk::Invoice).to receive(:cancel!)
+      # Mock invoice methods to avoid recursive calls and ensure they return true
+      allow_any_instance_of(PaymentServices::Rbk::Invoice).to receive(:pay!).and_return(true)
+      allow_any_instance_of(PaymentServices::Rbk::Invoice).to receive(:cancel!).and_return(true)
     end
 
     it 'starts in pending state' do
