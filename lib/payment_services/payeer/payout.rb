@@ -1,56 +1,58 @@
 # frozen_string_literal: true
 
-class PaymentServices::Payeer
-  class Payout < PaymentServices::ApplicationRecord
-    include WorkflowActiverecord
+module PaymentServices
+  class Payeer
+    class Payout < ApplicationRecord
+      include Workflow
 
-    self.table_name = 'payeer_payouts'
+      self.table_name = 'payeer_payouts'
 
-    scope :ordered, -> { order(id: :desc) }
+      scope :ordered, -> { order(id: :desc) }
 
-    monetize :amount_cents, as: :amount
-    validates :amount_cents, :destination_account, :state, presence: true
+      monetize :amount_cents, as: :amount
+      validates :amount_cents, :destination_account, :state, presence: true
 
-    workflow_column :state
-    workflow do
-      state :pending do
-        event :pay, transitions_to: :paid
+      workflow_column :state
+      workflow do
+        state :pending do
+          event :pay, transitions_to: :paid
+        end
+        state :paid do
+          event :confirm, transitions_to: :completed
+          event :fail, transitions_to: :failed
+        end
+        state :completed
+        state :failed
       end
-      state :paid do
-        event :confirm, transitions_to: :completed
-        event :fail, transitions_to: :failed
+
+      def pay
+        update(reference_id: build_reference_id)
       end
-      state :completed
-      state :failed
-    end
 
-    def pay
-      update(reference_id: build_reference_id)
-    end
+      def update_provider_state(provider_state)
+        update!(provider_state: provider_state)
 
-    def update_provider_state(provider_state)
-      update!(provider_state: provider_state)
+        confirm!  if success?
+        fail!     if failed?
+      end
 
-      confirm!  if success?
-      fail!     if failed?
-    end
+      def order_payout
+        @order_payout ||= OrderPayout.find(order_payout_id)
+      end
 
-    def order_payout
-      @order_payout ||= OrderPayout.find(order_payout_id)
-    end
+      def build_reference_id
+        "#{order_payout.order.public_id}-#{order_payout.id}"
+      end
 
-    def build_reference_id
-      "#{order_payout.order.public_id}-#{order_payout.id}"
-    end
+      private
 
-    private
+      def success?
+        provider_state == 'success'
+      end
 
-    def success?
-      provider_state == 'success'
-    end
-
-    def failed?
-      provider_state == 'canceled'
+      def failed?
+        provider_state == 'canceled'
+      end
     end
   end
 end

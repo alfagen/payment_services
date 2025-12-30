@@ -1,22 +1,24 @@
 # frozen_string_literal: true
 
-class PaymentServices::Bovapay
-  class Payout < ::PaymentServices::Base::FiatPayout
-    SUCCESS_PROVIDER_STATE = 'paid'
-    FAILED_PROVIDER_STATE  = 'failed'
+module PaymentServices
+  class Bovapay
+    class Payout < ::PaymentServices::Base::FiatPayout
+      SUCCESS_PROVIDER_STATE = 'paid'
+      FAILED_PROVIDER_STATE  = 'failed'
 
-    self.table_name = 'bovapay_payouts'
+      self.table_name = 'bovapay_payouts'
 
-    monetize :amount_cents, as: :amount
+      monetize :amount_cents, as: :amount
 
-    private
+      private
 
-    def provider_succeed?
-      provider_state == SUCCESS_PROVIDER_STATE
-    end
+      def provider_succeed?
+        provider_state == SUCCESS_PROVIDER_STATE
+      end
 
-    def provider_failed?
-      provider_state == FAILED_PROVIDER_STATE
+      def provider_failed?
+        provider_state == FAILED_PROVIDER_STATE
+      end
     end
   end
 end

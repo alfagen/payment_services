@@ -3,62 +3,64 @@
 require_relative 'invoice'
 require_relative 'client'
 
-class PaymentServices::Exmo
-  class Invoicer < ::PaymentServices::Base::Invoicer
-    TRANSACTION_TIME_THRESHOLD = 30.minutes
-    WalletOperationsRequestFailed = Class.new StandardError
+module PaymentServices
+  class Exmo
+    class Invoicer < ::PaymentServices::Base::Invoicer
+      TRANSACTION_TIME_THRESHOLD = 30.minutes
+      WalletOperationsRequestFailed = Class.new StandardError
 
-    def create_invoice(money)
-      Invoice.create!(amount: money, order_public_id: order.public_id)
-    end
+      def create_invoice(money)
+        Invoice.create!(amount: money, order_public_id: order.public_id)
+      end
 
-    def async_invoice_state_updater?
-      true
-    end
+      def async_invoice_state_updater?
+        true
+      end
 
-    def update_invoice_state!
-      response = client.wallet_operations(currency: invoice.amount_currency, type: 'deposit')
-      raise WalletOperationsRequestFailed, "Can't get wallet operations" unless response['items']
+      def update_invoice_state!
+        response = client.wallet_operations(currency: invoice.amount_currency, type: 'deposit')
+        raise WalletOperationsRequestFailed, "Can't get wallet operations" unless response['items']
 
-      transaction = find_transaction(transactions: response['items'])
-      return if transaction.nil?
+        transaction = find_transaction(transactions: response['items'])
+        return if transaction.nil?
 
-      invoice.update!(
-        transaction_created_at: DateTime.strptime(transaction['created'].to_s,'%s').utc,
-        transaction_id: transaction.dig('extra', 'txid')
-      )
-      invoice.update_state_by_provider(transaction['status'])
-    end
+        invoice.update!(
+          transaction_created_at: DateTime.strptime(transaction['created'].to_s,'%s').utc,
+          transaction_id: transaction.dig('extra', 'txid')
+        )
+        invoice.update_state_by_provider(transaction['status'])
+      end
 
-    def invoice
-      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
-    end
+      def invoice
+        @invoice ||= Invoice.find_by(order_public_id: order.public_id)
+      end
 
-    private
+      private
 
-    def find_transaction(transactions:)
-      transactions.find { |transaction| matches_amount_and_timing?(transaction) }
-    end
+      def find_transaction(transactions:)
+        transactions.find { |transaction| matches_amount_and_timing?(transaction) }
+      end
 
-    def matches_amount_and_timing?(transaction)
-      transaction['amount'].to_d == invoice.amount.to_d && match_time_interval?(transaction)
-    end
+      def matches_amount_and_timing?(transaction)
+        transaction['amount'].to_d == invoice.amount.to_d && match_time_interval?(transaction)
+      end
 
-    def match_time_interval?(transaction)
-      transaction_created_at_utc = DateTime.strptime(transaction['created'].to_s,'%s').utc
-      invoice_created_at_utc = invoice.created_at.utc
+      def match_time_interval?(transaction)
+        transaction_created_at_utc = DateTime.strptime(transaction['created'].to_s,'%s').utc
+        invoice_created_at_utc = invoice.created_at.utc
 
-      invoice_created_at_utc < transaction_created_at_utc && created_in_valid_interval?(transaction_created_at_utc, invoice_created_at_utc)
-    end
+        invoice_created_at_utc < transaction_created_at_utc && created_in_valid_interval?(transaction_created_at_utc, invoice_created_at_utc)
+      end
 
-    def created_in_valid_interval?(transaction_time, invoice_time)
-      interval = (transaction_time - invoice_time)
-      interval_in_minutes = (interval / 1.minute).round.minutes
-      interval_in_minutes < TRANSACTION_TIME_THRESHOLD
-    end
+      def created_in_valid_interval?(transaction_time, invoice_time)
+        interval = (transaction_time - invoice_time)
+        interval_in_minutes = (interval / 1.minute).round.minutes
+        interval_in_minutes < TRANSACTION_TIME_THRESHOLD
+      end
 
-    def client
-      @client ||= Client.new(public_key: api_key, secret_key: api_secret)
+      def client
+        @client ||= Client.new(public_key: api_key, secret_key: api_secret)
+      end
     end
   end
 end

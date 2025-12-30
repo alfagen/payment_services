@@ -3,70 +3,72 @@
 require_relative 'invoice'
 require_relative 'client'
 
-class PaymentServices::Paycraft
-  class Invoicer < ::PaymentServices::Base::Invoicer
-    Error = Class.new StandardError
-    SBP_PAYWAY = 'СБП'
+module PaymentServices
+  class Paycraft
+    class Invoicer < ::PaymentServices::Base::Invoicer
+      Error = Class.new StandardError
+      SBP_PAYWAY = 'СБП'
 
-    def prepare_invoice_and_get_wallet!(currency:, token_network:)
-      create_invoice!
-      response = client.create_invoice(params: invoice_params)
-      raise Error, "Can't create invoice: #{response['description']}" if response['description'].present?
-      raise Error, "Can't create invoice: #{response['message']}" if response['message'].present?
+      def prepare_invoice_and_get_wallet!(currency:, token_network:)
+        create_invoice!
+        response = client.create_invoice(params: invoice_params)
+        raise Error, "Can't create invoice: #{response['description']}" if response['description'].present?
+        raise Error, "Can't create invoice: #{response['message']}" if response['message'].present?
 
-      invoice.update!(deposit_id: order.public_id.to_s)
-      PaymentServices::Base::Wallet.new(
-        address: response['address'],
-        name: "#{response['surname']} #{response['first_name']}".presence,
-        memo: response['currency_name'].presence
-      )
-    end
+        invoice.update!(deposit_id: order.public_id.to_s)
+        PaymentServices::Base::Wallet.new(
+          address: response['address'],
+          name: "#{response['surname']} #{response['first_name']}".presence,
+          memo: response['currency_name'].presence
+        )
+      end
 
-    def create_invoice(money)
-      invoice
-    end
+      def create_invoice(money)
+        invoice
+      end
 
-    def async_invoice_state_updater?
-      true
-    end
+      def async_invoice_state_updater?
+        true
+      end
 
-    def update_invoice_state!
-      transaction = client.invoice(params: { clientUniqueId: invoice.deposit_id })
-      invoice.update(rate: transaction['course'].to_f)
-      invoice.update_state_by_provider(transaction['status']) if amount_valid?(transaction)
-    end
+      def update_invoice_state!
+        transaction = client.invoice(params: { clientUniqueId: invoice.deposit_id })
+        invoice.update(rate: transaction['course'].to_f)
+        invoice.update_state_by_provider(transaction['status']) if amount_valid?(transaction)
+      end
 
-    def invoice
-      @invoice ||= Invoice.find_by(order_public_id: order.public_id)
-    end
+      def invoice
+        @invoice ||= Invoice.find_by(order_public_id: order.public_id)
+      end
 
-    private
+      private
 
-    delegate :card_bank, :sbp?, to: :bank_resolver
+      delegate :card_bank, :sbp?, to: :bank_resolver
 
-    def create_invoice!
-      Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
-    end
+      def create_invoice!
+        Invoice.create!(amount: order.calculated_income_money, order_public_id: order.public_id)
+      end
 
-    def invoice_params
-      {
-        external_id: order.public_id.to_s,
-        amount: invoice.amount.to_i,
-        token_name: sbp? ? SBP_PAYWAY : card_bank,
-        currency: invoice.amount_currency.to_s
-      }
-    end
+      def invoice_params
+        {
+          external_id: order.public_id.to_s,
+          amount: invoice.amount.to_i,
+          token_name: sbp? ? SBP_PAYWAY : card_bank,
+          currency: invoice.amount_currency.to_s
+        }
+      end
 
-    def amount_valid?(transaction)
-      transaction['amountPaid'] == transaction['amount'] || transaction['amountPaid'].zero?
-    end
+      def amount_valid?(transaction)
+        transaction['amountPaid'] == transaction['amount'] || transaction['amountPaid'].zero?
+      end
 
-    def bank_resolver
-      @bank_resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self)
-    end
+      def bank_resolver
+        @bank_resolver ||= PaymentServices::Base::P2pBankResolver.new(adapter: self)
+      end
 
-    def client
-      @client ||= Client.new(api_key: api_key, secret_key: api_secret)
+      def client
+        @client ||= Client.new(api_key: api_key, secret_key: api_secret)
+      end
     end
   end
 end
