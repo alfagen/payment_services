@@ -7,6 +7,7 @@ class PaymentServices::FireKassa
   class Invoicer < ::PaymentServices::Base::Invoicer
     Error = Class.new StandardError
     DEFAULT_CARD = 'sber'
+    FIO_REGEX = /\A(\S{1,14})\s+(\S{1,14})\z/
 
     def prepare_invoice_and_get_wallet!(currency:, token_network:)
       create_invoice!
@@ -56,8 +57,12 @@ class PaymentServices::FireKassa
         ext_txn: order.public_id.to_s,
         ext_date: order.created_at.iso8601
       }
-      params[:ext_last_name] = order.user.aml_client.surname if order&.user&.aml_client&.surname.present?
-      params[:ext_first_name] = order.user.aml_client.first_name if order&.user&.aml_client&.first_name.present?
+
+      fio_match = order.income_fio&.match(FIO_REGEX)
+      raise Error, 'Нету ФИ' unless fio_match
+
+      params[:ext_last_name] = fio_match[1]
+      params[:ext_first_name] = fio_match[2]
       params[:ext_email] = order.user_email if order&.user&.email.present?
       params[:ext_ip] = order.remote_ip if order.remote_ip.present?
       params[:ext_user_agent] = order.user.user_agent if order&.user&.user_agent.present?
